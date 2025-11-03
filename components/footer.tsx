@@ -7,27 +7,27 @@ export function Footer() {
 
   const footerSections = {
     "ABOUT US": [
-      { name: "Home", href: "#" },
-      { name: "Catalog", href: "#" },
-      { name: "Collections", href: "#" },
+      { name: "Home", href: "/" },
+      { name: "Catalog", href: "/catalog" },
+      { name: "Collections", href: "/collections" },
     ],
     SHOP: [
-      { name: "Search", href: "#" },
-      { name: "dek series", href: "#" },
-      { name: "weev series", href: "#" },
+      { name: "Product", href: "/product" },
+      { name: "dek series", href: "/collections" },
+      { name: "weev series", href: "/collections" },
     ],
     "Quick Links": [
-      { name: "Warranty Claim", href: "#" },
-      { name: "Return Policy", href: "#" },
-      { name: "Refund Policy", href: "#" },
-      { name: "Shipping Policy", href: "#" },
-      { name: "Terms of Service", href: "#" },
-      { name: "Privacy Policy", href: "#" },
-      { name: "Legal Info", href: "#" },
+      { name: "Warranty Policy", href: "/warranty-policy" },
+      { name: "Return Policy", href: "/return-policy" },
+      { name: "Refund Policy", href: "/refund-policy" },
+      { name: "Shipping Policy", href: "/shipping-policy" },
+      { name: "Terms of Service", href: "/terms-of-service" },
+      { name: "Privacy Policy", href: "/privacy-policy" },
+      { name: "Legal Info", href: "/legal-info" },
     ],
     Connect: [
-      { name: "Contact Us", href: "#" },
-      { name: "Our Blog", href: "#" },
+      { name: "Contact Us", href: "/contact" },
+      { name: "Our Blog", href: "/blog" },
     ],
   }
 
@@ -50,8 +50,8 @@ export function Footer() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <a href="#" className="inline-flex items-center mb-4">
-                <img src="/images/new-logo.png" alt="dekord logo" className="h-7 lg:h-8 w-auto" decoding="async" />
+              <a href="/" className="inline-flex items-center mb-4">
+                <img src="/images/loogoo.png" alt="dekord logo" className="h-7 lg:h-8 w-auto" decoding="async" />
                 <span className="sr-only">{"dekord"}</span>
               </a>
               <p className="text-neutral-600 mb-6 leading-relaxed">
@@ -121,7 +121,7 @@ export function Footer() {
               <h4 className="font-semibold text-neutral-900 text-base lg:text-lg mb-1">We send tasty emails</h4>
               <p className="text-neutral-600 text-sm">Stay updated with new arrivals and stories.</p>
             </div>
-            <form className="flex w-full sm:w-auto">
+            <form className="flex w-full sm:w-auto shadow-lg">
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -139,25 +139,7 @@ export function Footer() {
           </div>
         </motion.div>
 
-        {/* Bottom Section */}
-        <motion.div
-          className="pt-6 sm:pt-8 border-t border-neutral-200/50"
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          viewport={{ once: true }}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-xs sm:text-sm text-neutral-600">
-            <p>© {currentYear} dekord, Powered by skordl</p>
-            <div className="flex items-center gap-2">
-              <a href="#" className="hover:text-neutral-900 transition-colors">
-                <Instagram size={16} />
-                <span className="sr-only">Instagram</span>
-              </a>
-              <span className="text-neutral-400">@dekord.pk</span>
-            </div>
-          </div>
-        </motion.div>
+        
       </div>
     </footer>
   )

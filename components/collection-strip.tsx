@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Image from "next/image"
 import { Reveal } from "./reveal"
@@ -69,6 +69,19 @@ const collections = [
 ]
 
 export function CollectionStrip() {
+  const [containerWidth, setContainerWidth] = useState(1200)
+  
+  useEffect(() => {
+    setContainerWidth(window.innerWidth)
+    
+    const handleResize = () => {
+      setContainerWidth(window.innerWidth)
+    }
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -79,7 +92,6 @@ export function CollectionStrip() {
 
   const itemWidth = 320 // 320px (w-80) + 32px gap = 352px per item
   const totalWidth = collections.length * (itemWidth + 32) - 32 // subtract last gap
-  const containerWidth = typeof window !== "undefined" ? window.innerWidth : 1200
   const maxDrag = Math.max(0, totalWidth - containerWidth + 48) // add padding
 
   return (

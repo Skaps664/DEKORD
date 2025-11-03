@@ -1,11 +1,24 @@
 "use client"
 
-import { useRef } from "react"
+import { useRef, useState, useEffect } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Reveal } from "./reveal"
 import { Mail, Play } from "lucide-react"
 
 export function UserVideoReviews() {
+  const [containerWidth, setContainerWidth] = useState(1200)
+  
+  useEffect(() => {
+    setContainerWidth(window.innerWidth)
+    
+    const handleResize = () => {
+      setContainerWidth(window.innerWidth)
+    }
+    
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+  
   const videoReviews = [
     {
       id: 1,
@@ -67,7 +80,6 @@ export function UserVideoReviews() {
 
   const itemWidth = 340 // width + gap
   const totalWidth = videoReviews.length * itemWidth - 32
-  const containerWidth = typeof window !== "undefined" ? window.innerWidth : 1200
   const maxDrag = Math.max(0, totalWidth - containerWidth + 48)
 
   return (
