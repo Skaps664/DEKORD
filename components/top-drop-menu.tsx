@@ -72,8 +72,8 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
               <p className="text-xs md:text-sm text-muted-foreground">Browse collections • Explore catalog</p>
             </div>
 
-            <div className="flex items-center gap-3 ml-4 flex-shrink-0">
-              <nav className="flex items-center gap-4 md:gap-6">
+            <div className="flex items-center gap-3 ml-4 flex-shrink-0 ">
+              <nav className="flex items-center gap-4 md:gap-6 ml-8">
                 <Link
                   href="/"
                   onClick={onClose}
@@ -98,7 +98,7 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
                 <Link
                   href="/contact"
                   onClick={onClose}
-                  className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap"
+                  className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap mr-12 md:mr-20"
                 >
                   Contact
                 </Link>

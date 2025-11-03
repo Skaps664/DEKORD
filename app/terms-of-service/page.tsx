@@ -118,7 +118,7 @@ export default function TermsPage() {
   ]
 
   return (
-    <main className="min-h-screen bg-background pt-16 md:pt-18">
+    <main className="min-h-screen bg-background pt-28">
       {/* Hero Section */}
       <section className="relative min-h-[40vh] flex items-center justify-center overflow-hidden">
         <motion.div 

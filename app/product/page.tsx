@@ -30,7 +30,7 @@ export default function ProductPage() {
   }
 
   return (
-    <main className="bg-background text-foreground pt-16 md:pt-18 relative overflow-hidden">
+    <main className="bg-background grain-texture text-foreground pt-16 md:pt-18 relative overflow-hidden">
       {/* Color Flash Overlay - Behind all components */}
       <AnimatePresence>
         {showColorFlash && (

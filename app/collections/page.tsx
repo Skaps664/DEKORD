@@ -68,7 +68,7 @@ export default function CollectionsPage() {
   const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   return (
-    <main className="min-h-screen bg-background pt-16 md:pt-18">
+    <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18">
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-950 dark:to-neutral-900" />

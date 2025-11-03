@@ -114,7 +114,7 @@ export default function CatalogPage() {
   })
 
   return (
-    <main className="min-h-screen bg-background pt-16 md:pt-18">
+    <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18">
       {/* Hero */}
       <section className="relative py-16 md:py-24 bg-gradient-to-br from-neutral-50 to-white dark:from-neutral-950 dark:to-neutral-900">
         <div className="container-custom">

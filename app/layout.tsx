@@ -139,7 +139,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
       </head>
-      <body className="font-sans bg-neutral-50 text-neutral-900 overflow-x-hidden">
+      <body className="font-sans bg-neutral-50 text-neutral-900 overflow-x-hidden grain-texture">
         <Header />
         <main role="main">{children}</main>
         <Footer />

@@ -29,8 +29,8 @@ export function Header() {
       <motion.header
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-          "backdrop-blur-md border-b",
-          isScrolled ? "bg-white/15 border-neutral-200" : "bg-white/80 border-white/20",
+          "backdrop-blur-md",
+          isScrolled ? "bg-white/15 border-neutral-200" : "bg-white/15",
         )}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
