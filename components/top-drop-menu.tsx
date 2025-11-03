@@ -96,6 +96,13 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
                   Catalog
                 </Link>
                 <Link
+                  href="/account"
+                  onClick={onClose}
+                  className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap"
+                >
+                  Account
+                </Link>
+                <Link
                   href="/contact"
                   onClick={onClose}
                   className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap mr-12 md:mr-20"

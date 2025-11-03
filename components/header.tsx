@@ -68,29 +68,54 @@ export function Header() {
               </a>
             </motion.div>
 
-            {/* Cart icon with badge on right */}
-            <button
-              type="button"
-              aria-label={cartOpen ? "Close cart" : "Open cart"}
-              aria-expanded={cartOpen}
-              onClick={() => {
-                setCartOpen((v) => !v)
-                setMenuOpen(false)
-              }}
-              className="flex-shrink-0 relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -mr-1 md:-mr-0.5"
-            >
-              <ShoppingBag className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
-              <span
-                aria-hidden="true"
-                className={cn(
-                  "absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] leading-none font-medium",
-                  badgeColor,
-                )}
+            {/* Right side icons */}
+            <div className="flex items-center gap-1 md:gap-2">
+              {/* Login/Account Button */}
+              <a
+                href="/auth"
+                className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10"
+                aria-label="Account"
               >
-                0
-              </span>
-              <span className="sr-only">Cart items: 0</span>
-            </button>
+                <svg 
+                  className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
+                  />
+                </svg>
+              </a>
+
+              {/* Cart icon with badge */}
+              <button
+                type="button"
+                aria-label={cartOpen ? "Close cart" : "Open cart"}
+                aria-expanded={cartOpen}
+                onClick={() => {
+                  setCartOpen((v) => !v)
+                  setMenuOpen(false)
+                }}
+                className="flex-shrink-0 relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -mr-1 md:-mr-0.5"
+              >
+                <ShoppingBag className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] leading-none font-medium",
+                    badgeColor,
+                  )}
+                >
+                  0
+                </span>
+                <span className="sr-only">Cart items: 0</span>
+              </button>
+            </div>
           </div>
         </div>
       </motion.header>
