@@ -1,14 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 
 // Google Analytics 4 Configuration
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
-// Google Analytics 4 Component
-export function GoogleAnalytics() {
+// Inner component that uses useSearchParams
+function GoogleAnalyticsContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -26,6 +26,11 @@ export function GoogleAnalytics() {
     }
   }, [pathname, searchParams]);
 
+  return null;
+}
+
+// Google Analytics 4 Component
+export function GoogleAnalytics() {
   // Don't render if no measurement ID
   if (!GA_MEASUREMENT_ID) {
     console.warn('Google Analytics: Missing NEXT_PUBLIC_GA_MEASUREMENT_ID');
@@ -51,6 +56,9 @@ export function GoogleAnalytics() {
           });
         `}
       </Script>
+      <Suspense fallback={null}>
+        <GoogleAnalyticsContent />
+      </Suspense>
     </>
   );
 }
