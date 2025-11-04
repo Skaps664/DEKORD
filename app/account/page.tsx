@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import {
@@ -28,7 +28,7 @@ import type { OrderWithItems } from "@/lib/types/database"
 
 type Tab = "profile" | "orders" | "password"
 
-export default function AccountPage() {
+function AccountPageContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const tabParam = searchParams.get('tab') as Tab | null
@@ -811,5 +811,21 @@ export default function AccountPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+// Wrap in Suspense boundary for useSearchParams
+export default function AccountPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-neutral-50 flex items-center justify-center pt-20">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-neutral-900 mx-auto mb-4" />
+          <p className="text-neutral-600">Loading account...</p>
+        </div>
+      </div>
+    }>
+      <AccountPageContent />
+    </Suspense>
   )
 }
