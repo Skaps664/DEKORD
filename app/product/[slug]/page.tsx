@@ -16,6 +16,7 @@ import { CareWarranty } from "@/components/product/care-warranty"
 import ComparisonSection from "@/components/comparison-section"
 import { SpecialtyShowcase } from "@/components/product/specialty-showcase"
 import { ProductBanner } from "@/components/product/product-banner"
+import { trackViewContent } from "@/components/facebook-pixel"
 
 export default function ProductPage() {
   const params = useParams()
@@ -49,6 +50,18 @@ export default function ProductPage() {
       fetchProduct()
     }
   }, [slug, router])
+
+  // Track product view with Facebook Pixel
+  useEffect(() => {
+    if (product && !loading) {
+      trackViewContent({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+      })
+      console.log('📊 Facebook Pixel: ViewContent tracked for', product.name)
+    }
+  }, [product, loading])
 
   const handleColorChange = (overlayClass: string, shadowClass: string) => {
     setFlashColor(overlayClass)

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { ShoppingCart, Zap, Shield, Truck, Plus, Minus, Check } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "@/contexts/cart-context"
+import { trackAddToCart } from "@/components/facebook-pixel"
 import type { Product, ProductVariant } from "@/lib/types/database"
 
 const defaultColors = [
@@ -160,6 +161,15 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
         price: finalPrice,
         quantity: quantity,
       })
+      
+      // Track with Facebook Pixel
+      trackAddToCart({
+        id: product?.id || "dekord-usb-c-cable",
+        name: product?.name || "Dekord Braided USB-C Cable",
+        price: finalPrice,
+        quantity: quantity,
+      })
+      console.log('📊 Facebook Pixel: AddToCart tracked for', product?.name || 'Dekord Cable')
       
       // Show success feedback
       setAddedToCart(true)

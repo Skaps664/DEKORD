@@ -11,6 +11,7 @@ import { useCart } from "@/contexts/cart-context"
 import { getCurrentUser, getUserProfile, updateUserProfile } from "@/lib/services/auth"
 import { createOrder } from "@/lib/services/orders"
 import confetti from "canvas-confetti"
+import { trackInitiateCheckout, trackPurchase } from "@/components/facebook-pixel"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
 
 const provinces = [
@@ -83,6 +84,21 @@ export default function CheckoutPage() {
       router.push("/cart")
     }
   }, [cartItems, checkingAuth, cartLoading, orderSuccess, router])
+
+  // Track checkout initiation with Facebook Pixel
+  useEffect(() => {
+    if (!checkingAuth && !cartLoading && cartItems.length > 0 && !orderSuccess) {
+      const items = cartItems.map(item => ({
+        id: item.productId,
+        name: item.productName,
+        price: item.price,
+        quantity: item.quantity,
+      }))
+      
+      trackInitiateCheckout(subtotal, items)
+      console.log('📊 Facebook Pixel: InitiateCheckout tracked, value:', subtotal)
+    }
+  }, [checkingAuth, cartLoading, cartItems, orderSuccess, subtotal])
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shipping = subtotal >= 5000 ? 0 : 200
@@ -174,6 +190,10 @@ export default function CheckoutPage() {
       if (data) {
         setOrderNumber(data.order_number)
         setOrderSuccess(true)
+        
+        // Track purchase with Facebook Pixel
+        trackPurchase(total, data.order_number)
+        console.log('📊 Facebook Pixel: Purchase tracked, order:', data.order_number, 'value:', total)
         
         // Save shipping info if checkbox is checked
         if (saveInfo && user) {
