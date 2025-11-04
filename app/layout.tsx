@@ -66,6 +66,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
+  icons: {
+    icon: [
+      { url: '/favicon.png', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
   alternates: {
     canonical: "https://dekord.online",
   },
@@ -78,11 +86,11 @@ export const metadata: Metadata = {
     description: "Not just cables, but a vibe. dekord creates essentials that charge your life with power, durability, and style. Defy Ordinary, every single day.",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/dekord-logo-new.png",
         width: 1200,
         height: 630,
         alt: "dekord - Premium Charging Cables & Tech Accessories",
-        type: "image/jpeg",
+        type: "image/png",
       },
     ],
   },
@@ -90,7 +98,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Defy Ordinary with dekord – Tech That Speaks Style",
     description: "Not just cables, but a vibe. dekord creates essentials that charge your life with power, durability, and style.",
-    images: ["/og-image.jpg"],
+    images: ["/dekord-logo-new.png"],
     creator: "@dekord",
   },
   robots: {
@@ -120,7 +128,7 @@ export default function RootLayout({
     "@type": "Organization",
     "name": "dekord",
     "url": "https://dekord.online",
-    "logo": "https://dekord.online/logo.png",
+    "logo": "https://dekord.online/dekord-logo-new.png",
     "description": "Premium charging cables and tech accessories. 60W-100W power delivery cables.",
     "address": {
       "@type": "PostalAddress",
@@ -144,6 +152,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${geistMono.variable} ${instrumentSerif.variable} antialiased`}>
       <head>
+        <link rel="icon" href="/favicon.png" sizes="any" />
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
