@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import {
   User,
@@ -18,25 +19,47 @@ import {
   Truck,
   CheckCircle2,
   Clock,
+  Loader2,
 } from "lucide-react"
 import Link from "next/link"
+import { getCurrentUser, getUserProfile, updateUserProfile, updatePassword, signOut } from "@/lib/services/auth"
+import { getUserOrders } from "@/lib/services/orders"
+import type { OrderWithItems } from "@/lib/types/database"
 
 type Tab = "profile" | "orders" | "password"
 
 export default function AccountPage() {
-  const [activeTab, setActiveTab] = useState<Tab>("profile")
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get('tab') as Tab | null
+  
+  const [activeTab, setActiveTab] = useState<Tab>(tabParam || "profile")
   const [isEditing, setIsEditing] = useState(false)
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
+  const [authProvider, setAuthProvider] = useState<string>('email')
 
-  // Mock user data - replace with real data from Supabase
+  // Real user data from Supabase
   const [userData, setUserData] = useState({
-    name: "Muhammad Sudais Khan",
-    email: "sudais@dekord.online",
-    phone: "+92 339 0166442",
-    address: "A2 Third Floor, New Dil Jan Plaza, Achini, Peshawar",
-    city: "Peshawar",
-    postalCode: "25000",
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    postalCode: "",
+  })
+
+  // Saved shipping info from Supabase
+  const [savedShippingInfo, setSavedShippingInfo] = useState({
+    shipping_name: "",
+    shipping_phone: "",
+    shipping_address: "",
+    shipping_city: "",
+    shipping_province: "",
+    save_shipping_info: false,
   })
 
   const [passwordData, setPasswordData] = useState({
@@ -45,54 +68,173 @@ export default function AccountPage() {
     confirmPassword: "",
   })
 
-  // Mock orders data - replace with real data from Supabase
-  const orders = [
-    {
-      id: "ORD-001",
-      date: "2025-11-01",
-      status: "delivered",
-      items: [
-        { name: "dekord W-60 Braided Cable", quantity: 2, price: 1499 },
-        { name: "dekord W-100 Power Cable", quantity: 1, price: 1999 },
-      ],
-      total: 4997,
-      trackingNumber: "TRK123456789",
-    },
-    {
-      id: "ORD-002",
-      date: "2025-10-28",
-      status: "shipped",
-      items: [{ name: "Type-C to Lightning Cable", quantity: 1, price: 1299 }],
-      total: 1299,
-      trackingNumber: "TRK987654321",
-    },
-    {
-      id: "ORD-003",
-      date: "2025-10-25",
-      status: "processing",
-      items: [
-        { name: "dekord Wall Charger 20W", quantity: 1, price: 899 },
-        { name: "Micro USB Cable", quantity: 3, price: 799 },
-      ],
-      total: 3296,
-      trackingNumber: "Pending",
-    },
-  ]
+  // Real orders data from Supabase
+  const [orders, setOrders] = useState<OrderWithItems[]>([])
 
-  const handleSaveProfile = () => {
-    // TODO: Save to Supabase
-    setIsEditing(false)
+  // Handle tab from URL parameter
+  useEffect(() => {
+    if (tabParam && (tabParam === "profile" || tabParam === "orders" || tabParam === "password")) {
+      setActiveTab(tabParam)
+    }
+  }, [tabParam])
+
+  // Load user data on mount
+  useEffect(() => {
+    async function loadUserData() {
+      try {
+        console.log('🔵 Loading user data...')
+        
+        // Get current user
+        const { data: user, error: userError } = await getCurrentUser()
+        
+        if (userError || !user) {
+          console.error('❌ Not logged in, redirecting to auth...')
+          router.push('/auth')
+          return
+        }
+
+        console.log('✅ User logged in:', user.id)
+        setUserId(user.id)
+
+        // Check auth provider
+        const provider = user.app_metadata?.provider || 'email'
+        console.log('✅ Auth provider:', provider)
+        setAuthProvider(provider)
+
+        // Get user profile
+        const { data: profile, error: profileError } = await getUserProfile(user.id)
+        
+        if (profile) {
+          console.log('✅ Profile loaded:', profile)
+          setUserData({
+            name: profile.full_name || '',
+            email: user.email || '',
+            phone: profile.phone || '',
+            address: profile.address_line1 || '',
+            city: profile.city || '',
+            postalCode: profile.postal_code || '',
+          })
+          
+          // Load saved shipping info
+          setSavedShippingInfo({
+            shipping_name: profile.shipping_name || '',
+            shipping_phone: profile.shipping_phone || '',
+            shipping_address: profile.shipping_address || '',
+            shipping_city: profile.shipping_city || '',
+            shipping_province: profile.shipping_province || '',
+            save_shipping_info: profile.save_shipping_info || false,
+          })
+        } else {
+          console.log('⚠️ No profile found, using user email')
+          setUserData({
+            name: '',
+            email: user.email || '',
+            phone: '',
+            address: '',
+            city: '',
+            postalCode: '',
+          })
+        }
+
+        // Get user orders
+        const { data: ordersData, error: ordersError } = await getUserOrders(user.id)
+        
+        if (ordersData) {
+          console.log('✅ Orders loaded:', ordersData.length)
+          setOrders(ordersData)
+        } else {
+          console.log('⚠️ No orders found')
+        }
+
+        setLoading(false)
+      } catch (err) {
+        console.error('💥 Error loading user data:', err)
+        setLoading(false)
+      }
+    }
+
+    loadUserData()
+  }, [router])
+
+  const handleSaveProfile = async () => {
+    if (!userId) return
+
+    setSaving(true)
+    try {
+      const { error } = await updateUserProfile(userId, {
+        full_name: userData.name,
+        phone: userData.phone,
+        address_line1: userData.address,
+        city: userData.city,
+        postal_code: userData.postalCode,
+      })
+
+      if (error) {
+        console.error('❌ Error saving profile:', error)
+        alert('Failed to save profile: ' + error)
+      } else {
+        console.log('✅ Profile saved successfully')
+        setIsEditing(false)
+      }
+    } catch (err) {
+      console.error('💥 Exception saving profile:', err)
+      alert('Failed to save profile')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement password change with Supabase
-    console.log("Password change:", passwordData)
+    
+    // Validate passwords
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      alert("Please fill in all password fields")
+      return
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert("New passwords do not match")
+      return
+    }
+    
+    if (passwordData.newPassword.length < 6) {
+      alert("Password must be at least 6 characters")
+      return
+    }
+    
+    setSaving(true)
+    try {
+      // Update password
+      const { error } = await updatePassword(passwordData.newPassword)
+      
+      if (error) {
+        alert(`Failed to update password: ${error}`)
+      } else {
+        alert("Password updated successfully!")
+        // Clear form
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        })
+      }
+    } catch (err) {
+      console.error('Error updating password:', err)
+      alert('Failed to update password')
+    } finally {
+      setSaving(false)
+    }
   }
 
-  const handleLogout = () => {
-    // TODO: Implement logout with Supabase
-    window.location.href = "/auth"
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      router.push('/auth')
+    } catch (err) {
+      console.error('Error logging out:', err)
+      router.push('/auth')
+    }
   }
 
   const getStatusIcon = (status: string) => {
@@ -121,6 +263,18 @@ export default function AccountPage() {
     }
   }
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100 pt-24 pb-16 px-4 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-neutral-900 mx-auto mb-4" />
+          <p className="text-neutral-600">Loading your account...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-neutral-50 via-white to-neutral-100 pt-24 pb-16 px-4">
       <div className="max-w-6xl mx-auto">
@@ -147,8 +301,40 @@ export default function AccountPage() {
                 <div className="w-20 h-20 bg-white rounded-full mx-auto mb-3 flex items-center justify-center">
                   <User className="w-10 h-10 text-neutral-900" />
                 </div>
-                <h2 className="text-lg font-semibold text-white">{userData.name}</h2>
+                <h2 className="text-lg font-semibold text-white">{userData.name || 'User'}</h2>
                 <p className="text-neutral-300 text-sm">{userData.email}</p>
+                
+                {/* Auth Provider Badge */}
+                <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs text-white">
+                  {authProvider === 'google' ? (
+                    <>
+                      <svg className="w-4 h-4" viewBox="0 0 24 24">
+                        <path
+                          fill="currentColor"
+                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        />
+                        <path
+                          fill="currentColor"
+                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        />
+                        <path
+                          fill="currentColor"
+                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                        />
+                        <path
+                          fill="currentColor"
+                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                        />
+                      </svg>
+                      <span>Signed in with Google</span>
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="w-4 h-4" />
+                      <span>Signed in with Email</span>
+                    </>
+                  )}
+                </div>
               </div>
 
               <nav className="p-2">
@@ -174,17 +360,19 @@ export default function AccountPage() {
                   <Package className="w-5 h-5" />
                   <span className="font-medium">Orders</span>
                 </button>
-                <button
-                  onClick={() => setActiveTab("password")}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                    activeTab === "password"
-                      ? "bg-neutral-900 text-white"
-                      : "text-neutral-700 hover:bg-neutral-100"
-                  }`}
-                >
-                  <Lock className="w-5 h-5" />
-                  <span className="font-medium">Password</span>
-                </button>
+                {authProvider !== 'google' && (
+                  <button
+                    onClick={() => setActiveTab("password")}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                      activeTab === "password"
+                        ? "bg-neutral-900 text-white"
+                        : "text-neutral-700 hover:bg-neutral-100"
+                    }`}
+                  >
+                    <Lock className="w-5 h-5" />
+                    <span className="font-medium">Password</span>
+                  </button>
+                )}
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition-all mt-2"
@@ -221,14 +409,25 @@ export default function AccountPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={handleSaveProfile}
-                          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                          disabled={saving}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                          <Save className="w-4 h-4" />
-                          Save
+                          {saving ? (
+                            <>
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="w-4 h-4" />
+                              Save
+                            </>
+                          )}
                         </button>
                         <button
                           onClick={() => setIsEditing(false)}
-                          className="flex items-center gap-2 px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg hover:bg-neutral-300 transition-colors"
+                          disabled={saving}
+                          className="flex items-center gap-2 px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg hover:bg-neutral-300 transition-colors disabled:opacity-50"
                         >
                           <X className="w-4 h-4" />
                           Cancel
@@ -258,14 +457,42 @@ export default function AccountPage() {
                       <label className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-2">
                         <Mail className="w-4 h-4" />
                         Email Address
+                        {authProvider === 'google' && (
+                          <span className="ml-auto text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full flex items-center gap-1">
+                            <svg className="w-3 h-3" viewBox="0 0 24 24">
+                              <path
+                                fill="currentColor"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                              />
+                              <path
+                                fill="currentColor"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                              />
+                              <path
+                                fill="currentColor"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                              />
+                              <path
+                                fill="currentColor"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                              />
+                            </svg>
+                            Google
+                          </span>
+                        )}
                       </label>
                       <input
                         type="email"
                         value={userData.email}
                         onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-                        disabled={!isEditing}
+                        disabled={true}
                         className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all outline-none disabled:bg-neutral-50 disabled:text-neutral-600"
                       />
+                      {authProvider === 'google' && (
+                        <p className="text-xs text-neutral-500 mt-1">
+                          This email is linked to your Google account and cannot be changed here.
+                        </p>
+                      )}
                     </div>
 
                     {/* Phone */}
@@ -322,6 +549,55 @@ export default function AccountPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Saved Shipping Information Section */}
+                  {savedShippingInfo.save_shipping_info && (
+                    <div className="mt-8 pt-8 border-t border-neutral-200">
+                      <div className="flex items-center gap-2 mb-4">
+                        <Truck className="w-5 h-5 text-neutral-700" />
+                        <h3 className="text-xl font-bold text-neutral-900">Saved Shipping Information</h3>
+                        <span className="ml-auto text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                          ✓ Auto-fills at checkout
+                        </span>
+                      </div>
+                      
+                      <div className="bg-neutral-50 rounded-lg p-6 space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Full Name</label>
+                            <p className="text-neutral-900 mt-1">{savedShippingInfo.shipping_name || '-'}</p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">WhatsApp Number</label>
+                            <p className="text-neutral-900 mt-1">{savedShippingInfo.shipping_phone || '-'}</p>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Shipping Address</label>
+                          <p className="text-neutral-900 mt-1">{savedShippingInfo.shipping_address || '-'}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">City</label>
+                            <p className="text-neutral-900 mt-1">{savedShippingInfo.shipping_city || '-'}</p>
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Province</label>
+                            <p className="text-neutral-900 mt-1">{savedShippingInfo.shipping_province || '-'}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="pt-4 border-t border-neutral-200">
+                          <p className="text-sm text-neutral-600 flex items-center gap-2">
+                            <CheckCircle2 className="w-4 h-4 text-green-600" />
+                            This information will automatically fill when you checkout
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -329,63 +605,81 @@ export default function AccountPage() {
               {activeTab === "orders" && (
                 <div>
                   <h2 className="text-2xl font-bold text-neutral-900 mb-6">Order History</h2>
-                  <div className="space-y-4">
-                    {orders.map((order, index) => (
-                      <motion.div
-                        key={order.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="border border-neutral-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                  
+                  {orders.length === 0 ? (
+                    <div className="text-center py-12 bg-neutral-50 rounded-lg border border-neutral-200">
+                      <Package className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
+                      <p className="text-neutral-600 text-lg">No orders yet</p>
+                      <Link
+                        href="/catalog"
+                        className="inline-block mt-4 px-6 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors"
                       >
-                        {/* Order Header */}
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-lg font-semibold text-neutral-900">{order.id}</h3>
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(
-                                  order.status
-                                )}`}
-                              >
-                                {getStatusIcon(order.status)}
-                                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-4 text-sm text-neutral-600">
-                              <span className="flex items-center gap-1">
-                                <Calendar className="w-4 h-4" />
-                                {new Date(order.date).toLocaleDateString("en-US", {
-                                  year: "numeric",
-                                  month: "long",
-                                  day: "numeric",
-                                })}
-                              </span>
-                              {order.trackingNumber !== "Pending" && (
-                                <span className="flex items-center gap-1">
-                                  <Truck className="w-4 h-4" />
-                                  {order.trackingNumber}
+                        Start Shopping
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {orders.map((order, index) => (
+                        <motion.div
+                          key={order.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="border border-neutral-200 rounded-lg p-6 hover:shadow-md transition-shadow"
+                        >
+                          {/* Order Header */}
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <div className="flex items-center gap-3 mb-2">
+                                <h3 className="text-lg font-semibold text-neutral-900">{order.order_number}</h3>
+                                <span
+                                  className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getStatusColor(
+                                    order.status
+                                  )}`}
+                                >
+                                  {getStatusIcon(order.status)}
+                                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                                 </span>
-                              )}
+                              </div>
+                              <div className="flex items-center gap-4 text-sm text-neutral-600">
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="w-4 h-4" />
+                                  {new Date(order.created_at).toLocaleDateString("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  })}
+                                </span>
+                                {order.tracking_number && (
+                                  <span className="flex items-center gap-1">
+                                    <Truck className="w-4 h-4" />
+                                    {order.tracking_number}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm text-neutral-600 mb-1">Total</p>
+                              <p className="text-xl font-bold text-neutral-900">Rs. {order.total.toLocaleString()}</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-sm text-neutral-600 mb-1">Total</p>
-                            <p className="text-xl font-bold text-neutral-900">Rs. {order.total.toLocaleString()}</p>
-                          </div>
-                        </div>
 
                         {/* Order Items */}
                         <div className="space-y-2 mb-4">
-                          {order.items.map((item, itemIndex) => (
-                            <div key={itemIndex} className="flex justify-between items-center py-2 border-t border-neutral-100">
+                          {order.items?.map((item, itemIndex) => (
+                            <div key={item.id || itemIndex} className="flex justify-between items-center py-2 border-t border-neutral-100">
                               <div>
-                                <p className="font-medium text-neutral-900">{item.name}</p>
+                                <p className="font-medium text-neutral-900">
+                                  {item.product_name}
+                                  {item.variant_details && (
+                                    <span className="text-sm text-neutral-500"> ({item.variant_details})</span>
+                                  )}
+                                </p>
                                 <p className="text-sm text-neutral-600">Quantity: {item.quantity}</p>
                               </div>
-                              <p className="font-medium text-neutral-900">Rs. {item.price.toLocaleString()}</p>
+                              <p className="font-medium text-neutral-900">Rs. {item.total_price.toLocaleString()}</p>
                             </div>
-                          ))}
+                          )) || <p className="text-sm text-neutral-500 py-2">No items</p>}
                         </div>
 
                         {/* Order Actions */}
@@ -410,6 +704,7 @@ export default function AccountPage() {
                       </motion.div>
                     ))}
                   </div>
+                  )}
                 </div>
               )}
 

@@ -1,12 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { ShoppingCart, Zap, Shield, Truck, Plus, Minus } from "lucide-react"
+import { ShoppingCart, Zap, Shield, Truck, Plus, Minus, Check } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { useCart } from "@/contexts/cart-context"
+import type { Product, ProductVariant } from "@/lib/types/database"
 
-const colors = [
+const defaultColors = [
   { 
     name: "Obsidian Black", 
     token: "bg-neutral-900", 
@@ -51,17 +53,44 @@ const colors = [
   },
 ]
 
-const lengths = ["0.5 m", "1 m", "2 m"]
+const defaultLengths = ["0.5 m", "1 m", "2 m"]
 
 interface PurchasePanelProps {
+  product?: Product
+  variants?: ProductVariant[]
   onColorChange?: (overlayClass: string, shadowClass: string) => void
   activeColorShadow?: string
 }
 
-export function PurchasePanel({ onColorChange, activeColorShadow }: PurchasePanelProps) {
-  const [activeColor, setActiveColor] = useState(colors[0].name)
-  const [activeLength, setActiveLength] = useState(lengths[1])
+export function PurchasePanel({ product, variants, onColorChange, activeColorShadow }: PurchasePanelProps = {}) {
+  // Extract unique colors and lengths from variants
+  const availableColors = useMemo(() => {
+    if (!variants || variants.length === 0) return defaultColors
+    
+    const uniqueColors = [...new Set(variants.map(v => v.color).filter((c): c is string => c !== null && c !== undefined))]
+    return uniqueColors.map(colorName => {
+      // Map color names to design tokens (you might want to store this in DB)
+      const colorMap: Record<string, any> = {
+        "Black": { name: "Black", token: "bg-neutral-900", ring: "ring-neutral-900", overlay: "bg-neutral-900/10", shadow: "shadow-neutral-900/50" },
+        "White": { name: "White", token: "bg-neutral-100", ring: "ring-neutral-900", overlay: "bg-neutral-100/20", shadow: "shadow-neutral-400/50" },
+        "Navy": { name: "Navy", token: "bg-blue-900", ring: "ring-blue-900", overlay: "bg-blue-900/15", shadow: "shadow-blue-900/50" },
+        "Gray": { name: "Gray", token: "bg-gray-500", ring: "ring-gray-500", overlay: "bg-gray-500/15", shadow: "shadow-gray-500/50" },
+      }
+      return colorMap[colorName] || defaultColors[0]
+    })
+  }, [variants])
+
+  const availableLengths = useMemo(() => {
+    if (!variants || variants.length === 0) return defaultLengths
+    return [...new Set(variants.map(v => v.length).filter((l): l is string => l !== null && l !== undefined))]
+  }, [variants])
+
+  const [activeColor, setActiveColor] = useState(availableColors[0]?.name || "Black")
+  const [activeLength, setActiveLength] = useState(availableLengths[0] || "1m")
   const [quantity, setQuantity] = useState(1)
+  const [addedToCart, setAddedToCart] = useState(false)
+  
+  const { addItem, isLoading } = useCart()
   const [isHovering, setIsHovering] = useState(false)
   const [showSadEmoji, setShowSadEmoji] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -106,6 +135,40 @@ export function PurchasePanel({ onColorChange, activeColorShadow }: PurchasePane
     }, 1600)
   }
 
+  // Get current color details
+  const currentColorObj = availableColors.find((c) => c.name === activeColor) || availableColors[0]
+  
+  // Find matching variant based on color and length
+  const selectedVariant = variants?.find(v => v.color === activeColor && v.length === activeLength)
+  
+  // Calculate price from product or variant
+  const basePrice = product?.price ? (typeof product.price === 'string' ? parseFloat(product.price) : product.price) : 19
+  const finalPrice = selectedVariant?.price_override 
+    ? (typeof selectedVariant.price_override === 'string' ? parseFloat(selectedVariant.price_override) : selectedVariant.price_override)
+    : basePrice
+
+  const handleAddToCart = async () => {
+    try {
+      await addItem({
+        productId: product?.id || "dekord-usb-c-cable",
+        productName: product ? `${product.name} - ${currentColorObj?.name}` : `Dekord Braided USB-C Cable - ${currentColorObj?.name}`,
+        productImage: product?.main_image || "/images/products/usb-cable.jpg",
+        variantId: selectedVariant?.id,
+        variantDetails: `${activeLength}, ${currentColorObj?.name}`,
+        length: activeLength,
+        color: activeColor,
+        price: finalPrice,
+        quantity: quantity,
+      })
+      
+      // Show success feedback
+      setAddedToCart(true)
+      setTimeout(() => setAddedToCart(false), 2000)
+    } catch (error) {
+      console.error("❌ Failed to add to cart:", error)
+    }
+  }
+
   return (
     <aside className={cn(
       "rounded-2xl ring-1 ring-border bg-white overflow-hidden sticky top-20 transition-shadow duration-500",
@@ -116,11 +179,11 @@ export function PurchasePanel({ onColorChange, activeColorShadow }: PurchasePane
       <div className="p-6 border-b border-border bg-gradient-to-br from-neutral-50 to-white">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-xl font-bold text-neutral-900">Dekord Braided USB‑C Cable</h2>
-            <p className="text-sm text-neutral-600 mt-1">Premium fast charging cable</p>
+            <h2 className="text-xl font-bold text-neutral-900">{product?.name || "Dekord Braided USB‑C Cable"}</h2>
+            <p className="text-sm text-neutral-600 mt-1">{product?.category || "Premium fast charging cable"}</p>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-bold text-neutral-900">$19</p>
+            <p className="text-3xl font-bold text-neutral-900">Rs. {finalPrice.toFixed(2)}</p>
             <p className="text-xs text-neutral-500">Free shipping</p>
           </div>
         </div>
@@ -135,7 +198,7 @@ export function PurchasePanel({ onColorChange, activeColorShadow }: PurchasePane
             <p className="text-xs text-neutral-600">{activeColor}</p>
           </div>
           <div className="flex items-center gap-3">
-            {colors.map((c) => (
+            {availableColors.map((c) => (
               <button
                 key={c.name}
                 aria-label={c.name}
@@ -157,10 +220,10 @@ export function PurchasePanel({ onColorChange, activeColorShadow }: PurchasePane
             <p className="text-xs text-neutral-600">{activeLength}</p>
           </div>
           <div className="grid grid-cols-3 gap-2">
-            {lengths.map((l) => (
+            {availableLengths.map((l) => (
               <button
                 key={l}
-                onClick={() => setActiveLength(l)}
+                onClick={() => l && setActiveLength(l)}
                 className={cn(
                   "h-11 rounded-lg text-sm font-medium transition-all",
                   "ring-1 ring-border hover:ring-neutral-900",
@@ -203,9 +266,20 @@ export function PurchasePanel({ onColorChange, activeColorShadow }: PurchasePane
               size="lg"
               variant="outline" 
               className="flex-1 h-12 text-base font-semibold border-2 border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white transition-all"
+              onClick={handleAddToCart}
+              disabled={isLoading}
             >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              Add to Cart
+              {addedToCart ? (
+                <>
+                  <Check className="w-4 h-4 mr-2" />
+                  Added!
+                </>
+              ) : (
+                <>
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Add to Cart
+                </>
+              )}
             </Button>
           </div>
 
@@ -215,14 +289,25 @@ export function PurchasePanel({ onColorChange, activeColorShadow }: PurchasePane
               size="lg"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
+              onClick={handleAddToCart}
+              disabled={isLoading}
               className={cn(
                 "w-full text-base font-semibold bg-neutral-900 hover:bg-neutral-800 transition-all duration-500 ease-out relative overflow-visible",
                 isHovering || showSadEmoji ? "h-20" : "h-14"
               )}
             >
               <div className="flex items-center justify-center">
-                <Zap className="w-4 h-4 mr-2" />
-                Buy Now
+                {addedToCart ? (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Added to Cart!
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Buy Now
+                  </>
+                )}
               </div>
             </Button>
             

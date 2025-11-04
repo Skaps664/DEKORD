@@ -123,7 +123,7 @@ export function FAQsSection() {
                       [&[data-state=open]>div_.minus]:opacity-100
                     "
                   >
-                    <span className="text-sm sm:text-base font-semibold text-foreground">{item.question}</span>
+                    <span className="text-sm sm:text-base text-foreground">{item.question}</span>
                   </AccordionTrigger>
 
                   <AccordionContent className="px-4 sm:px-5 md:px-6 pb-5 sm:pb-6 pt-0 text-sm sm:text-base text-foreground/80 leading-relaxed">

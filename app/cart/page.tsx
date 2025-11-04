@@ -1,61 +1,52 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, Tag, Truck, Shield, X } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, Tag, Truck, Shield, X, LogIn } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-// Mock cart items
-const initialCartItems = [
-  {
-    id: 1,
-    name: "DEK Pro USB-C Cable",
-    price: 2999,
-    image: "/modern-armchair-pillows.png",
-    color: "Midnight Black",
-    length: "2m",
-    quantity: 1,
-  },
-  {
-    id: 2,
-    name: "WEEV Lightning Cable",
-    price: 2499,
-    image: "/modular-cushion-bench.png",
-    color: "Ocean Blue",
-    length: "1.5m",
-    quantity: 2,
-  },
-]
+import { useCart } from "@/contexts/cart-context"
+import { getCurrentUser } from "@/lib/services/auth"
+import type { User } from "@supabase/supabase-js"
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(initialCartItems)
+  const router = useRouter()
+  const { items: cartItems, itemCount, total: cartTotal, updateQuantity, removeItem, isLoading } = useCart()
+  const [user, setUser] = useState<User | null>(null)
+  const [checkingAuth, setCheckingAuth] = useState(true)
   const [promoCode, setPromoCode] = useState("")
   const [promoApplied, setPromoApplied] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const [showSadEmoji, setShowSadEmoji] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
 
-  const updateQuantity = (id: number, delta: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    )
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const { data: currentUser } = await getCurrentUser()
+        setUser(currentUser)
+      } catch (error) {
+        console.error("Error checking user:", error)
+      } finally {
+        setCheckingAuth(false)
+      }
+    }
+    checkUser()
+  }, [])
+
+  const handleUpdateQuantity = async (productId: string, variantId: string | null, newQuantity: number) => {
+    if (newQuantity < 1) return
+    await updateQuantity(productId, variantId, newQuantity)
   }
 
-  const removeItem = (id: number) => {
-    setCartItems((items) => items.filter((item) => item.id !== id))
+  const handleRemoveItem = async (productId: string, variantId: string | null) => {
+    await removeItem(productId, variantId)
   }
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  )
-  const shipping = 200 // Rs. 200 flat shipping
+  const subtotal = cartTotal
+  const shipping = subtotal > 0 ? 200 : 0 // Rs. 200 flat shipping
   const discount = promoApplied ? Math.floor(subtotal * 0.1) : 0
   const total = subtotal + shipping - discount
 
@@ -98,6 +89,29 @@ export default function CartPage() {
     }, 1500)
   }
 
+  const handleCheckout = () => {
+    if (!user) {
+      // Redirect to login with cart redirect
+      router.push("/auth?redirect=/cart")
+    } else {
+      // Proceed to checkout
+      router.push("/checkout")
+    }
+  }
+
+  if (checkingAuth || isLoading) {
+    return (
+      <main className="min-h-screen bg-background grain-texture pt-20 md:pt-24">
+        <div className="container-custom py-8 sm:py-10 md:py-12">
+          <div className="text-center py-20">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+            <p className="mt-4 text-muted-foreground">Loading your cart...</p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-background grain-texture pt-20 md:pt-24">
       <div className="container-custom py-8 sm:py-10 md:py-12 px-2 sm:px-2 md:px-3">
@@ -112,11 +126,11 @@ export default function CartPage() {
             Your Cart
           </h1>
           <p className="text-muted-foreground text-sm sm:text-base">
-            {cartItems.length} {cartItems.length === 1 ? "item" : "items"} ready for checkout
+            {itemCount} {itemCount === 1 ? "item" : "items"} ready for checkout
           </p>
         </motion.div>
 
-        {cartItems.length === 0 ? (
+        {itemCount === 0 ? (
           // Empty Cart State
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -149,7 +163,7 @@ export default function CartPage() {
                 <AnimatePresence mode="popLayout">
                   {cartItems.map((item, index) => (
                     <motion.div
-                      key={item.id}
+                      key={item.productId}
                       layout
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -161,8 +175,8 @@ export default function CartPage() {
                         {/* Product Image */}
                         <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-muted/30">
                           <Image
-                            src={item.image}
-                            alt={item.name}
+                            src={item.productImage || "/placeholder.svg"}
+                            alt={item.productName}
                             fill
                             className="object-cover"
                           />
@@ -172,10 +186,10 @@ export default function CartPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between gap-4 mb-1.5">
                             <h3 className="text-base sm:text-lg font-semibold text-foreground">
-                              {item.name}
+                              {item.productName}
                             </h3>
                             <button
-                              onClick={() => removeItem(item.id)}
+                              onClick={() => handleRemoveItem(item.productId, item.variantId || null)}
                               className="text-muted-foreground hover:text-destructive transition-colors flex-shrink-0"
                               aria-label="Remove item"
                             >
@@ -183,18 +197,19 @@ export default function CartPage() {
                             </button>
                           </div>
 
-                          <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-muted-foreground mb-3">
-                            <span>Color: {item.color}</span>
-                            <span>•</span>
-                            <span>Length: {item.length}</span>
-                          </div>
+                          {item.variantDetails && (
+                            <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-muted-foreground mb-3">
+                              <span>{item.variantDetails}</span>
+                            </div>
+                          )}
 
                           <div className="flex items-center justify-between">
                             {/* Quantity Controls */}
                             <div className="flex items-center gap-2 bg-muted/20 rounded-lg p-1">
                               <button
-                                onClick={() => updateQuantity(item.id, -1)}
-                                className="w-7 h-7 rounded-md hover:bg-muted/50 transition-colors flex items-center justify-center"
+                                onClick={() => handleUpdateQuantity(item.productId, item.variantId || null, item.quantity - 1)}
+                                disabled={item.quantity <= 1}
+                                className="w-7 h-7 rounded-md hover:bg-muted/50 transition-colors flex items-center justify-center disabled:opacity-50"
                                 aria-label="Decrease quantity"
                               >
                                 <Minus className="w-3.5 h-3.5" />
@@ -203,7 +218,7 @@ export default function CartPage() {
                                 {item.quantity}
                               </span>
                               <button
-                                onClick={() => updateQuantity(item.id, 1)}
+                                onClick={() => handleUpdateQuantity(item.productId, item.variantId || null, item.quantity + 1)}
                                 className="w-7 h-7 rounded-md hover:bg-muted/50 transition-colors flex items-center justify-center"
                                 aria-label="Increase quantity"
                               >
@@ -213,14 +228,12 @@ export default function CartPage() {
 
                             {/* Price */}
                             <div className="text-right">
-                              <p className="text-base sm:text-lg font-bold text-foreground">
-                                Rs. {((item.price * item.quantity) / 100).toFixed(0)}
+                                                            <p className="text-lg font-bold text-foreground">
+                                Rs. {(item.price * item.quantity).toFixed(2)}
                               </p>
-                              {item.quantity > 1 && (
-                                <p className="text-xs text-muted-foreground">
-                                  Rs. {(item.price / 100).toFixed(0)} each
-                                </p>
-                              )}
+                              <p className="text-sm text-muted-foreground">
+                                  Rs. {item.price.toFixed(2)} each
+                              </p>
                             </div>
                           </div>
                         </div>
@@ -323,13 +336,13 @@ export default function CartPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="font-medium text-foreground">
-                      Rs. {(subtotal / 100).toFixed(0)}
+                      Rs. {subtotal.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Shipping</span>
                     <span className="font-medium text-foreground">
-                      Rs. 200
+                      decided at checkout
                     </span>
                   </div>
                   {promoApplied && (
@@ -340,7 +353,7 @@ export default function CartPage() {
                     >
                       <span>Discount (10%)</span>
                       <span className="font-medium">
-                        - Rs. {(discount / 100).toFixed(0)}
+                        - Rs. {discount.toFixed(2)}
                       </span>
                     </motion.div>
                   )}
@@ -350,7 +363,7 @@ export default function CartPage() {
                   <div className="flex justify-between items-baseline">
                     <span className="text-lg font-bold text-foreground">Total</span>
                     <span className="text-2xl font-bold text-foreground">
-                      Rs. {(total / 100).toFixed(0)}
+                      Rs. {total.toFixed(2)}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">
@@ -359,18 +372,33 @@ export default function CartPage() {
                 </div>
 
                 {/* Checkout Button with Emoji */}
-                <div className="relative">
-                  <button 
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                    className={cn(
-                      "w-full bg-foreground text-background rounded-lg font-semibold hover:opacity-90 transition-all duration-500 ease-out flex items-center justify-center gap-2 shadow-lg hover:shadow-xl relative overflow-visible",
-                      isHovering || showSadEmoji ? "py-5" : "py-3"
-                    )}
-                  >
-                    Proceed to Pay
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                {!user ? (
+                  <div className="space-y-3">
+                    <button 
+                      onClick={handleCheckout}
+                      className="w-full bg-foreground text-background rounded-lg font-semibold hover:opacity-90 transition-all py-3 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
+                    >
+                      <LogIn className="w-4 h-4" />
+                      Sign In to Checkout
+                    </button>
+                    <p className="text-xs text-center text-muted-foreground">
+                      Sign in to save your cart and continue
+                    </p>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <button 
+                      onMouseEnter={handleMouseEnter}
+                      onMouseLeave={handleMouseLeave}
+                      onClick={handleCheckout}
+                      className={cn(
+                        "w-full bg-foreground text-background rounded-lg font-semibold hover:opacity-90 transition-all duration-500 ease-out flex items-center justify-center gap-2 shadow-lg hover:shadow-xl relative overflow-visible",
+                        isHovering || showSadEmoji ? "py-5" : "py-3"
+                      )}
+                    >
+                      Proceed to Pay
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
                   
                   {/* Emoji Container - Above button */}
                   <div className="absolute left-1/2 -translate-x-1/2 -top-10 pointer-events-none">
@@ -401,7 +429,8 @@ export default function CartPage() {
                       )}
                     </AnimatePresence>
                   </div>
-                </div>
+                  </div>
+                )}
 
                 <p className="text-xs text-center text-muted-foreground mt-3">
                   Secure checkout powered by skordl
@@ -412,7 +441,7 @@ export default function CartPage() {
         )}
 
         {/* Continue Shopping */}
-        {cartItems.length > 0 && (
+        {itemCount > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

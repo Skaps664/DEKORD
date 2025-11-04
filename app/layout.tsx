@@ -4,6 +4,10 @@ import { Inter, Geist_Mono, Instrument_Serif } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import FacebookPixel from "@/components/facebook-pixel"
+import { CartProvider } from "@/contexts/cart-context"
+import { Analytics } from '@vercel/analytics/react'
+
 
 const inter = Inter({
   subsets: ["latin"],
@@ -140,9 +144,13 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans bg-neutral-50 text-neutral-900 overflow-x-hidden grain-texture">
-        <Header />
-        <main role="main">{children}</main>
-        <Footer />
+        <FacebookPixel />
+        <CartProvider>
+          <Header />
+          <main role="main">{children}</main>
+          <Analytics />
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   )

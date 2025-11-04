@@ -12,7 +12,7 @@ export function CareWarranty() {
           <div>
             <h3 className="font-medium">{"Shipping & returns"}</h3>
             <p className="text-muted-foreground mt-2 leading-relaxed">
-              {"Free standard shipping over $50. 30‑day returns—items must be in like‑new condition."}
+              {"Free standard shipping over Rs. 5000. 30‑day returns—items must be in like‑new condition."}
             </p>
           </div>
           <div>

@@ -1,13 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Filter } from "lucide-react"
+import { ArrowRight, Filter, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { getAllCollections } from "@/lib/services/collections"
+import type { Collection } from "@/lib/types/database"
 
-const collections = [
+const defaultCollections = [
   {
     id: "dek-series",
     name: "DEK SERIES",
@@ -26,46 +28,31 @@ const collections = [
     tag: "Hand Crafted",
     color: "from-amber-900 to-amber-700"
   },
-  {
-    id: "type-c",
-    name: "USB-C CABLES",
-    description: "60-100W Power Delivery for laptops, tablets, and phones",
-    image: "/distressed-artistic-chair.png",
-    products: 15,
-    tag: "Fast Charging",
-    color: "from-blue-900 to-blue-700"
-  },
-  {
-    id: "lightning",
-    name: "LIGHTNING",
-    description: "MFi certified cables for iPhone and iPad with tangle-free design",
-    image: "/green-modular-loveseat.png",
-    products: 10,
-    tag: "Apple Certified",
-    color: "from-green-900 to-green-700"
-  },
-  {
-    id: "braided",
-    name: "BRAIDED COLLECTION",
-    description: "Extra durable nylon braiding withstands 25,000+ bends",
-    image: "/braided-rope-loveseat.png",
-    products: 18,
-    tag: "Durable",
-    color: "from-purple-900 to-purple-700"
-  },
-  {
-    id: "multi-cable",
-    name: "MULTI CABLE",
-    description: "3-in-1 cables with USB-C, Lightning, and Micro USB connectors",
-    image: "/minimalist-boucle-loveseat.png",
-    products: 6,
-    tag: "Versatile",
-    color: "from-red-900 to-red-700"
-  },
 ]
 
 export default function CollectionsPage() {
+  const [collections, setCollections] = useState<Collection[]>([])
+  const [loading, setLoading] = useState(true)
   const [hoveredId, setHoveredId] = useState<string | null>(null)
+
+  useEffect(() => {
+    async function fetchCollections() {
+      try {
+        const { data, error } = await getAllCollections()
+        if (error) {
+          console.error("Error fetching collections:", error)
+        } else if (data) {
+          setCollections(data)
+        }
+      } catch (err) {
+        console.error("Failed to fetch collections:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCollections()
+  }, [])
 
   return (
     <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18">
@@ -107,85 +94,95 @@ export default function CollectionsPage() {
       {/* Collections Grid */}
       <section className="py-12 md:py-20">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            {collections.map((collection, index) => (
-              <motion.div
-                key={collection.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                onHoverStart={() => setHoveredId(collection.id)}
-                onHoverEnd={() => setHoveredId(null)}
-              >
-                <Link href={`/collections/${collection.id}`}>
-                  <div className="group relative h-[500px] rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-900">
-                    {/* Image */}
-                    <motion.div
-                      className="absolute inset-0"
-                      animate={{
-                        scale: hoveredId === collection.id ? 1.1 : 1,
-                      }}
-                      transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
-                    >
-                      <Image
-                        src={collection.image || "/placeholder.svg"}
-                        alt={collection.name}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, 50vw"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                    </motion.div>
-
-                    {/* Content */}
-                    <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                      {/* Tag */}
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-neutral-600" />
+            </div>
+          ) : collections.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-muted-foreground">No collections found. Please seed the database.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+              {collections.map((collection, index) => (
+                <motion.div
+                  key={collection.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  onHoverStart={() => setHoveredId(collection.id)}
+                  onHoverEnd={() => setHoveredId(null)}
+                >
+                  <Link href={`/collections/${collection.slug}`}>
+                    <div className="group relative h-[500px] rounded-2xl overflow-hidden bg-neutral-100 dark:bg-neutral-900">
+                      {/* Image */}
                       <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 + 0.3 }}
-                        className="mb-4"
+                        className="absolute inset-0"
+                        animate={{
+                          scale: hoveredId === collection.id ? 1.1 : 1,
+                        }}
+                        transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
                       >
-                        <span className={cn(
-                          "inline-block px-4 py-1.5 rounded-full text-xs font-medium text-white backdrop-blur-sm",
-                          `bg-gradient-to-r ${collection.color}`
-                        )}>
-                          {collection.tag}
-                        </span>
+                        <Image
+                          src={collection.image || "/placeholder.svg"}
+                          alt={collection.name}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                       </motion.div>
 
-                      {/* Title */}
-                      <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
-                        {collection.name}
-                      </h2>
-
-                      {/* Description */}
-                      <p className="text-white/80 text-sm mb-4 line-clamp-2">
-                        {collection.description}
-                      </p>
-
-                      {/* Footer */}
-                      <div className="flex items-center justify-between">
-                        <span className="text-white/60 text-sm">
-                          {collection.products} Products
-                        </span>
-                        
+                      {/* Content */}
+                      <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                        {/* Tag */}
                         <motion.div
-                          className="flex items-center gap-2 text-white group-hover:gap-3 transition-all"
-                          animate={{
-                            x: hoveredId === collection.id ? 10 : 0,
-                          }}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 + 0.3 }}
+                          className="mb-4"
                         >
-                          <span className="text-sm font-medium">Explore</span>
-                          <ArrowRight className="w-5 h-5" />
+                          <span className={cn(
+                            "inline-block px-4 py-1.5 rounded-full text-xs font-medium text-white backdrop-blur-sm",
+                            "bg-gradient-to-r from-neutral-900 to-neutral-700"
+                          )}>
+                            Collection
+                          </span>
                         </motion.div>
+
+                        {/* Title */}
+                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight">
+                          {collection.name}
+                        </h2>
+
+                        {/* Description */}
+                        <p className="text-white/80 text-sm mb-4 line-clamp-2">
+                          {collection.description}
+                        </p>
+
+                        {/* Footer */}
+                        <div className="flex items-center justify-between">
+                          <span className="text-white/60 text-sm">
+                            View Products
+                          </span>
+                          
+                          <motion.div
+                            className="flex items-center gap-2 text-white group-hover:gap-3 transition-all"
+                            animate={{
+                              x: hoveredId === collection.id ? 10 : 0,
+                            }}
+                          >
+                            <span className="text-sm font-medium">Explore</span>
+                            <ArrowRight className="w-5 h-5" />
+                          </motion.div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
+                  </Link>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

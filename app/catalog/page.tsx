@@ -1,102 +1,14 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { Filter, Grid3x3, List, Search, ShoppingBag, Star } from "lucide-react"
+import { Filter, Grid3x3, List, Search, ShoppingBag, Star, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
-
-const products = [
-  {
-    id: 1,
-    name: "DEK Pro USB-C Cable",
-    price: 29.99,
-    image: "/modern-armchair-pillows.png",
-    rating: 4.9,
-    reviews: 234,
-    tag: "Bestseller",
-    colors: ["Black", "White", "Gray"],
-    category: "USB-C"
-  },
-  {
-    id: 2,
-    name: "WEEV Lightning Cable",
-    price: 24.99,
-    image: "/modular-cushion-bench.png",
-    rating: 4.8,
-    reviews: 189,
-    tag: "Premium",
-    colors: ["Black", "Navy"],
-    category: "Lightning"
-  },
-  {
-    id: 3,
-    name: "Braided Multi Cable 3-in-1",
-    price: 34.99,
-    image: "/distressed-artistic-chair.png",
-    rating: 4.7,
-    reviews: 156,
-    tag: "Versatile",
-    colors: ["Black", "Red", "Blue"],
-    category: "Multi"
-  },
-  {
-    id: 4,
-    name: "Fast Charge USB-C 100W",
-    price: 39.99,
-    image: "/green-modular-loveseat.png",
-    rating: 5.0,
-    reviews: 312,
-    tag: "New",
-    colors: ["Black", "Green"],
-    category: "USB-C"
-  },
-  {
-    id: 5,
-    name: "Compact Lightning Cable",
-    price: 19.99,
-    image: "/braided-rope-loveseat.png",
-    rating: 4.6,
-    reviews: 98,
-    tag: null,
-    colors: ["Black", "White"],
-    category: "Lightning"
-  },
-  {
-    id: 6,
-    name: "DEK Essential USB-C",
-    price: 22.99,
-    image: "/colorful-patchwork-sofa.png",
-    rating: 4.8,
-    reviews: 201,
-    tag: null,
-    colors: ["Black", "Gray", "White"],
-    category: "USB-C"
-  },
-  {
-    id: 7,
-    name: "Premium Braided Bundle",
-    price: 49.99,
-    image: "/minimalist-boucle-loveseat.png",
-    rating: 4.9,
-    reviews: 267,
-    tag: "Bundle",
-    colors: ["Black"],
-    category: "Bundle"
-  },
-  {
-    id: 8,
-    name: "Magnetic Charging Cable",
-    price: 32.99,
-    image: "/abstract-artistic-sofa.png",
-    rating: 4.7,
-    reviews: 134,
-    tag: "Innovation",
-    colors: ["Black", "Silver"],
-    category: "Magnetic"
-  },
-]
+import { useCart } from "@/contexts/cart-context"
+import { getAllProducts } from "@/lib/services/products"
+import type { Product } from "@/lib/types/database"
 
 const categories = ["All", "USB-C", "Lightning", "Multi", "Bundle", "Magnetic"]
 const sortOptions = ["Popular", "Price: Low to High", "Price: High to Low", "Rating"]
@@ -106,12 +18,87 @@ export default function CatalogPage() {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [sortBy, setSortBy] = useState("Popular")
   const [searchQuery, setSearchQuery] = useState("")
+  const [addedProductId, setAddedProductId] = useState<string | null>(null)
+  const [products, setProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  
+  const { addItem, isLoading } = useCart()
+
+  // Fetch products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true)
+      const { data, error } = await getAllProducts()
+      if (data && !error) {
+        setProducts(data)
+      } else {
+        console.error("Failed to fetch products:", error)
+      }
+      setLoading(false)
+    }
+    fetchProducts()
+  }, [])
+
+  const handleAddToCart = async (product: Product, e: React.MouseEvent) => {
+    e.preventDefault() // Prevent navigation to product page
+    e.stopPropagation()
+    
+    try {
+      console.log('🔵 Adding product to cart:', product.id, product.name)
+      
+      await addItem({
+        productId: product.id, // This is already a UUID from the database
+        productName: product.name,
+        productImage: product.main_image,
+        variantId: undefined, // Use undefined instead of null
+        variantDetails: "Default", // Default variant
+        color: undefined,
+        length: "1m", // Default length
+        price: parseFloat(product.price.toString()),
+        quantity: 1,
+      })
+      
+      console.log('✅ Successfully added to cart')
+      
+      // Show success feedback
+      setAddedProductId(product.id)
+      setTimeout(() => setAddedProductId(null), 2000)
+    } catch (error) {
+      console.error("❌ Failed to add to cart:", error)
+    }
+  }
 
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === "All" || product.category === selectedCategory
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (product.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
     return matchesCategory && matchesSearch
   })
+
+  // Sort products
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case "Price: Low to High":
+        return parseFloat(a.price.toString()) - parseFloat(b.price.toString())
+      case "Price: High to Low":
+        return parseFloat(b.price.toString()) - parseFloat(a.price.toString())
+      default:
+        return 0
+    }
+  })
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18">
+        <div className="container-custom py-20">
+          <div className="text-center">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+            <p className="mt-4 text-muted-foreground">Loading products...</p>
+          </div>
+        </div>
+      </main>
+    )
+  }
 
   return (
     <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18">
@@ -225,7 +212,7 @@ export default function CatalogPage() {
                   : "flex flex-col gap-4"
               )}
             >
-              {filteredProducts.map((product, index) => (
+              {sortedProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -233,21 +220,16 @@ export default function CatalogPage() {
                   transition={{ duration: 0.4, delay: index * 0.05 }}
                 >
                   {viewMode === "grid" ? (
-                    <Link href={`/product`}>
+                    <Link href={`/product/${product.slug}`}>
                       <div className="group relative bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow">
                         {/* Image */}
                         <div className="relative aspect-square bg-muted overflow-hidden">
                           <Image
-                            src={product.image || "/placeholder.svg"}
+                            src={product.main_image || "/placeholder.svg"}
                             alt={product.name}
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-500"
                           />
-                          {product.tag && (
-                            <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-foreground text-background text-xs font-medium">
-                              {product.tag}
-                            </div>
-                          )}
                         </div>
 
                         {/* Content */}
@@ -258,31 +240,37 @@ export default function CatalogPage() {
                           
                           <div className="flex items-center gap-1 mb-3">
                             <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                            <span className="text-sm font-medium">{product.rating}</span>
-                            <span className="text-xs text-muted-foreground">({product.reviews})</span>
+                            <span className="text-sm font-medium">4.8</span>
+                            <span className="text-xs text-muted-foreground">(Reviews)</span>
                           </div>
 
                           <div className="flex items-center justify-between">
                             <span className="text-xl font-bold text-foreground">
-                              ${product.price}
+                              ${parseFloat(product.price.toString()).toFixed(2)}
                             </span>
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
-                              className="p-2 rounded-full bg-foreground text-background hover:shadow-md transition-shadow"
+                              onClick={(e) => handleAddToCart(product, e)}
+                              disabled={isLoading}
+                              className="p-2 rounded-full bg-foreground text-background hover:shadow-md transition-shadow disabled:opacity-50"
                             >
-                              <ShoppingBag className="w-4 h-4" />
+                              {addedProductId === product.id ? (
+                                <Check className="w-4 h-4" />
+                              ) : (
+                                <ShoppingBag className="w-4 h-4" />
+                              )}
                             </motion.button>
                           </div>
                         </div>
                       </div>
                     </Link>
                   ) : (
-                    <Link href={`/product`}>
+                    <Link href={`/product/${product.slug}`}>
                       <div className="group flex gap-6 bg-card rounded-xl border border-border p-4 hover:shadow-lg transition-shadow">
                         <div className="relative w-32 h-32 flex-shrink-0 bg-muted rounded-lg overflow-hidden">
                           <Image
-                            src={product.image || "/placeholder.svg"}
+                            src={product.main_image || "/placeholder.svg"}
                             alt={product.name}
                             fill
                             className="object-cover group-hover:scale-110 transition-transform duration-500"
@@ -295,38 +283,38 @@ export default function CatalogPage() {
                               <h3 className="font-medium text-lg text-foreground">
                                 {product.name}
                               </h3>
-                              {product.tag && (
-                                <span className="px-3 py-1 rounded-full bg-foreground text-background text-xs font-medium">
-                                  {product.tag}
-                                </span>
-                              )}
                             </div>
                             
                             <div className="flex items-center gap-1 mb-2">
                               <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                              <span className="text-sm font-medium">{product.rating}</span>
-                              <span className="text-xs text-muted-foreground">({product.reviews} reviews)</span>
+                              <span className="text-sm font-medium">4.8</span>
+                              <span className="text-xs text-muted-foreground">(Reviews)</span>
                             </div>
 
-                            <div className="flex gap-2 mb-3">
-                              {product.colors.map((color) => (
-                                <span key={color} className="text-xs text-muted-foreground">
-                                  {color}
-                                </span>
-                              ))}
-                            </div>
+                            <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                              {product.description}
+                            </p>
                           </div>
 
                           <div className="flex items-center justify-between">
                             <span className="text-2xl font-bold text-foreground">
-                              ${product.price}
+                              Rs. {parseFloat(product.price.toString()).toFixed(2)}
                             </span>
                             <motion.button
                               whileHover={{ scale: 1.05 }}
                               whileTap={{ scale: 0.95 }}
-                              className="px-6 py-2 rounded-full bg-foreground text-background font-medium hover:shadow-md transition-shadow"
+                              onClick={(e) => handleAddToCart(product, e)}
+                              disabled={isLoading}
+                              className="px-6 py-2 rounded-full bg-foreground text-background font-medium hover:shadow-md transition-shadow disabled:opacity-50"
                             >
-                              Add to Cart
+                              {addedProductId === product.id ? (
+                                <>
+                                  <Check className="w-4 h-4 inline mr-2" />
+                                  Added!
+                                </>
+                              ) : (
+                                "Add to Cart"
+                              )}
                             </motion.button>
                           </div>
                         </div>
@@ -338,7 +326,7 @@ export default function CatalogPage() {
             </motion.div>
           </AnimatePresence>
 
-          {filteredProducts.length === 0 && (
+          {sortedProducts.length === 0 && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

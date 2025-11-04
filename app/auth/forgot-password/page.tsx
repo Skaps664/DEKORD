@@ -2,18 +2,34 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Mail, ArrowLeft, CheckCircle2 } from "lucide-react"
+import { Mail, ArrowLeft, CheckCircle2, Loader2 } from "lucide-react"
 import Link from "next/link"
+import { resetPassword } from "@/lib/services/auth"
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement password reset with Supabase
-    console.log("Password reset requested for:", email)
-    setIsSubmitted(true)
+    setError("")
+    setIsLoading(true)
+    
+    try {
+      const { error: resetError } = await resetPassword(email)
+      
+      if (resetError) {
+        setError(resetError)
+      } else {
+        setIsSubmitted(true)
+      }
+    } catch (err) {
+      setError("Failed to send reset email. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -66,15 +82,28 @@ export default function ForgotPasswordPage() {
                   <p className="mt-2 text-sm text-neutral-600">
                     Enter the email associated with your account
                   </p>
+                  {error && (
+                    <p className="mt-2 text-sm text-red-600">
+                      {error}
+                    </p>
+                  )}
                 </div>
 
                 <motion.button
                   type="submit"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full bg-neutral-900 text-white py-3 rounded-lg font-medium hover:bg-neutral-800 transition-colors shadow-lg hover:shadow-xl"
+                  disabled={isLoading}
+                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                  className="w-full bg-neutral-900 text-white py-3 rounded-lg font-medium hover:bg-neutral-800 transition-colors shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Send Reset Link
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Reset Link'
+                  )}
                 </motion.button>
               </form>
             ) : (

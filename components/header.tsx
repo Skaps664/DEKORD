@@ -6,11 +6,13 @@ import { cn } from "@/lib/utils"
 import { Menu, ShoppingBag, X } from "lucide-react"
 import CartDropPanel from "./cart-drop-panel"
 import { TopDropMenu } from "./top-drop-menu"
+import { useCart } from "@/contexts/cart-context"
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
+  const { itemCount } = useCart()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,16 +106,18 @@ export function Header() {
                 className="flex-shrink-0 relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -mr-1 md:-mr-0.5"
               >
                 <ShoppingBag className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
-                <span
-                  aria-hidden="true"
-                  className={cn(
-                    "absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] leading-none font-medium",
-                    badgeColor,
-                  )}
-                >
-                  0
-                </span>
-                <span className="sr-only">Cart items: 0</span>
+                {itemCount > 0 && (
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] leading-none font-medium",
+                      badgeColor,
+                    )}
+                  >
+                    {itemCount}
+                  </span>
+                )}
+                <span className="sr-only">Cart items: {itemCount}</span>
               </button>
             </div>
           </div>
