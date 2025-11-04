@@ -74,7 +74,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
             productName: item.product?.name || 'Product',
             productImage: item.product?.main_image || '',
             variantId: item.variant_id,
-            variantDetails: item.variant ? `${item.variant.length || ''} ${item.variant.color || ''}`.trim() : undefined,
+            variantDetails: item.variant && (item.variant.color || item.variant.length) 
+              ? `${item.variant.color || ''} • ${item.variant.length || ''}`.replace(/^•\s*|\s*•$/g, '').trim()
+              : undefined,
             length: item.variant?.length,
             color: item.variant?.color,
             price: item.variant?.price_override || item.product?.price || 0,
@@ -86,7 +88,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
         // Load from localStorage
         const stored = localStorage.getItem(CART_STORAGE_KEY)
         if (stored) {
-          setItems(JSON.parse(stored))
+          const parsedItems = JSON.parse(stored)
+          console.log('💾 Loaded from localStorage:', parsedItems)
+          setItems(parsedItems)
+        } else {
+          console.log('💾 No items in localStorage')
         }
       }
     } catch (error) {
@@ -140,12 +146,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
             // Update quantity
             newItems = [...prev]
             newItems[existingIndex].quantity += quantity
+            console.log('📦 Updated quantity in cart:', newItems[existingIndex])
           } else {
             // Add new item
-            newItems = [...prev, { ...item, quantity }]
+            const newItem = { ...item, quantity }
+            console.log('📦 Adding new item to cart:', newItem)
+            newItems = [...prev, newItem]
           }
           
           localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems))
+          console.log('💾 Saved to localStorage:', newItems)
           return newItems
         })
       }

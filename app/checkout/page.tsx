@@ -85,6 +85,11 @@ export default function CheckoutPage() {
     }
   }, [cartItems, checkingAuth, cartLoading, orderSuccess, router])
 
+  // Calculate totals
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
+  const shipping = subtotal >= 5000 ? 0 : 200
+  const total = subtotal + shipping
+
   // Track checkout initiation with Facebook Pixel
   useEffect(() => {
     if (!checkingAuth && !cartLoading && cartItems.length > 0 && !orderSuccess) {
@@ -98,11 +103,8 @@ export default function CheckoutPage() {
       trackInitiateCheckout(subtotal, items)
       console.log('📊 Facebook Pixel: InitiateCheckout tracked, value:', subtotal)
     }
-  }, [checkingAuth, cartLoading, cartItems, orderSuccess, subtotal])
-
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = subtotal >= 5000 ? 0 : 200
-  const total = subtotal + shipping
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [checkingAuth, cartLoading, cartItems, orderSuccess])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -592,10 +594,28 @@ export default function CheckoutPage() {
                         <h3 className="text-sm font-semibold text-foreground truncate">
                           {item.productName}
                         </h3>
-                        <p className="text-xs text-muted-foreground">
-                          {item.variantDetails || `${item.color} • ${item.length}`}
-                        </p>
-                        <div className="flex items-center justify-between mt-1">
+                        {/* Variant Details */}
+                        <div className="flex flex-wrap gap-1.5 mt-1">
+                          {item.variantDetails ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-foreground border border-border">
+                              {item.variantDetails}
+                            </span>
+                          ) : (
+                            <>
+                              {item.color && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-foreground border border-border">
+                                  {item.color}
+                                </span>
+                              )}
+                              {item.length && (
+                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-foreground border border-border">
+                                  {item.length}
+                                </span>
+                              )}
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between mt-1.5">
                           <span className="text-xs text-muted-foreground">Qty: {item.quantity}</span>
                           <span className="text-sm font-bold text-foreground">
                             Rs. {(item.price * item.quantity).toFixed(2)}

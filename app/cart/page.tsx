@@ -22,6 +22,11 @@ export default function CartPage() {
   const [showSadEmoji, setShowSadEmoji] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
 
+  // Debug: Log cart items
+  useEffect(() => {
+    console.log('🛒 Cart items on cart page:', cartItems)
+  }, [cartItems])
+
   useEffect(() => {
     const checkUser = async () => {
       try {
@@ -113,8 +118,8 @@ export default function CartPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background grain-texture pt-20 md:pt-24">
-      <div className="container-custom py-8 sm:py-10 md:py-12 px-2 sm:px-2 md:px-3">
+    <main className="min-h-screen bg-muted/30 pt-20 pb-16">
+      <div className="container-custom max-w-7xl">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -197,9 +202,27 @@ export default function CartPage() {
                             </button>
                           </div>
 
-                          {item.variantDetails && (
-                            <div className="flex flex-wrap gap-2 text-xs sm:text-sm text-muted-foreground mb-3">
-                              <span>{item.variantDetails}</span>
+                          {/* Variant Details - Color and Length */}
+                          {(item.variantDetails || item.color || item.length) && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                              {item.variantDetails ? (
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-muted text-foreground border border-border">
+                                  {item.variantDetails}
+                                </span>
+                              ) : (
+                                <>
+                                  {item.color && (
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-muted text-foreground border border-border">
+                                      Color: {item.color}
+                                    </span>
+                                  )}
+                                  {item.length && (
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-muted text-foreground border border-border">
+                                      Length: {item.length}
+                                    </span>
+                                  )}
+                                </>
+                              )}
                             </div>
                           )}
 

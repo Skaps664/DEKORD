@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState, useMemo, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { ShoppingCart, Zap, Shield, Truck, Plus, Minus, Check } from "lucide-react"
@@ -76,8 +76,20 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
         "White": { name: "White", token: "bg-neutral-100", ring: "ring-neutral-900", overlay: "bg-neutral-100/20", shadow: "shadow-neutral-400/50" },
         "Navy": { name: "Navy", token: "bg-blue-900", ring: "ring-blue-900", overlay: "bg-blue-900/15", shadow: "shadow-blue-900/50" },
         "Gray": { name: "Gray", token: "bg-gray-500", ring: "ring-gray-500", overlay: "bg-gray-500/15", shadow: "shadow-gray-500/50" },
+        "Green": { name: "Green", token: "bg-green-700", ring: "ring-green-700", overlay: "bg-green-700/15", shadow: "shadow-green-700/50" },
+        "Army Green": { name: "Army Green", token: "bg-green-700", ring: "ring-green-700", overlay: "bg-green-700/15", shadow: "shadow-green-700/50" },
+        "Red": { name: "Red", token: "bg-red-600", ring: "ring-red-600", overlay: "bg-red-600/15", shadow: "shadow-red-600/50" },
+        "Blue": { name: "Blue", token: "bg-blue-600", ring: "ring-blue-600", overlay: "bg-blue-600/15", shadow: "shadow-blue-600/50" },
+        "Yellow": { name: "Yellow", token: "bg-yellow-400", ring: "ring-yellow-400", overlay: "bg-yellow-400/15", shadow: "shadow-yellow-400/50" },
       }
-      return colorMap[colorName] || defaultColors[0]
+      // Return the mapped color or create a basic one with the color name
+      return colorMap[colorName] || { 
+        name: colorName, 
+        token: "bg-gray-500", 
+        ring: "ring-gray-500", 
+        overlay: "bg-gray-500/15", 
+        shadow: "shadow-gray-500/50" 
+      }
     })
   }, [variants])
 
@@ -86,10 +98,27 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
     return [...new Set(variants.map(v => v.length).filter((l): l is string => l !== null && l !== undefined))]
   }, [variants])
 
-  const [activeColor, setActiveColor] = useState(availableColors[0]?.name || "Black")
-  const [activeLength, setActiveLength] = useState(availableLengths[0] || "1m")
+  const initialColor = useMemo(() => {
+    return availableColors[0]?.name || defaultColors[0]?.name || "Obsidian Black"
+  }, [availableColors])
+
+  const initialLength = useMemo(() => {
+    return availableLengths[0] || defaultLengths[0] || "1 m"
+  }, [availableLengths])
+
+  const [activeColor, setActiveColor] = useState(initialColor)
+  const [activeLength, setActiveLength] = useState(initialLength)
   const [quantity, setQuantity] = useState(1)
   const [addedToCart, setAddedToCart] = useState(false)
+  
+  // Update state when initial values change
+  useEffect(() => {
+    setActiveColor(initialColor)
+  }, [initialColor])
+  
+  useEffect(() => {
+    setActiveLength(initialLength)
+  }, [initialLength])
   
   const { addItem, isLoading } = useCart()
   const [isHovering, setIsHovering] = useState(false)
@@ -150,17 +179,25 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
 
   const handleAddToCart = async () => {
     try {
-      await addItem({
+      const colorName = currentColorObj?.name || activeColor
+      const cartItem = {
         productId: product?.id || "dekord-usb-c-cable",
-        productName: product ? `${product.name} - ${currentColorObj?.name}` : `Dekord Braided USB-C Cable - ${currentColorObj?.name}`,
+        productName: product?.name || "Dekord Braided USB-C Cable",
         productImage: product?.main_image || "/images/products/usb-cable.jpg",
         variantId: selectedVariant?.id,
-        variantDetails: `${activeLength}, ${currentColorObj?.name}`,
+        variantDetails: `${colorName} • ${activeLength}`,
         length: activeLength,
-        color: activeColor,
+        color: colorName,
         price: finalPrice,
         quantity: quantity,
-      })
+      }
+      
+      console.log('🎨 Active Color:', activeColor)
+      console.log('📏 Active Length:', activeLength)
+      console.log('🎨 Current Color Object:', currentColorObj)
+      console.log('🛒 Adding to cart:', cartItem)
+      
+      await addItem(cartItem)
       
       // Track with Facebook Pixel
       trackAddToCart({
