@@ -5,6 +5,7 @@ import "./globals.css"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import FacebookPixel from "@/components/facebook-pixel"
+import { GoogleAnalytics } from "@/components/google-analytics"
 import { CartProvider } from "@/contexts/cart-context"
 import { Analytics } from '@vercel/analytics/react'
 
@@ -149,6 +150,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans bg-neutral-50 text-neutral-900 overflow-x-hidden grain-texture">
+        <GoogleAnalytics />
         <FacebookPixel />
         <CartProvider>
           <Header />
