@@ -15,6 +15,7 @@ const inter = Inter({
   variable: "--font-inter",
   preload: true,
   fallback: ['system-ui', 'arial'],
+  adjustFontFallback: true,
 })
 
 const geistMono = Geist_Mono({
@@ -22,6 +23,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
   display: "swap",
   preload: false,
+  fallback: ['monospace'],
+  adjustFontFallback: true,
 })
 
 const instrumentSerif = Instrument_Serif({
@@ -31,6 +34,8 @@ const instrumentSerif = Instrument_Serif({
   style: ["italic", "normal"],
   display: "swap",
   preload: false,
+  fallback: ['serif'],
+  adjustFontFallback: true,
 })
 
 export const metadata: Metadata = {
