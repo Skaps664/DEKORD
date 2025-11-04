@@ -83,6 +83,7 @@ export interface Order {
   id: string
   order_number: string
   user_id: string | null
+  user_email: string | null
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
   payment_method: string
   subtotal: number

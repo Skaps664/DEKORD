@@ -169,6 +169,7 @@ export default function CheckoutPage() {
       // Create order
       const { data, error } = await createOrder({
         user_id: user.id,
+        user_email: user.email || null,
         items: orderItems,
         subtotal: subtotal,
         shipping_fee: shipping,

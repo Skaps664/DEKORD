@@ -64,6 +64,7 @@ export async function getOrderByNumber(orderNumber: string) {
 
 interface CreateOrderData {
   user_id?: string
+  user_email?: string
   payment_method: string
   subtotal: number
   shipping_fee: number
@@ -111,6 +112,7 @@ export async function createOrder(orderData: CreateOrderData) {
     .insert({
       order_number: orderNumber,
       user_id: orderData.user_id,
+      user_email: orderData.user_email,
       payment_method: orderData.payment_method,
       subtotal: orderData.subtotal,
       shipping_fee: orderData.shipping_fee,
