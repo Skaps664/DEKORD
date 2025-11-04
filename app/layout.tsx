@@ -138,8 +138,10 @@ export default function RootLayout({
       "addressCountry": "PK"
     },
     "sameAs": [
-      "https://www.instagram.com/dekord",
-      "https://www.facebook.com/dekord",
+      "https://www.instagram.com/dekord.pk",
+      "https://www.facebook.com/dekord.pk",
+      "https://www.tiktok.com/@dekord.pk",
+      "https://www.linkedin.com/company/dekord"
     ],
     "contactPoint": {
       "@type": "ContactPoint",

@@ -16,6 +16,7 @@ export interface Product {
   image_5: string | null
   meta_title: string | null
   meta_description: string | null
+  og_image: string | null
   created_at: string
   updated_at: string
 }
@@ -43,6 +44,7 @@ export interface Collection {
   sort_order: number
   meta_title: string | null
   meta_description: string | null
+  og_image: string | null
   created_at: string
   updated_at: string
 }
@@ -127,6 +129,54 @@ export interface CartItem {
   updated_at: string
 }
 
+// Blog types
+
+export interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string
+  featured_image: string | null
+  featured_image_alt: string | null
+  author_id: string | null
+  author_name: string | null
+  meta_title: string | null
+  meta_description: string | null
+  og_image: string | null
+  category: string | null
+  tags: string[]
+  status: 'draft' | 'published' | 'archived'
+  published_at: string | null
+  view_count: number
+  like_count: number
+  featured: boolean
+  sort_order: number
+  read_time_minutes: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface BlogCategory {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  meta_title: string | null
+  meta_description: string | null
+  sort_order: number
+  post_count: number
+  created_at: string
+}
+
+export interface BlogTag {
+  id: string
+  name: string
+  slug: string
+  post_count: number
+  created_at: string
+}
+
 // Extended types with relations
 
 export interface ProductWithVariants extends Product {
@@ -145,6 +195,12 @@ export interface OrderWithItems extends Order {
 export interface CartItemWithProduct extends CartItem {
   product?: Product
   variant?: ProductVariant
+}
+
+export interface BlogPostWithAuthor extends BlogPost {
+  author?: {
+    full_name: string | null
+  }
 }
 
 // API Response types
