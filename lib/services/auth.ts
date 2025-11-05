@@ -217,17 +217,45 @@ export async function getUserProfile(userId: string) {
 export async function updateUserProfile(userId: string, updates: Partial<UserProfile>) {
   const supabase = createClient()
   
-  const { data, error } = await supabase
+  // First check if profile exists
+  const { data: existingProfile } = await supabase
     .from('user_profiles')
-    .update(updates)
+    .select('id')
     .eq('id', userId)
-    .select()
     .single()
   
-  if (error) {
-    console.error('Error updating user profile:', error)
-    return { data: null, error: error.message }
+  if (!existingProfile) {
+    // Profile doesn't exist, create it with upsert
+    console.log('📝 Creating new user profile for:', userId)
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .insert({
+        id: userId,
+        ...updates
+      })
+      .select()
+      .single()
+    
+    if (error) {
+      console.error('Error creating user profile:', error)
+      return { data: null, error: error.message }
+    }
+    
+    return { data: data as UserProfile, error: null }
+  } else {
+    // Profile exists, update it
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update(updates)
+      .eq('id', userId)
+      .select()
+      .single()
+    
+    if (error) {
+      console.error('Error updating user profile:', error)
+      return { data: null, error: error.message }
+    }
+    
+    return { data: data as UserProfile, error: null }
   }
-  
-  return { data: data as UserProfile, error: null }
 }

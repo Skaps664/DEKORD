@@ -5,14 +5,16 @@ import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Package, CreditCard, MapPin, User, Phone, Loader2, CheckCircle2 } from "lucide-react"
+import { ArrowLeft, Package, CreditCard, MapPin, User, Phone, Loader2, CheckCircle2, Tag } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/contexts/cart-context"
 import { getCurrentUser, getUserProfile, updateUserProfile } from "@/lib/services/auth"
 import { createOrder } from "@/lib/services/orders"
+import { recordCouponUsage } from "@/lib/services/coupons"
 import confetti from "canvas-confetti"
 import { trackInitiateCheckout, trackPurchase } from "@/components/facebook-pixel"
 import type { User as SupabaseUser } from "@supabase/supabase-js"
+import type { AppliedCoupon } from "@/lib/types/coupon"
 
 const provinces = [
   "Punjab",
@@ -30,6 +32,7 @@ export default function CheckoutPage() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [checkingAuth, setCheckingAuth] = useState(true)
   const [saveInfo, setSaveInfo] = useState(false)
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null)
   
   const [formData, setFormData] = useState({
     fullName: "",
@@ -53,6 +56,18 @@ export default function CheckoutPage() {
           return
         }
         setUser(currentUser)
+
+        // Load applied coupon from session storage
+        const storedCoupon = sessionStorage.getItem('appliedCoupon')
+        if (storedCoupon) {
+          try {
+            const coupon = JSON.parse(storedCoupon) as AppliedCoupon
+            setAppliedCoupon(coupon)
+            console.log('✅ Loaded coupon from session:', coupon)
+          } catch (e) {
+            console.error('Error parsing stored coupon:', e)
+          }
+        }
 
         // Load user profile with saved shipping info
         const { data: profile } = await getUserProfile(currentUser.id)
@@ -88,7 +103,18 @@ export default function CheckoutPage() {
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const shipping = subtotal >= 5000 ? 0 : 200
-  const total = subtotal + shipping
+  const discount = appliedCoupon ? appliedCoupon.discount_amount : 0
+  const total = subtotal + shipping - discount
+
+  // Debug logging
+  console.log('🛒 Checkout Totals:', {
+    subtotal,
+    shipping,
+    discount,
+    total,
+    appliedCoupon,
+    hasCoupon: !!appliedCoupon
+  })
 
   // Track checkout initiation with Facebook Pixel
   useEffect(() => {
@@ -169,18 +195,19 @@ export default function CheckoutPage() {
       // Create order
       const { data, error } = await createOrder({
         user_id: user.id,
-        user_email: user.email || null,
+        user_email: user.email || undefined,
         items: orderItems,
         subtotal: subtotal,
         shipping_fee: shipping,
-        discount_amount: 0,
+        discount_amount: discount,
         total: total,
         payment_method: "cod",
         shipping_name: formData.fullName,
         shipping_phone: formData.whatsappNumber,
         shipping_address: formData.address,
         shipping_city: formData.city,
-        shipping_province: formData.province
+        shipping_province: formData.province,
+        coupon_code: appliedCoupon?.code || null
       })
 
       if (error) {
@@ -193,6 +220,24 @@ export default function CheckoutPage() {
       if (data) {
         setOrderNumber(data.order_number)
         setOrderSuccess(true)
+        
+        // Record coupon usage if coupon was applied
+        if (appliedCoupon && data.id) {
+          try {
+            await recordCouponUsage(
+              appliedCoupon.coupon_id,
+              user.id,
+              data.id,
+              discount
+            )
+            console.log('✅ Coupon usage recorded:', appliedCoupon.code)
+            // Clear coupon from session storage after successful order
+            sessionStorage.removeItem('appliedCoupon')
+          } catch (error) {
+            console.error('Error recording coupon usage:', error)
+            // Don't fail the order if coupon recording fails
+          }
+        }
         
         // Track purchase with Facebook Pixel
         trackPurchase(total, data.order_number)
@@ -643,6 +688,19 @@ export default function CheckoutPage() {
                   </div>
                   {subtotal >= 5000 && shipping === 0 && (
                     <p className="text-xs text-green-600">🎉 Free shipping applied!</p>
+                  )}
+                  {appliedCoupon && (
+                    <div className="flex justify-between items-center text-sm pt-2 border-t border-border">
+                      <div className="flex items-center gap-2 text-green-600">
+                        <Tag className="w-4 h-4" />
+                        <span className="font-medium">
+                          Discount ({appliedCoupon.code})
+                        </span>
+                      </div>
+                      <span className="font-semibold text-green-600">
+                        -Rs. {discount.toFixed(2)}
+                      </span>
+                    </div>
                   )}
                 </div>
 

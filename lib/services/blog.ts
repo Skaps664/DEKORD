@@ -1,4 +1,4 @@
-import { supabase } from '../supabase/client'
+import { createClient } from '../supabase/client'
 import type { BlogPost, BlogCategory, BlogTag } from '../types/database'
 
 // ============================================
@@ -19,6 +19,7 @@ export async function getBlogPosts(options: {
   const from = (page - 1) * pageSize
   const to = from + pageSize - 1
 
+  const supabase = createClient()
   let query = supabase
     .from('blog_posts')
     .select('*', { count: 'exact' })
@@ -53,6 +54,7 @@ export async function getBlogPosts(options: {
  * Get a single blog post by slug
  */
 export async function getBlogPostBySlug(slug: string) {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -75,6 +77,7 @@ export async function getBlogPostBySlug(slug: string) {
  * Get featured blog posts for homepage
  */
 export async function getFeaturedBlogPosts(limit: number = 3) {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -95,6 +98,7 @@ export async function getFeaturedBlogPosts(limit: number = 3) {
  * Get related blog posts (same category or tags)
  */
 export async function getRelatedBlogPosts(postId: string, limit: number = 3) {
+  const supabase = createClient()
   // First get the current post's category and tags
   const { data: currentPost, error: fetchError } = await supabase
     .from('blog_posts')
@@ -128,6 +132,7 @@ export async function getRelatedBlogPosts(postId: string, limit: number = 3) {
  * Search blog posts
  */
 export async function searchBlogPosts(query: string) {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('blog_posts')
     .select('*')
@@ -152,6 +157,7 @@ export async function searchBlogPosts(query: string) {
  * Get all blog categories
  */
 export async function getBlogCategories() {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('blog_categories')
     .select('*')
@@ -169,6 +175,7 @@ export async function getBlogCategories() {
  * Get a blog category by slug
  */
 export async function getBlogCategoryBySlug(slug: string) {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('blog_categories')
     .select('*')
@@ -191,6 +198,7 @@ export async function getBlogCategoryBySlug(slug: string) {
  * Get all blog tags
  */
 export async function getBlogTags() {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('blog_tags')
     .select('*')
@@ -208,6 +216,7 @@ export async function getBlogTags() {
  * Get popular tags (with most posts)
  */
 export async function getPopularBlogTags(limit: number = 10) {
+  const supabase = createClient()
   const { data, error } = await supabase
     .from('blog_tags')
     .select('*')

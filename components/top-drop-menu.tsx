@@ -62,11 +62,13 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
             "pointer-events-auto w-full mx-3 sm:mx-4 md:mx-5 rounded-b-2xl border border-(--ring) bg-background/95 shadow-lg backdrop-blur transition-all duration-300",
             "ring-1 ring-border",
             open ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0",
-            "h-30 md:h-36 px-4 md:px-6",
+            // Mobile: tall/vertical layout
+            "h-auto py-4 md:py-0 md:h-36 px-4 md:px-6",
             className,
           )}
         >
-          <div className="flex h-full items-center justify-between">
+          {/* Desktop Layout (horizontal) */}
+          <div className="hidden md:flex h-full items-center justify-between">
             <div className="flex min-w-0 flex-col">
               <h3 className="text-sm md:text-base font-medium text-foreground text-pretty">Navigation</h3>
               <p className="text-xs md:text-sm text-muted-foreground">Browse collections • Explore catalog</p>
@@ -96,16 +98,9 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
                   Catalog
                 </Link>
                 <Link
-                  href="/account"
-                  onClick={onClose}
-                  className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap"
-                >
-                  Account
-                </Link>
-                <Link
                   href="/contact"
                   onClick={onClose}
-                  className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap mr-12 md:mr-20"
+                  className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap mr-8 md:mr-16"
                 >
                   Contact
                 </Link>
@@ -121,6 +116,55 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
                 <X className="size-5 md:size-6" />
               </button>
             </div>
+          </div>
+
+          {/* Mobile Layout (vertical) */}
+          <div className="flex md:hidden flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex min-w-0 flex-col">
+                <h3 className="text-base font-medium text-foreground">Navigation</h3>
+                <p className="text-xs text-muted-foreground">Browse • Explore</p>
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                className="inline-flex p-1 text-foreground/80 hover:text-foreground transition-colors flex-shrink-0"
+                aria-label="Close menu panel"
+              >
+                <X className="size-6" />
+              </button>
+            </div>
+
+            <nav className="flex flex-col gap-3">
+              <Link
+                href="/"
+                onClick={onClose}
+                className="text-base font-medium text-foreground hover:opacity-70 transition-opacity py-2 text-center"
+              >
+                Home
+              </Link>
+              <Link
+                href="/collections"
+                onClick={onClose}
+                className="text-base font-medium text-foreground hover:opacity-70 transition-opacity py-2 text-center"
+              >
+                Collections
+              </Link>
+              <Link
+                href="/catalog"
+                onClick={onClose}
+                className="text-base font-medium text-foreground hover:opacity-70 transition-opacity py-2 text-center"
+              >
+                Catalog
+              </Link>
+              <Link
+                href="/contact"
+                onClick={onClose}
+                className="text-base font-medium text-foreground hover:opacity-70 transition-opacity py-2 text-center"
+              >
+                Contact
+              </Link>
+            </nav>
           </div>
         </div>
       </div>

@@ -3,22 +3,22 @@
 import * as React from "react"
 import { X, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { useCart } from "@/contexts/cart-context"
 
 type CartDropPanelProps = {
   open: boolean
   onClose: () => void
   className?: string
-  // Optional: approximate panel height so our overlay can start below header+panel
-  // If you adjust this, also tweak the overlay's inline style below.
-  panelHeight?: number // in px
+  panelHeight?: number
 }
 
 export default function CartDropPanel({
   open,
   onClose,
   className,
-  panelHeight = 92, // ~ h-20 to h-24 depending on density
+  panelHeight = 92,
 }: CartDropPanelProps) {
+  const { itemCount, total } = useCart()
   // Auto-close on scroll / wheel / touch or ESC
   React.useEffect(() => {
     if (!open) return
@@ -77,7 +77,13 @@ export default function CartDropPanel({
           <div className="flex h-full items-center justify-between">
             <div className="flex min-w-0 flex-col">
               <h3 className="text-sm md:text-base font-medium text-foreground text-pretty">Cart preview</h3>
-              <p className="text-xs md:text-sm text-muted-foreground">Recently added items • Secure checkout</p>
+              {itemCount === 0 ? (
+                <p className="text-xs md:text-sm text-muted-foreground">Your cart is empty</p>
+              ) : (
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  {itemCount} {itemCount === 1 ? 'item' : 'items'} • Rs. {total.toFixed(2)}
+                </p>
+              )}
             </div>
 
             <div className="flex items-center gap-3 ml-4 flex-shrink-0">

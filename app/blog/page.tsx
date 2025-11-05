@@ -4,48 +4,43 @@ import { motion, useScroll, useTransform } from "framer-motion"
 import { BookOpen, Calendar, ArrowRight, User } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-
-const blogPosts = [
-  {
-    slug: "dekord-where-love-meets-hard-work",
-    title: "dekord: Where Love Meets Hard Work",
-    excerpt: "Every product we create is a promise. A promise that you won't have to deal with frayed cables, slow charging, or unreliable connections. We test, refine, and perfect until we're confident you'll love what we've built.",
-    date: "November 3, 2025",
-    author: "dekord Team",
-    image: "/premium-braided-cable-lifestyle.jpg",
-    category: "Brand Story"
-  },
-  {
-    slug: "dekord-launching-soon",
-    title: "Dekord is Launching Soon",
-    excerpt: "At Dekord, we believe Pakistan deserves world-class technology made right here at home. We are proud to announce that Dekord (SMC-Private) Limited is officially launching its first flagship product this October.",
-    date: "October 1, 2025",
-    author: "dekord Team",
-    image: "/braided-cable-coiled-aesthetic-still.jpg",
-    category: "Product Launch"
-  },
-  {
-    slug: "dekord-defy-ordinary",
-    title: "dekord – Defy Ordinary: Premium Charging Cables in Pakistan",
-    excerpt: "Why should Pakistan always settle for ordinary? We're building the country's first premium charging accessories brand — one that focuses on durability, performance, and trust.",
-    date: "September 15, 2025",
-    author: "dekord Team",
-    image: "/premium-braided-cable-lifestyle.jpg",
-    category: "Brand Story"
-  }
-]
+import { useEffect, useState } from "react"
+import { getBlogPosts } from "@/lib/services/blog"
+import type { BlogPost } from "@/lib/types/database"
 
 export default function BlogPage() {
   const { scrollYProgress } = useScroll()
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"])
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadBlogPosts()
+  }, [])
+
+  async function loadBlogPosts() {
+    try {
+      const { data, error } = await getBlogPosts({ pageSize: 100 })
+      if (data) {
+        setBlogPosts(data)
+      }
+      if (error) {
+        console.error('Error loading blog posts:', error)
+      }
+    } catch (err) {
+      console.error('Failed to load blog posts:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18">
+    <main className="min-h-screen  grain-texture">
       {/* Hero Section */}
       <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
         <motion.div 
           style={{ y: backgroundY }}
-          className="absolute inset-0 z-0 bg-background"
+          className="absolute inset-0 z-0 "
         />
         
         <div className="container-custom relative z-10">
@@ -83,65 +78,85 @@ export default function BlogPage() {
       </section>
 
       {/* Blog Posts Grid */}
-      <section className="py-20">
+      <section className="py-12">
         <div className="container-custom">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post, index) => (
-              <motion.article
-                key={post.slug}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Link href={`/blog/${post.slug}`} className="group block">
-                  <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
-                    {/* Image */}
-                    <div className="relative w-full aspect-video overflow-hidden bg-neutral-100">
-                      <Image
-                        src={post.image}
-                        alt={post.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <span className="px-3 py-1 rounded-full bg-foreground text-background text-xs font-semibold">
-                          {post.category}
-                        </span>
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">Loading blog posts...</p>
+            </div>
+          ) : blogPosts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">No blog posts found. Check back soon!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {blogPosts.map((post, index) => (
+                <motion.article
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Link href={`/blog/${post.slug}`} className="group block">
+                    <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300">
+                      {/* Image */}
+                      <div className="relative w-full aspect-video overflow-hidden bg-neutral-100">
+                        <Image
+                          src={post.featured_image || '/premium-braided-cable-lifestyle.jpg'}
+                          alt={post.title}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        {post.category && (
+                          <div className="absolute top-4 left-4">
+                            <span className="px-3 py-1 rounded-full bg-foreground text-background text-xs font-semibold">
+                              {post.category}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-6">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            <time>
+                              {post.published_at 
+                                ? new Date(post.published_at).toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric' 
+                                  })
+                                : 'Recent'}
+                            </time>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <User className="w-3 h-3" />
+                            <span>{post.author_name || 'dekord Team'}</span>
+                          </div>
+                        </div>
+
+                        <h2 className="text-xl font-bold text-foreground mb-3 group-hover:text-neutral-600 transition-colors line-clamp-2">
+                          {post.title}
+                        </h2>
+
+                        <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3">
+                          {post.excerpt}
+                        </p>
+
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground group-hover:gap-3 transition-all">
+                          Read More
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
                       </div>
                     </div>
-
-                    {/* Content */}
-                    <div className="p-6">
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground mb-3">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          <time>{post.date}</time>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <User className="w-3 h-3" />
-                          <span>{post.author}</span>
-                        </div>
-                      </div>
-
-                      <h2 className="text-xl font-bold text-foreground mb-3 group-hover:text-neutral-600 transition-colors line-clamp-2">
-                        {post.title}
-                      </h2>
-
-                      <p className="text-sm text-muted-foreground leading-relaxed mb-4 line-clamp-3">
-                        {post.excerpt}
-                      </p>
-
-                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground group-hover:gap-3 transition-all">
-                        Read More
-                        <ArrowRight className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </motion.article>
-            ))}
-          </div>
+                  </Link>
+                </motion.article>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

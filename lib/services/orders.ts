@@ -77,6 +77,7 @@ interface CreateOrderData {
   shipping_province: string
   shipping_postal_code?: string
   customer_notes?: string
+  coupon_code?: string | null
   items: Array<{
     product_id: string
     variant_id?: string
@@ -125,6 +126,7 @@ export async function createOrder(orderData: CreateOrderData) {
       shipping_province: orderData.shipping_province,
       shipping_postal_code: orderData.shipping_postal_code,
       customer_notes: orderData.customer_notes,
+      coupon_code: orderData.coupon_code,
       status: 'pending',
     })
     .select()

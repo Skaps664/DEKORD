@@ -1,0 +1,17 @@
+"use client"
+
+import { useEffect, useState } from 'react'
+
+export function HydrationBoundary({ children }: { children: React.ReactNode }) {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  return (
+    <div suppressHydrationWarning>
+      {isClient ? children : <div style={{ visibility: 'hidden' }}>{children}</div>}
+    </div>
+  )
+}

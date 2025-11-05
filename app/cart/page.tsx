@@ -9,18 +9,19 @@ import { ShoppingBag, Trash2, Plus, Minus, ArrowRight, Tag, Truck, Shield, X, Lo
 import { cn } from "@/lib/utils"
 import { useCart } from "@/contexts/cart-context"
 import { getCurrentUser } from "@/lib/services/auth"
+import CouponInput from "@/components/cart/coupon-input"
 import type { User } from "@supabase/supabase-js"
+import type { AppliedCoupon } from "@/lib/types/coupon"
 
 export default function CartPage() {
   const router = useRouter()
   const { items: cartItems, itemCount, total: cartTotal, updateQuantity, removeItem, isLoading } = useCart()
   const [user, setUser] = useState<User | null>(null)
   const [checkingAuth, setCheckingAuth] = useState(true)
-  const [promoCode, setPromoCode] = useState("")
-  const [promoApplied, setPromoApplied] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
   const [showSadEmoji, setShowSadEmoji] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null)
 
   // Debug: Log cart items
   useEffect(() => {
@@ -51,19 +52,20 @@ export default function CartPage() {
   }
 
   const subtotal = cartTotal
-  const shipping = subtotal > 0 ? 200 : 0 // Rs. 200 flat shipping
-  const discount = promoApplied ? Math.floor(subtotal * 0.1) : 0
-  const total = subtotal + shipping - discount
+  const discount = appliedCoupon ? appliedCoupon.discount_amount : 0
+  const total = subtotal - discount
 
-  const applyPromo = () => {
-    if (promoCode.trim()) {
-      setPromoApplied(true)
-    }
+  const handleCouponApplied = (coupon: AppliedCoupon) => {
+    setAppliedCoupon(coupon)
+    // Store in session storage for checkout
+    sessionStorage.setItem('appliedCoupon', JSON.stringify(coupon))
+    console.log('✅ Coupon stored in sessionStorage:', coupon)
+    console.log('📦 SessionStorage content:', sessionStorage.getItem('appliedCoupon'))
   }
 
-  const removePromo = () => {
-    setPromoApplied(false)
-    setPromoCode("")
+  const handleCouponRemoved = () => {
+    setAppliedCoupon(null)
+    sessionStorage.removeItem('appliedCoupon')
   }
 
   const handleMouseEnter = () => {
@@ -309,88 +311,48 @@ export default function CartPage() {
                   Order Summary
                 </h2>
 
-                {/* Promo Code */}
-                <div className="mb-4">
-                  <label className="text-xs font-medium text-foreground mb-1.5 block">
-                    Promo Code
-                  </label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={promoCode}
-                      onChange={(e) => setPromoCode(e.target.value)}
-                      placeholder="Enter code"
-                      disabled={promoApplied}
-                      className={cn(
-                        "flex-1 px-3 py-2 text-sm rounded-lg border border-border bg-background focus:ring-2 focus:ring-foreground/20 focus:border-foreground transition-all outline-none",
-                        promoApplied && "opacity-50"
-                      )}
-                    />
-                    {promoApplied ? (
-                      <button
-                        onClick={removePromo}
-                        className="px-3 py-2 rounded-lg bg-muted hover:bg-muted/70 transition-colors"
-                        aria-label="Remove promo code"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    ) : (
-                      <button
-                        onClick={applyPromo}
-                        className="px-4 py-2 text-sm rounded-lg bg-foreground text-background hover:opacity-90 transition-opacity font-medium"
-                      >
-                        Apply
-                      </button>
-                    )}
-                  </div>
-                  {promoApplied && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-xs text-green-600 mt-1.5 flex items-center gap-1"
-                    >
-                      <Tag className="w-3 h-3" />
-                      10% discount applied!
-                    </motion.p>
-                  )}
+                {/* Coupon Code Section */}
+                <div className="mb-6">
+                  <CouponInput
+                    cartTotal={subtotal}
+                    userId={user?.id || null}
+                    onCouponApplied={handleCouponApplied}
+                    onCouponRemoved={handleCouponRemoved}
+                    appliedCoupon={appliedCoupon}
+                  />
                 </div>
 
-                <div className="border-t border-border pt-4 space-y-2 mb-4">
+                <div className="border-t border-border pt-4 space-y-3 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="font-medium text-foreground">
                       Rs. {subtotal.toFixed(2)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Shipping</span>
-                    <span className="font-medium text-foreground">
-                      decided at checkout
-                    </span>
-                  </div>
-                  {promoApplied && (
+                  
+                  {appliedCoupon && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       className="flex justify-between text-sm text-green-600"
                     >
-                      <span>Discount (10%)</span>
-                      <span className="font-medium">
+                      <span className="font-medium">Discount ({appliedCoupon.code})</span>
+                      <span className="font-semibold">
                         - Rs. {discount.toFixed(2)}
                       </span>
                     </motion.div>
                   )}
                 </div>
 
-                <div className="border-t border-border pt-4 mb-4">
+                <div className="border-t border-border pt-4 mb-6">
                   <div className="flex justify-between items-baseline">
                     <span className="text-lg font-bold text-foreground">Total</span>
                     <span className="text-2xl font-bold text-foreground">
                       Rs. {total.toFixed(2)}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Including all taxes
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Shipping calculated at checkout
                   </p>
                 </div>
 

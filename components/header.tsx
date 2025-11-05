@@ -7,12 +7,35 @@ import { Menu, ShoppingBag, X } from "lucide-react"
 import CartDropPanel from "./cart-drop-panel"
 import { TopDropMenu } from "./top-drop-menu"
 import { useCart } from "@/contexts/cart-context"
+import { getCurrentUser } from "@/lib/services/auth"
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
+  const [isShaking, setIsShaking] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const { itemCount } = useCart()
+  const [prevItemCount, setPrevItemCount] = useState(0)
+
+  // Check if user is logged in
+  useEffect(() => {
+    checkAuthStatus()
+  }, [])
+
+  async function checkAuthStatus() {
+    const { data: user } = await getCurrentUser()
+    setIsLoggedIn(!!user)
+  }
+
+  // Trigger shake animation when item is added
+  useEffect(() => {
+    if (itemCount > prevItemCount && itemCount > 0) {
+      setIsShaking(true)
+      setTimeout(() => setIsShaking(false), 500)
+    }
+    setPrevItemCount(itemCount)
+  }, [itemCount, prevItemCount])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -72,14 +95,14 @@ export function Header() {
 
             {/* Right side icons */}
             <div className="flex items-center gap-1 md:gap-2">
-              {/* Login/Account Button */}
+              {/* User/Account Icon */}
               <a
-                href="/auth"
-                className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10"
-                aria-label="Account"
+                href={isLoggedIn ? "/account" : "/auth"}
+                className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 rounded-full hover:bg-neutral-100 transition-colors"
+                aria-label={isLoggedIn ? "Account" : "Login"}
               >
                 <svg 
-                  className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} 
+                  className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)}
                   fill="none" 
                   stroke="currentColor" 
                   viewBox="0 0 24 24"
@@ -103,7 +126,10 @@ export function Header() {
                   setCartOpen((v) => !v)
                   setMenuOpen(false)
                 }}
-                className="flex-shrink-0 relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -mr-1 md:-mr-0.5"
+                className={cn(
+                  "flex-shrink-0 relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -mr-1 md:-mr-0.5",
+                  isShaking && "animate-shake"
+                )}
               >
                 <ShoppingBag className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
                 {itemCount > 0 && (
