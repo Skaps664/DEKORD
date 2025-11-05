@@ -695,10 +695,15 @@ function AccountPageContent() {
                               Buy Again
                             </button>
                           )}
-                          {order.status === "shipped" && (
-                            <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                          {order.status === "shipped" && order.tracking_url && (
+                            <a
+                              href={order.tracking_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"
+                            >
                               Track Order
-                            </button>
+                            </a>
                           )}
                         </div>
                       </motion.div>

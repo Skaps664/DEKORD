@@ -40,6 +40,7 @@ export interface Collection {
   slug: string
   description: string | null
   image: string | null
+  banner_image: string | null
   status: 'active' | 'draft'
   sort_order: number
   meta_title: string | null
@@ -96,10 +97,12 @@ export interface Order {
   shipping_city: string
   shipping_province: string
   shipping_postal_code: string | null
+  courier: string | null
   tracking_number: string | null
   tracking_url: string | null
   customer_notes: string | null
   admin_notes: string | null
+  coupon_code: string | null
   created_at: string
   updated_at: string
   shipped_at: string | null
