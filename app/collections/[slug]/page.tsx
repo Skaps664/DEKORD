@@ -5,10 +5,11 @@ import { useParams, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Filter, Grid3x3, List, Search, ShoppingBag, Star, Check, Loader2 } from "lucide-react"
+import { ArrowLeft, Filter, Grid3x3, List, Search, ShoppingBag, Check, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/contexts/cart-context"
 import { getCollectionBySlug } from "@/lib/services/collections"
+import { RatingDisplay } from "@/components/rating-display"
 import type { Collection, Product } from "@/lib/types/database"
 
 const sortOptions = ["Popular", "Price: Low to High", "Price: High to Low", "Rating"]
@@ -325,10 +326,13 @@ export default function CollectionPage() {
                               {product.name}
                             </h3>
                             
-                            <div className="flex items-center gap-1 mb-3">
-                              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                              <span className="text-sm font-medium">4.8</span>
-                              <span className="text-xs text-muted-foreground">(Reviews)</span>
+                            <div className="mb-3">
+                              <RatingDisplay 
+                                rating={product.rating}
+                                reviewCount={product.review_count || 0}
+                                size="sm"
+                                showCount={true}
+                              />
                             </div>
 
                             <div className="flex items-center justify-between">
@@ -372,10 +376,13 @@ export default function CollectionPage() {
                                 </h3>
                               </div>
                               
-                              <div className="flex items-center gap-1 mb-2">
-                                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                                <span className="text-sm font-medium">4.8</span>
-                                <span className="text-xs text-muted-foreground">(Reviews)</span>
+                              <div className="mb-2">
+                                <RatingDisplay 
+                                  rating={product.rating}
+                                  reviewCount={product.review_count || 0}
+                                  size="sm"
+                                  showCount={true}
+                                />
                               </div>
 
                               <p className="text-sm text-muted-foreground line-clamp-2 mb-3">

@@ -13,13 +13,13 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   const footerSections = {
-    "ABOUT US": [
+    "Explore": [
       { name: "Home", href: "/" },
-      { name: "Catalog", href: "/catalog" },
-      { name: "Collections", href: "/collections" },
+      {name: "About Us", href: "/about"},
     ],
     SHOP: [
-      { name: "Product", href: "/product" },
+      { name: "Catalog", href: "/catalog" },
+      { name: "Collections", href: "/collections" },
       { name: "dek series", href: "/collections" },
       { name: "weev series", href: "/collections" },
     ],
@@ -39,10 +39,10 @@ export function Footer() {
   }
 
   const socialLinks = [
-    { name: "Instagram", icon: Instagram, href: "https://www.instagram.com/dekord.pk" },
-    { name: "TikTok", icon: TikTokIcon, href: "https://www.tiktok.com/@dekord.pk" },
-    { name: "Facebook", icon: Facebook, href: "https://www.facebook.com/dekord.pk" },
-    { name: "LinkedIn", icon: Linkedin, href: "https://www.linkedin.com/company/dekord" },
+    { name: "Instagram", target:"_blank", icon: Instagram, href: "https://www.instagram.com/dekord.pk" },
+    { name: "TikTok", target:"_blank", icon: TikTokIcon, href: "https://www.tiktok.com/@dekord.pk" },
+    { name: "Facebook", target:"_blank", icon: Facebook, href: "https://www.facebook.com/dekord.pk" },
+    { name: "LinkedIn", target:"_blank", icon: Linkedin, href: "https://www.linkedin.com/company/dekord" },
   ]
 
   return (
@@ -70,6 +70,7 @@ export function Footer() {
                   <motion.a
                     key={social.name}
                     href={social.href}
+                    target="_blank"
                     className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-all duration-200"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}

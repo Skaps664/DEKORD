@@ -16,6 +16,7 @@ import { CareWarranty } from "@/components/product/care-warranty"
 import ComparisonSection from "@/components/comparison-section"
 import { SpecialtyShowcase } from "@/components/product/specialty-showcase"
 import { ProductBanner } from "@/components/product/product-banner"
+import { ProductReviews } from "@/components/product-reviews"
 import { trackViewContent } from "@/components/facebook-pixel"
 
 export default function ProductPage() {
@@ -149,6 +150,10 @@ export default function ProductPage() {
 
       <div className="py-6 md:py-8">
         <CareWarranty />
+      </div>
+
+      <div id="reviews-section" className="py-6 md:py-8">
+        <ProductReviews productId={product.id} />
       </div>
     </main>
   )

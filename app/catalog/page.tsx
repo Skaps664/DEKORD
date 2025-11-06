@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { useCart } from "@/contexts/cart-context"
 import { getAllProducts } from "@/lib/services/products"
 import type { Product } from "@/lib/types/database"
+import { RatingDisplay } from "@/components/rating-display"
 
 const categories = ["All", "USB-C", "Lightning", "Multi", "Bundle", "Magnetic"]
 const sortOptions = ["Popular", "Price: Low to High", "Price: High to Low", "Rating"]
@@ -238,15 +239,18 @@ export default function CatalogPage() {
                             {product.name}
                           </h3>
                           
-                          <div className="flex items-center gap-1 mb-3">
-                            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                            <span className="text-sm font-medium">4.8</span>
-                            <span className="text-xs text-muted-foreground">(Reviews)</span>
+                          <div className="mb-3">
+                            <RatingDisplay 
+                              rating={product.rating}
+                              reviewCount={product.review_count || 0}
+                              size="sm"
+                              showCount={true}
+                            />
                           </div>
 
                           <div className="flex items-center justify-between">
                             <span className="text-xl font-bold text-foreground">
-                              ${parseFloat(product.price.toString()).toFixed(2)}
+                              Rs. {parseFloat(product.price.toString()).toFixed(2)}
                             </span>
                             <motion.button
                               whileHover={{ scale: 1.1 }}
@@ -285,10 +289,13 @@ export default function CatalogPage() {
                               </h3>
                             </div>
                             
-                            <div className="flex items-center gap-1 mb-2">
-                              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                              <span className="text-sm font-medium">4.8</span>
-                              <span className="text-xs text-muted-foreground">(Reviews)</span>
+                            <div className="mb-2">
+                              <RatingDisplay 
+                                rating={product.rating}
+                                reviewCount={product.review_count || 0}
+                                size="sm"
+                                showCount={true}
+                              />
                             </div>
 
                             <p className="text-sm text-muted-foreground line-clamp-2 mb-3">

@@ -17,6 +17,8 @@ export interface Product {
   meta_title: string | null
   meta_description: string | null
   og_image: string | null
+  rating: number | null
+  review_count: number
   created_at: string
   updated_at: string
 }
@@ -203,6 +205,27 @@ export interface CartItemWithProduct extends CartItem {
 
 export interface BlogPostWithAuthor extends BlogPost {
   author?: {
+    full_name: string | null
+  }
+}
+
+export interface Review {
+  id: string
+  product_id: string
+  order_id: string
+  user_id: string
+  rating: number
+  title: string | null
+  comment: string
+  images: string[] | null
+  verified_purchase: boolean
+  helpful_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface ReviewWithUser extends Review {
+  user?: {
     full_name: string | null
   }
 }

@@ -81,7 +81,7 @@ export function FeaturedProducts() {
   }
 
   return (
-    <section className="relative z-10 py-12 sm:py-16 lg:py-32" id="featured-products">
+    <section className="py-12 sm:py-16 lg:py-32" id="featured-products">
       <div className="container-custom px-2 sm:px-2 md:px-3">
         <Reveal>
           <div className="text-left mb-10 sm:mb-16">

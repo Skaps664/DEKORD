@@ -44,24 +44,24 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
   return (
     <>
       {/* Overlay - sits below header */}
-      {open ? (
+      {open && (
         <button
           aria-label="Close menu overlay"
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-foreground/5 backdrop-blur-sm transition-opacity data-[state=open]:opacity-100"
+          className="fixed inset-0 z-[90] bg-foreground/5 backdrop-blur-sm transition-opacity"
           style={{ top: 0 }}
         />
-      ) : null}
+      )}
 
-      {/* Floating panel */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center">
+      {/* Floating panel - always pointer-events-none on container, auto on content */}
+      <div className="pointer-events-none fixed inset-x-0 top-0 z-[100] flex justify-center">
         <div
           aria-hidden={!open}
           id="menu-drop-panel"
           className={cn(
-            "pointer-events-auto w-full mx-3 sm:mx-4 md:mx-5 rounded-b-2xl border border-(--ring) bg-background/95 shadow-lg backdrop-blur transition-all duration-300",
+            "w-full mx-3 sm:mx-4 md:mx-5 rounded-b-2xl border border-(--ring) bg-background/95 shadow-lg backdrop-blur transition-all duration-300",
             "ring-1 ring-border",
-            open ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0",
+            open ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-full opacity-0 pointer-events-none",
             // Mobile: tall/vertical layout
             "h-auto py-4 md:py-0 md:h-36 px-4 md:px-6",
             className,

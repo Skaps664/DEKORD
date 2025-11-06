@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { ShoppingCart, Zap, Shield, Truck, Plus, Minus, Check } from "lucide-react"
@@ -121,6 +122,7 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
   }, [initialLength])
   
   const { addItem, isLoading } = useCart()
+  const router = useRouter()
   const [isHovering, setIsHovering] = useState(false)
   const [showSadEmoji, setShowSadEmoji] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
@@ -216,6 +218,38 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
     }
   }
 
+  const handleBuyNow = async () => {
+    try {
+      const colorName = currentColorObj?.name || activeColor
+      const cartItem = {
+        productId: product?.id || "dekord-usb-c-cable",
+        productName: product?.name || "Dekord Braided USB-C Cable",
+        productImage: product?.main_image || "/images/products/usb-cable.jpg",
+        variantId: selectedVariant?.id,
+        variantDetails: `${colorName} • ${activeLength}`,
+        length: activeLength,
+        color: colorName,
+        price: finalPrice,
+        quantity: quantity,
+      }
+      
+      await addItem(cartItem)
+      
+      // Track with Facebook Pixel
+      trackAddToCart({
+        id: product?.id || "dekord-usb-c-cable",
+        name: product?.name || "Dekord Braided USB-C Cable",
+        price: finalPrice,
+        quantity: quantity,
+      })
+      
+      // Redirect to cart
+      router.push('/cart')
+    } catch (error) {
+      console.error("❌ Failed to buy now:", error)
+    }
+  }
+
   return (
     <aside className={cn(
       "rounded-2xl ring-1 ring-border bg-white overflow-hidden sticky top-20 transition-shadow duration-500",
@@ -224,14 +258,14 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
     )}>
       {/* Header with Price */}
       <div className="p-6 border-b border-border bg-gradient-to-br from-neutral-50 to-white">
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4 mb-3">
           <div>
             <h2 className="text-xl font-bold text-neutral-900">{product?.name || "Dekord Braided USB‑C Cable"}</h2>
             <p className="text-sm text-neutral-600 mt-1">{product?.category || "Premium fast charging cable"}</p>
           </div>
           <div className="text-right">
             <p className="text-3xl font-bold text-neutral-900">Rs. {finalPrice.toFixed(2)}</p>
-            <p className="text-xs text-neutral-500">Free shipping</p>
+            
           </div>
         </div>
       </div>
@@ -336,7 +370,7 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
               size="lg"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
-              onClick={handleAddToCart}
+              onClick={handleBuyNow}
               disabled={isLoading}
               className={cn(
                 "w-full text-base font-semibold bg-neutral-900 hover:bg-neutral-800 transition-all duration-500 ease-out relative overflow-visible",
@@ -409,7 +443,7 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
           <div className="flex items-start gap-3">
             <Truck className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-neutral-900">Free Shipping</p>
+              <p className="text-sm font-medium text-neutral-900">Fast Shipping</p>
               <p className="text-xs text-neutral-600">Delivery in 3-5 business days</p>
             </div>
           </div>

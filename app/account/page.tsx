@@ -20,10 +20,14 @@ import {
   CheckCircle2,
   Clock,
   Loader2,
+  Star,
+  MessageSquare,
 } from "lucide-react"
 import Link from "next/link"
 import { getCurrentUser, getUserProfile, updateUserProfile, updatePassword, signOut } from "@/lib/services/auth"
 import { getUserOrders } from "@/lib/services/orders"
+import { ReviewModal } from "@/components/review-modal"
+import { canUserReviewProduct, getUserReviewForProduct } from "@/lib/services/reviews"
 import type { OrderWithItems } from "@/lib/types/database"
 
 type Tab = "profile" | "orders" | "password"
@@ -41,6 +45,17 @@ function AccountPageContent() {
   const [saving, setSaving] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
   const [authProvider, setAuthProvider] = useState<string>('email')
+
+  // Review modal state
+  const [reviewModalOpen, setReviewModalOpen] = useState(false)
+  const [selectedOrderForReview, setSelectedOrderForReview] = useState<{
+    orderId: string
+    productId: string
+    productName: string
+  } | null>(null)
+  
+  // Track which products have been reviewed (orderId-productId: boolean)
+  const [reviewedProducts, setReviewedProducts] = useState<Record<string, boolean>>({})
 
   // Real user data from Supabase
   const [userData, setUserData] = useState({
@@ -142,6 +157,21 @@ function AccountPageContent() {
         if (ordersData) {
           console.log('✅ Orders loaded:', ordersData.length)
           setOrders(ordersData)
+          
+          // Check which products have been reviewed
+          const reviewStatus: Record<string, boolean> = {}
+          for (const order of ordersData) {
+            if (order.status === 'delivered' && order.items) {
+              for (const item of order.items) {
+                if (item.product_id) {
+                  const key = `${order.id}-${item.product_id}`
+                  const { data: existingReview } = await getUserReviewForProduct(order.id, item.product_id)
+                  reviewStatus[key] = !!existingReview
+                }
+              }
+            }
+          }
+          setReviewedProducts(reviewStatus)
         } else {
           console.log('⚠️ No orders found')
         }
@@ -234,6 +264,30 @@ function AccountPageContent() {
     } catch (err) {
       console.error('Error logging out:', err)
       router.push('/auth')
+    }
+  }
+
+  const handleOpenReviewModal = (orderId: string, productId: string, productName: string) => {
+    setSelectedOrderForReview({ orderId, productId, productName })
+    setReviewModalOpen(true)
+  }
+
+  const handleReviewSuccess = async () => {
+    // Mark product as reviewed immediately
+    if (selectedOrderForReview) {
+      const key = `${selectedOrderForReview.orderId}-${selectedOrderForReview.productId}`
+      setReviewedProducts(prev => ({
+        ...prev,
+        [key]: true
+      }))
+    }
+    
+    // Reload orders to update review status
+    if (userId) {
+      const { data: ordersData } = await getUserOrders(userId)
+      if (ordersData) {
+        setOrders(ordersData)
+      }
     }
   }
 
@@ -683,15 +737,15 @@ function AccountPageContent() {
                         </div>
 
                         {/* Order Actions */}
-                        <div className="flex gap-3">
+                        <div className="flex flex-wrap gap-3 mb-4">
                           <Link
                             href={`/order/${order.id}`}
-                            className="flex-1 px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors text-center font-medium"
+                            className="flex-1 min-w-[140px] px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors text-center font-medium"
                           >
                             View Details
                           </Link>
                           {order.status === "delivered" && (
-                            <button className="flex-1 px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors font-medium">
+                            <button className="flex-1 min-w-[140px] px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors font-medium">
                               Buy Again
                             </button>
                           )}
@@ -700,12 +754,65 @@ function AccountPageContent() {
                               href={order.tracking_url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"
+                              className="flex-1 min-w-[140px] px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"
                             >
                               Track Order
                             </a>
                           )}
                         </div>
+
+                        {/* Review Section - Only for delivered orders */}
+                        {order.status === "delivered" && order.items && order.items.length > 0 && (
+                          <div className="border-t border-neutral-200 pt-4">
+                            <div className="flex items-center gap-2 mb-3">
+                              <Star className="w-5 h-5 text-yellow-500" />
+                              <h4 className="font-semibold text-neutral-900">Share Your Experience</h4>
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {order.items.map((item) => {
+                                if (!item.product_id) return null
+                                
+                                const reviewKey = `${order.id}-${item.product_id}`
+                                const hasReviewed = reviewedProducts[reviewKey]
+                                
+                                return (
+                                  <button
+                                    key={item.id}
+                                    onClick={() => !hasReviewed && item.product_id && handleOpenReviewModal(order.id, item.product_id, item.product_name)}
+                                    disabled={hasReviewed}
+                                    className={`p-3 rounded-lg border-2 text-left transition-all ${
+                                      hasReviewed
+                                        ? 'border-green-200 bg-green-50 cursor-not-allowed'
+                                        : 'border-yellow-300 bg-yellow-50 hover:bg-yellow-100 hover:border-yellow-400'
+                                    }`}
+                                  >
+                                    <div className="flex items-start justify-between gap-2">
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-neutral-900 truncate text-sm">
+                                          {item.product_name}
+                                        </p>
+                                        {item.variant_details && (
+                                          <p className="text-xs text-neutral-500 mt-0.5">{item.variant_details}</p>
+                                        )}
+                                      </div>
+                                      {hasReviewed ? (
+                                        <div className="flex items-center gap-1 text-green-600 text-xs font-medium whitespace-nowrap">
+                                          <CheckCircle2 className="w-4 h-4" />
+                                          Reviewed
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center gap-1 text-yellow-600 text-xs font-medium whitespace-nowrap">
+                                          <MessageSquare className="w-4 h-4" />
+                                          Review
+                                        </div>
+                                      )}
+                                    </div>
+                                  </button>
+                                )
+                              })}
+                            </div>
+                          </div>
+                        )}
                       </motion.div>
                     ))}
                   </div>
@@ -815,6 +922,21 @@ function AccountPageContent() {
           </motion.div>
         </div>
       </div>
+
+      {/* Review Modal */}
+      {selectedOrderForReview && (
+        <ReviewModal
+          isOpen={reviewModalOpen}
+          onClose={() => {
+            setReviewModalOpen(false)
+            setSelectedOrderForReview(null)
+          }}
+          productId={selectedOrderForReview.productId}
+          productName={selectedOrderForReview.productName}
+          orderId={selectedOrderForReview.orderId}
+          onSuccess={handleReviewSuccess}
+        />
+      )}
     </div>
   )
 }
