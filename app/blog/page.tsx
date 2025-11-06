@@ -13,6 +13,9 @@ export default function BlogPage() {
   const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"])
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
+  const [newsletterEmail, setNewsletterEmail] = useState("")
+  const [newsletterIsSubmitting, setNewsletterIsSubmitting] = useState(false)
+  const [newsletterMessage, setNewsletterMessage] = useState("")
 
   useEffect(() => {
     loadBlogPosts()
@@ -31,6 +34,43 @@ export default function BlogPage() {
       console.error('Failed to load blog posts:', err)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleNewsletterSubscribe(e: React.FormEvent) {
+    e.preventDefault()
+    
+    if (!newsletterEmail) return
+
+    setNewsletterIsSubmitting(true)
+    setNewsletterMessage("")
+
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: newsletterEmail.toLowerCase(),
+          source: 'blog'
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setNewsletterMessage("Thank you for subscribing! You'll be notified when we publish new articles.")
+        setNewsletterEmail("")
+        setTimeout(() => setNewsletterMessage(""), 5000)
+      } else {
+        setNewsletterMessage(data.error || 'Failed to subscribe. Please try again.')
+      }
+    } catch (error) {
+      console.error('Subscription error:', error)
+      setNewsletterMessage('Failed to subscribe. Please try again.')
+    } finally {
+      setNewsletterIsSubmitting(false)
     }
   }
 
@@ -175,16 +215,33 @@ export default function BlogPage() {
             <p className="text-muted-foreground mb-6">
               Subscribe to our newsletter to be the first to know when we publish new articles
             </p>
-            <div className="flex gap-3 max-w-md mx-auto">
+            {newsletterMessage && (
+              <motion.p
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`mb-4 text-sm ${newsletterMessage.includes('Thank') ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {newsletterMessage}
+              </motion.p>
+            )}
+            <form onSubmit={handleNewsletterSubscribe} className="flex gap-3 max-w-md mx-auto">
               <input
                 type="email"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="flex-1 px-5 py-3 rounded-2xl border border-border/50 bg-background focus:ring-2 focus:ring-foreground/20 focus:border-foreground transition-all outline-none text-foreground placeholder:text-muted-foreground"
+                required
+                disabled={newsletterIsSubmitting}
               />
-              <button className="px-6 py-3 bg-foreground text-background rounded-2xl font-semibold hover:shadow-lg transition-all">
-                Subscribe
+              <button 
+                type="submit"
+                disabled={newsletterIsSubmitting}
+                className="px-6 py-3 bg-foreground text-background rounded-2xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {newsletterIsSubmitting ? 'Subscribing...' : 'Subscribe'}
               </button>
-            </div>
+            </form>
           </motion.div>
         </div>
       </section>

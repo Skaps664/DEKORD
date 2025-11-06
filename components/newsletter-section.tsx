@@ -12,19 +12,53 @@ export function NewsletterSection() {
   const [email, setEmail] = useState("")
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isValid, setIsValid] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
 
   const validateEmail = (email: string) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return re.test(email)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (validateEmail(email)) {
-      setIsSubmitted(true)
-      setIsValid(true)
-    } else {
+    
+    if (!validateEmail(email)) {
       setIsValid(false)
+      return
+    }
+
+    setIsLoading(true)
+    setErrorMessage("")
+
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email.toLowerCase(),
+          source: 'newsletter-section'
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setIsSubmitted(true)
+        setIsValid(true)
+        setEmail("")
+      } else {
+        setErrorMessage(data.error || 'Failed to subscribe. Please try again.')
+        setIsValid(false)
+      }
+    } catch (error) {
+      console.error('Subscription error:', error)
+      setErrorMessage('Failed to subscribe. Please try again.')
+      setIsValid(false)
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -73,17 +107,18 @@ export function NewsletterSection() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      Please enter a valid email address
+                      {errorMessage || "Please enter a valid email address"}
                     </motion.p>
                   )}
 
                   <motion.button
                     type="submit"
-                    className="w-full bg-neutral-900 text-white py-4 rounded-full font-medium hover:bg-neutral-800 transition-all duration-200"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    disabled={isLoading}
+                    className="w-full bg-neutral-900 text-white py-4 rounded-full font-medium hover:bg-neutral-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                    whileTap={{ scale: isLoading ? 1 : 0.98 }}
                   >
-                    Subscribe to Newsletter
+                    {isLoading ? 'Subscribing...' : 'Subscribe to Newsletter'}
                   </motion.button>
                 </form>
               ) : (

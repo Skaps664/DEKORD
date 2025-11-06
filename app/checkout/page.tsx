@@ -221,6 +221,50 @@ export default function CheckoutPage() {
         setOrderNumber(data.order_number)
         setOrderSuccess(true)
         
+        // Send order placed notifications (email + WhatsApp)
+        try {
+          console.log('🔔 Sending notifications for order:', data.id, 'at', new Date().toISOString())
+          
+          // Send email notification
+          const emailResponse = await fetch('/api/send-order-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: data.id,
+              type: 'placed'  // ✅ CORRECT: using 'type' not 'status'
+            })
+          })
+          
+          if (!emailResponse.ok) {
+            const errorData = await emailResponse.json()
+            console.error('❌ Email notification failed:', errorData)
+          } else {
+            console.log('✅ Email notification sent')
+          }
+          
+          // Send WhatsApp notification
+          const whatsappResponse = await fetch('/api/send-whatsapp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: data.id,
+              type: 'placed'
+            })
+          })
+          
+          if (!whatsappResponse.ok) {
+            const errorData = await whatsappResponse.json()
+            console.error('❌ WhatsApp notification failed:', errorData)
+          } else {
+            console.log('✅ WhatsApp notification sent')
+          }
+          
+          console.log('✅ Order notifications sent:', data.order_number)
+        } catch (error) {
+          console.error('Error sending order notifications:', error)
+          // Don't fail the order if notifications fail
+        }
+        
         // Record coupon usage if coupon was applied
         if (appliedCoupon && data.id) {
           try {
@@ -749,3 +793,4 @@ export default function CheckoutPage() {
     </main>
   )
 }
+

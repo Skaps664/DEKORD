@@ -1,4 +1,5 @@
 "use client"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { Instagram, Facebook, Linkedin, ArrowUpRight, Mail } from "lucide-react"
 
@@ -11,6 +12,46 @@ const TikTokIcon = ({ size = 18 }: { size?: number }) => (
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const [footerEmail, setFooterEmail] = useState("")
+  const [footerIsSubmitting, setFooterIsSubmitting] = useState(false)
+  const [footerMessage, setFooterMessage] = useState("")
+
+  const handleFooterSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!footerEmail) return
+
+    setFooterIsSubmitting(true)
+    setFooterMessage("")
+
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: footerEmail.toLowerCase(),
+          source: 'footer'
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setFooterMessage("Thank you for subscribing!")
+        setFooterEmail("")
+        setTimeout(() => setFooterMessage(""), 3000)
+      } else {
+        setFooterMessage(data.error || 'Failed to subscribe')
+      }
+    } catch (error) {
+      console.error('Subscription error:', error)
+      setFooterMessage('Failed to subscribe. Please try again.')
+    } finally {
+      setFooterIsSubmitting(false)
+    }
+  }
 
   const footerSections = {
     "Explore": [
@@ -129,20 +170,31 @@ export function Footer() {
             <div>
               <h4 className="font-semibold text-neutral-900 text-base lg:text-lg mb-1">We send tasty emails</h4>
               <p className="text-neutral-600 text-sm">Stay updated with new arrivals and stories.</p>
+              {footerMessage && (
+                <p className={`text-sm mt-2 ${footerMessage.includes('Thank') ? 'text-green-600' : 'text-red-600'}`}>
+                  {footerMessage}
+                </p>
+              )}
             </div>
-            <form className="flex w-full sm:w-auto shadow-lg">
+            <form onSubmit={handleFooterSubscribe} className="flex w-full sm:w-auto shadow-lg">
               <input
                 type="email"
+                value={footerEmail}
+                onChange={(e) => setFooterEmail(e.target.value)}
                 placeholder="Enter your email"
                 className="flex-1 sm:flex-none px-4 py-2.5 sm:py-3 bg-white/[0.05] border border-white/[0.1] rounded-l text-sm text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-400"
                 required
+                disabled={footerIsSubmitting}
               />
               <button
                 type="submit"
-                className="px-4 sm:px-6 py-2.5 sm:py-3 bg-neutral-900 text-white rounded-r hover:bg-neutral-800 transition-colors duration-200 flex items-center justify-center"
+                disabled={footerIsSubmitting}
+                className="px-4 sm:px-6 py-2.5 sm:py-3 bg-neutral-900 text-white rounded-r hover:bg-neutral-800 transition-colors duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Mail size={16} className="sm:hidden" />
-                <span className="hidden sm:inline text-sm">Subscribe</span>
+                <span className="hidden sm:inline text-sm">
+                  {footerIsSubmitting ? 'Subscribing...' : 'Subscribe'}
+                </span>
               </button>
             </form>
           </div>
