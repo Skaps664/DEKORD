@@ -60,6 +60,7 @@ export function Header() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.6, ease: [0.21, 0.47, 0.32, 0.98] }}
+        style={{ pointerEvents: 'auto', isolation: 'isolate' }}
       >
         <div className="w-full">
           <div className="flex items-center justify-between h-16 md:h-18 px-2 sm:px-3 md:px-4">

@@ -19,21 +19,14 @@ export default function CartDropPanel({
   panelHeight = 92,
 }: CartDropPanelProps) {
   const { itemCount, total } = useCart()
-  // Auto-close on scroll / wheel / touch or ESC
+  // Auto-close on ESC key only
   React.useEffect(() => {
     if (!open) return
-    const handleClose = () => onClose()
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose()
     }
-    window.addEventListener("scroll", handleClose, { passive: true })
-    window.addEventListener("wheel", handleClose, { passive: true })
-    window.addEventListener("touchmove", handleClose, { passive: true })
     window.addEventListener("keydown", onKey)
     return () => {
-      window.removeEventListener("scroll", handleClose)
-      window.removeEventListener("wheel", handleClose)
-      window.removeEventListener("touchmove", handleClose)
       window.removeEventListener("keydown", onKey)
     }
   }, [open, onClose])
@@ -61,15 +54,16 @@ export default function CartDropPanel({
         />
       )}
 
-      {/* Floating panel - always pointer-events-none on container, auto on content */}
-      <div className="pointer-events-none fixed inset-x-0 top-0 z-[100] flex justify-center">
+      {/* Floating panel - container should not block anything */}
+      <div className="fixed left-0 right-0 top-0 z-[101] flex justify-center" style={{ pointerEvents: 'none' }}>
         <div
           aria-hidden={!open}
           id="cart-drop-panel"
+          style={{ pointerEvents: open ? 'auto' : 'none' }}
           className={cn(
             "w-full mx-3 sm:mx-4 md:mx-5 rounded-b-2xl border border-(--ring) bg-background/95 shadow-lg backdrop-blur transition-all duration-300",
             "ring-1 ring-border",
-            open ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-full opacity-0 pointer-events-none",
+            open ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0",
             "h-30 md:h-36 px-4 md:px-6",
             className,
           )}
