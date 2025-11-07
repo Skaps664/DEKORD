@@ -259,6 +259,22 @@ export default function CheckoutPage() {
             console.log('✅ WhatsApp notification sent')
           }
           
+          // Send Telegram notification to admin
+          const telegramResponse = await fetch('/api/notify-admin-telegram', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: data.id
+            })
+          })
+          
+          if (!telegramResponse.ok) {
+            const errorData = await telegramResponse.json()
+            console.error('❌ Telegram admin notification failed:', errorData)
+          } else {
+            console.log('✅ Telegram admin notification sent')
+          }
+          
           console.log('✅ Order notifications sent:', data.order_number)
         } catch (error) {
           console.error('Error sending order notifications:', error)
