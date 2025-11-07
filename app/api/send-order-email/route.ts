@@ -10,7 +10,12 @@ interface OrderEmailData {
   customerName: string
   customerEmail: string
   total: number
-  items: Array<{ product_name: string; quantity: number; unit_price: number }>
+  items: Array<{ 
+    product_name: string
+    variant_details?: string
+    quantity: number
+    unit_price: number
+  }>
   trackingNumber?: string
   trackingUrl?: string
   courier?: string
@@ -52,11 +57,14 @@ function getEmailContent(type: string, data: OrderEmailData) {
         <h2>Order #${data.orderNumber}</h2>
         ${data.items.map(item => `
           <div class="item">
-            <strong>${item.product_name}</strong> x ${item.quantity}
-            <span style="float: right;">Rs. ${item.unit_price.toFixed(2)}</span>
+            <div>
+              <strong>${item.product_name}</strong> x ${item.quantity}
+              ${item.variant_details ? `<br><span style="color: #666; font-size: 13px;">[${item.variant_details}]</span>` : ''}
+            </div>
+            <div style="float: right;">Rs. ${Number(item.unit_price).toLocaleString()}</div>
           </div>
         `).join('')}
-        <div class="total">Total: Rs. ${data.total.toFixed(2)}</div>
+        <div class="total">Total: Rs. ${Number(data.total).toLocaleString()}</div>
       </div>
       
       <p><strong>Please confirm your order via WhatsApp within 24 hours.</strong></p>

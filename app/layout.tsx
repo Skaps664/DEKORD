@@ -8,6 +8,7 @@ import FacebookPixel from "@/components/facebook-pixel"
 import { GoogleAnalytics } from "@/components/google-analytics"
 import { CartProvider } from "@/contexts/cart-context"
 import { Analytics } from '@vercel/analytics/react'
+import LoadingBar from "@/components/loading-bar"
 
 
 const inter = Inter({
@@ -165,6 +166,7 @@ export default function RootLayout({
       <body className="font-sans bg-neutral-50 text-neutral-900 overflow-x-hidden grain-texture">
         <GoogleAnalytics />
         <FacebookPixel />
+        <LoadingBar />
         <CartProvider>
           <Header />
           <main role="main">{children}</main>

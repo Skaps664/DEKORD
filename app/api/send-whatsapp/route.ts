@@ -18,64 +18,108 @@ interface WhatsAppMessageData {
   trackingNumber?: string
   trackingUrl?: string
   courier?: string
+  items?: Array<{
+    product_name: string
+    variant_details?: string
+    quantity: number
+    unit_price: number
+    total_price: number
+  }>
 }
 
 function getMessage(type: string, data: WhatsAppMessageData) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dekord.online'
-  const confirmUrl = `${baseUrl}/api/confirm-order?id=${data.orderId}`
+  const confirmUrl = `${baseUrl}/order-confirmation/${data.orderId}`
+  const accountUrl = `${baseUrl}/account?tab=orders`
+  
+  // Build items list with variants
+  let itemsList = ''
+  if (data.items && data.items.length > 0) {
+    itemsList = data.items.map((item: any) => {
+      const variantText = item.variant_details ? ` [${item.variant_details}]` : ''
+      return `  • ${item.quantity}x ${item.product_name}${variantText} - Rs. ${Number(item.unit_price).toLocaleString()}`
+    }).join('\n')
+  }
   
   switch (type) {
     case 'placed':
-      return `Hi ${data.customerName}, we've received your order #${data.orderNumber} totaling ${data.total.toFixed(2)}
+      return `🎉 *Thank You for Your Order!*
 
-Shall we confirm it now?
+Hi ${data.customerName}! 👋
 
-👉 Confirm Order: ${confirmUrl}
+Thank you so much for placing your order with *dekord*! We're excited to get your premium charging cables to you.
 
-Or reply with any queries you have.
+📦 *Order Details:*
+Order Number: *#${data.orderNumber}*
 
-- dekord team`
+*Items:*
+${itemsList}
+
+💰 *Total: Rs. ${Number(data.total).toLocaleString()}*
+
+⚠️ *IMPORTANT - Please Confirm Your Order*
+To proceed with your order, please confirm it within *24 hours* by clicking the link below:
+
+👉 ${confirmUrl}
+
+Have questions? Just reply to this message!
+
+Thank you for choosing *dekord*! 🙏
+- Team dekord`
 
     case 'processing':
-      return `📦 *Order Processing*
+      return `📦 *Your Order is Being Processed*
 
-Hi ${data.customerName}!
+Hi ${data.customerName}! 👋
 
-Great news! Your order #${data.orderNumber} is being prepared for shipment.
+Great news! Your order has been *confirmed by you* and we are now processing it.
 
-We're carefully packing your premium cables and will ship them soon.
+✅ *Order #${data.orderNumber}*
+Status: *Confirmed & Processing*
 
-Track your order: ${baseUrl}/account/orders
+We're carefully preparing your items for shipment. You'll receive tracking information as soon as your order ships (usually within 1-2 business days).
 
-- dekord team`
+Track your order status here:
+${accountUrl}
+
+Thank you for your patience! ⏳
+- Team dekord`
 
     case 'shipped':
-      return `🚚 *Order Shipped!*
+      return `🚚 *Your Order is On Its Way!*
 
-Hi ${data.customerName}!
+Hi ${data.customerName}! 👋
 
-Your order #${data.orderNumber} is on its way!
+Excellent news! Your order has been *shipped* and is on its way to you! 🎉
 
-${data.courier ? `*Courier:* ${data.courier}\n` : ''}${data.trackingNumber ? `*Tracking:* ${data.trackingNumber}\n` : ''}${data.trackingUrl ? `Track here: ${data.trackingUrl}\n` : ''}
-Expected delivery: 3-5 business days
+📦 *Order #${data.orderNumber}*
+${data.courier ? `🏢 *Courier:* ${data.courier}\n` : ''}${data.trackingNumber ? `📍 *Tracking Number:* ${data.trackingNumber}\n` : ''}
+📅 *Estimated Delivery:* 3-5 business days
 
-- dekord team`
+${data.trackingUrl ? `🔍 *Track your shipment in real-time:*\n${data.trackingUrl}\n` : ''}
+We'll notify you when your order is delivered. If you have any concerns, please reach out!
+
+- Team dekord`
 
     case 'delivered':
-      return `🎉 *Order Delivered!*
+      return `🎉 *Order Delivered Successfully!*
 
-Hi ${data.customerName}!
+Hi ${data.customerName}! 👋
 
-Your order #${data.orderNumber} has been delivered successfully!
+*THANK YOU!* 💚
 
-We hope you love your new dekord cables! 💚
+Your order *#${data.orderNumber}* has been delivered successfully! We hope you love your new *dekord* charging cables!
 
-*Please share your feedback:*
-${baseUrl}/account/orders?review=${data.orderId}
+🌟 *We'd Love Your Feedback!*
+Your review means the world to us and helps other customers make informed decisions.
 
-Your review helps us improve!
+Share your experience here:
+${accountUrl}
 
-Thank you for trusting dekord! 🙏`
+If you have any issues with your order, please contact us immediately and we'll make it right.
+
+Thank you for trusting *dekord*! 🙏❤️
+- Team dekord`
 
     default:
       throw new Error('Invalid message type')
@@ -96,10 +140,19 @@ export async function POST(request: Request) {
 
     const supabase = await createClient()
 
-    // Get order details
+    // Get order details with items
     const { data: order, error: orderError } = await supabase
       .from('orders')
-      .select('*')
+      .select(`
+        *,
+        order_items (
+          product_name,
+          variant_details,
+          quantity,
+          unit_price,
+          total_price
+        )
+      `)
       .eq('id', orderId)
       .single()
 
@@ -133,7 +186,8 @@ export async function POST(request: Request) {
       total: order.total,
       trackingNumber: order.tracking_number,
       trackingUrl: order.tracking_url,
-      courier: order.courier
+      courier: order.courier,
+      items: order.order_items || []
     }
 
     const message = getMessage(type, messageData)
