@@ -230,17 +230,44 @@ export default function BlogPage() {
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 px-5 py-3 rounded-2xl border border-border/50 bg-background focus:ring-2 focus:ring-foreground/20 focus:border-foreground transition-all outline-none text-foreground placeholder:text-muted-foreground"
+                className="flex-1 px-5 py-3 rounded-2xl border border-border/50 bg-background focus:ring-2 focus:ring-foreground/20 focus:border-foreground transition-all outline-none text-foreground placeholder:text-muted-foreground min-w-0"
                 required
                 disabled={newsletterIsSubmitting}
               />
               <button 
                 type="submit"
                 disabled={newsletterIsSubmitting}
-                className="px-6 py-3 bg-foreground text-background rounded-2xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-6 py-3 bg-foreground text-background rounded-2xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-0"
               >
                 {newsletterIsSubmitting ? 'Subscribing...' : 'Subscribe'}
               </button>
+            <style jsx>{`
+              @media (max-width: 480px) {
+                form {
+                  flex-direction: column !important;
+                  gap: 0.5rem !important;
+                }
+                input, button {
+                  width: 100% !important;
+                  min-width: 0 !important;
+                }
+              }
+              @media (min-width: 481px) {
+                form {
+                  flex-direction: row !important;
+                  gap: 0.75rem !important;
+                }
+                input {
+                  width: auto !important;
+                  flex: 1 1 0% !important;
+                  min-width: 0 !important;
+                }
+                button {
+                  width: auto !important;
+                  min-width: 0 !important;
+                }
+              }
+            `}</style>
             </form>
           </motion.div>
         </div>

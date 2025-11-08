@@ -94,9 +94,16 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
                 <Link
                   href="/contact"
                   onClick={onClose}
-                  className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap mr-8 md:mr-16"
+                  className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap"
                 >
                   Contact
+                </Link>
+                <Link
+                  href="/blog"
+                  onClick={onClose}
+                  className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap mr-8 md:mr-16"
+                >
+                  Blog
                 </Link>
               </nav>
 
@@ -157,6 +164,13 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
                 className="text-base font-medium text-foreground hover:opacity-70 transition-opacity py-2 text-center"
               >
                 Contact
+              </Link>
+              <Link
+                href="/blog"
+                onClick={onClose}
+                className="text-base font-medium text-foreground hover:opacity-70 transition-opacity py-2 text-center"
+              >
+                Blog
               </Link>
             </nav>
           </div>

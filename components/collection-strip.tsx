@@ -99,7 +99,9 @@ export function CollectionStrip() {
       <div className="mb-12">
         <Reveal>
           <div className="container-custom text-center">
-            <h2 className="text-neutral-900 mb-4 text-6xl font-normal">SHOP BY COLLECTION</h2>
+            <h2 className="text-neutral-900 mb-4 text-4xl sm:text-5xl md:text-6xl font-normal break-words max-w-full mx-auto" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>
+              SHOP BY COLLECTION
+            </h2>
             <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
               Explore our cable collections, each engineered for specific needs - from premium DEK series to hand-crafted WEEV cables.
             </p>
