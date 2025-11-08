@@ -64,7 +64,7 @@ export function NewsletterSection() {
 
   return (
     <section className="py-20 lg:py-32">
-      <div className="container-custom px-2 sm:px-2 md:px-3">
+      <div className="container-custom px-2 sm:px-2 md:px-3 overflow-x-hidden">
         <Reveal>
           <div className="max-w-2xl mx-auto">
             <BlurPanel className="p-8 lg:p-12 bg-white/40 backdrop-blur-md grain-texture">
@@ -81,7 +81,7 @@ export function NewsletterSection() {
               </div>
 
               {!isSubmitted ? (
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4 max-w-full">
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Mail size={20} className="text-neutral-400" />
@@ -94,7 +94,7 @@ export function NewsletterSection() {
                         setIsValid(true)
                       }}
                       placeholder="Enter your email address"
-                      className={`w-full pl-12 pr-4 py-4 bg-white/60 backdrop-blur-sm border rounded-full text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200 ${
+                      className={`w-full pl-12 pr-4 py-4 bg-white/60 backdrop-blur-sm border rounded-full text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:border-transparent transition-all duration-200 max-w-full ${
                         !isValid ? "border-red-300 focus:ring-red-500" : "border-neutral-200"
                       }`}
                     />
@@ -114,7 +114,7 @@ export function NewsletterSection() {
                   <motion.button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full bg-neutral-900 text-white py-4 rounded-full font-medium hover:bg-neutral-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full max-w-full bg-neutral-900 text-white py-4 rounded-full font-medium hover:bg-neutral-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     whileHover={{ scale: isLoading ? 1 : 1.02 }}
                     whileTap={{ scale: isLoading ? 1 : 0.98 }}
                   >

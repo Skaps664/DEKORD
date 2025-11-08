@@ -47,7 +47,7 @@ const FEATURES = [
 export function ComparisonSection() {
   return (
     <section className="py-12 sm:py-16 lg:py-28" id="comparison">
-      <div className="container-custom px-2 sm:px-2 md:px-3">
+  <div className="container-custom px-2 sm:px-2 md:px-3 overflow-x-hidden">
         <Reveal>
           <header className="text-center mb-8 sm:mb-10 lg:mb-14">
             <h2 className="text-neutral-900 text-2xl sm:text-3xl lg:text-5xl font-semibold tracking-wide">
@@ -60,8 +60,8 @@ export function ComparisonSection() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="rounded-none overflow-x-auto">
-            <Table className="text-sm sm:text-base w-full table-fixed min-w-[480px]">
+          <div className="rounded-none overflow-x-auto max-w-full">
+            <Table className="text-sm sm:text-base w-full max-w-full table-fixed min-w-[320px]">
               <colgroup>
                 <col className="w-[45%] md:w-auto" />
                 <col className="w-[27.5%] md:w-auto" />

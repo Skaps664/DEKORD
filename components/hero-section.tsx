@@ -69,10 +69,10 @@ export function HeroSection() {
         <div className="container-custom text-center text-white px-2 sm:px-2 md:px-3">
           <Reveal>
             <h1 className="leading-none tracking-tight mb-6 drop-shadow-2xl">
-              <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold whitespace-nowrap">
+              <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold max-w-xs mx-auto break-words overflow-hidden text-wrap">
                 <AnimatedText text="WHY ORDINARY" delay={0.5} />
               </div>
-              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light italic mt-2 whitespace-nowrap">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light italic mt-2 max-w-xs mx-auto break-words overflow-hidden text-wrap">
                 <AnimatedText text="when you can defy-ordinary" delay={1.1} />
               </div>
             </h1>
