@@ -57,6 +57,7 @@ export function Footer() {
     "Explore": [
       { name: "Home", href: "/" },
       {name: "About Us", href: "/about"},
+      { name: "Our Blog", href: "/blog" },
     ],
     SHOP: [
       { name: "Catalog", href: "/catalog" },
@@ -75,7 +76,7 @@ export function Footer() {
     ],
     Connect: [
       { name: "Contact Us", href: "/contact" },
-      { name: "Our Blog", href: "/blog" },
+      {name: "Corporate Queries", href: "/corporate-queries" },
     ],
   }
 
@@ -160,7 +161,7 @@ export function Footer() {
 
         {/* Newsletter Section */}
         <motion.div
-          className="py-8 sm:py-10 px-4 sm:px-6 lg:px-8 bg-white/[0.03] rounded-lg mb-8 sm:mb-10 border border-white/[0.05]"
+          className="py-8 sm:py-10 bg-white/[0.03] rounded-lg mb-8 sm:mb-10 border border-white/[0.05]"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}

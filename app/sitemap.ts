@@ -15,6 +15,7 @@ export default async function sitemap() {
     "/product",
     "/collections",
     "/blog",
+    "/corporate-queries",
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString(),
