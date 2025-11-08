@@ -50,25 +50,10 @@ export default async function sitemap() {
   }))
 
   // Combine all routes
-  const allRoutes = [
+  return [
     ...staticRoutes,
     ...productRoutes,
     ...blogRoutes,
     ...collectionRoutes,
   ]
-
-  // Return valid XML for Next.js sitemap
-  return [
-    '<?xml version="1.0" encoding="UTF-8"?>',
-    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...allRoutes.map((route) => `
-      <url>
-        <loc>${route.url}</loc>
-        <lastmod>${route.lastModified}</lastmod>
-        <changefreq>${route.changefreq}</changefreq>
-        <priority>${route.priority}</priority>
-      </url>
-    `),
-    '</urlset>'
-  ].join('')
 }
