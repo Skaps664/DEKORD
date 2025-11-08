@@ -436,7 +436,7 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
           <div className="flex items-start gap-3">
             <Shield className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-neutral-900">Lifetime Warranty</p>
+              <p className="text-sm font-medium text-neutral-900">1 Year Warranty</p>
               <p className="text-xs text-neutral-600">Fray-replacement guarantee</p>
             </div>
           </div>

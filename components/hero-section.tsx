@@ -111,7 +111,7 @@ export function HeroSection() {
             </div>
             <div className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-blue-400" />
-              <span className="text-xs sm:text-sm">Lifetime Warranty</span>
+              <span className="text-xs sm:text-sm">1 Year Warranty</span>
             </div>
           </div>
         </BlurPanel>

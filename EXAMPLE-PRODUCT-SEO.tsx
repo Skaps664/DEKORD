@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   // TODO: Fetch product data from your database
   const product = {
     name: "dekord 100W USB-C Cable",
-    description: "Premium braided 100W USB-C to USB-C cable. Fast charging for MacBook, iPad Pro, and more. 2m length, lifetime warranty.",
+    description: "Premium braided 100W USB-C to USB-C cable. Fast charging for MacBook, iPad Pro, and more. 2m length, 1 Year warranty.",
     price: 4999,
     image: "https://dekord.online/products/100w-cable.jpg"
   }
@@ -48,7 +48,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
   // TODO: Fetch actual product data from database
   const product = {
     name: "dekord 100W USB-C Cable",
-    description: "Premium braided 100W USB-C to USB-C cable with lifetime warranty",
+    description: "Premium braided 100W USB-C to USB-C cable with 1 Year warranty",
     image: "https://dekord.online/products/100w-cable.jpg",
     price: 4999,
     currency: "PKR",

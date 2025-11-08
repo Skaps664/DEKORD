@@ -8,7 +8,7 @@
 - Changed: "Design furniture for spaces that breathe" 
 - To: "WHY ORDINARY WHEN YOU CAN DEFY-ORDINARY"
 - Updated tagline to dekord's actual messaging
-- Changed badges: 100% Pure Copper, Fast PD Charging, Lifetime Warranty
+- Changed badges: 100% Pure Copper, Fast PD Charging, 1 Year Warranty
 
 #### 2. **Cinematic Banner** ✅
 - Updated: "⚡ CHARGE FASTER. LIVE SMARTER."

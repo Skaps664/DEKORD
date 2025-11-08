@@ -74,7 +74,7 @@ export default function AboutPage() {
     {
       year: "2024",
       title: "First Product Launch",
-      description: "Released our flagship braided cables with lifetime warranty. Customers loved the durability and style."
+      description: "Released our flagship braided cables with 1 Year warranty. Customers loved the durability and style."
     },
     {
       year: "2025",
@@ -514,12 +514,12 @@ export default function AboutPage() {
               Experience the dekord Difference
             </h2>
             <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Join thousands of satisfied customers who've discovered what true quality feels like. Every product backed by our lifetime warranty and 24/7 support.
+              Join thousands of satisfied customers who've discovered what true quality feels like. Every product backed by our 1 Year warranty and 24/7 support.
             </p>
             <div className="flex flex-wrap gap-6 justify-center items-center text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-green-500" />
-                <span>Lifetime Warranty</span>
+                <span>1 Year Warranty</span>
               </div>
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5 text-yellow-500" />

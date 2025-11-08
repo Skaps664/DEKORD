@@ -22,7 +22,7 @@ const defaultCollections = [
   {
     id: "weev-series",
     name: "WEEV SERIES",
-    description: "Hand-crafted cables with unique weave patterns and lifetime warranty",
+    description: "Hand-crafted cables with unique weave patterns and 1 Year warranty",
     image: "/modular-cushion-bench.png",
     products: 8,
     tag: "Hand Crafted",
