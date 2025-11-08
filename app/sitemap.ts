@@ -1,31 +1,74 @@
-import { MetadataRoute } from 'next'
+import { getAllProducts } from "../lib/services/products"
+import { getBlogPosts } from "../lib/services/blog"
+import { getAllCollections } from "../lib/services/collections"
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://dekord.online'
-  
+export default async function sitemap() {
+  const baseUrl = "https://dekord.online"
+
   // Static pages
-  const routes = [
-    '',
-    '/product',
-    '/about',
-    '/contact',
-    '/shop',
+  const staticRoutes = [
+    "",
+    "/about",
+    "/contact",
+    "/warranty",
+    "/shop",
+    "/product",
+    "/collections",
+    "/blog",
   ].map((route) => ({
     url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
-    priority: route === '' ? 1 : 0.8,
+    lastModified: new Date().toISOString(),
+    changefreq: "weekly",
+    priority: route === "" ? 1 : 0.8,
   }))
 
-  // TODO: Add dynamic product pages when you have products in database
-  // Example:
-  // const products = await getProducts()
-  // const productRoutes = products.map((product) => ({
-  //   url: `${baseUrl}/product/${product.slug}`,
-  //   lastModified: product.updatedAt,
-  //   changeFrequency: 'daily' as const,
-  //   priority: 0.9,
-  // }))
+  // Dynamic product pages
+  const { data: products } = await getAllProducts()
+  const productRoutes = (products || []).map((product: any) => ({
+    url: `${baseUrl}/product/${product.slug}`,
+    lastModified: product.updated_at || new Date().toISOString(),
+    changefreq: "weekly",
+    priority: 0.9,
+  }))
 
-  return [...routes]
+  // Dynamic blog pages
+  const { data: blogPosts } = await getBlogPosts({ pageSize: 100 })
+  const blogRoutes = (blogPosts || []).map((post: any) => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: post.published_at || new Date().toISOString(),
+    changefreq: "weekly",
+    priority: 0.7,
+  }))
+
+  // Dynamic collection pages
+  const { data: collections } = await getAllCollections()
+  const collectionRoutes = (collections || []).map((collection: any) => ({
+    url: `${baseUrl}/collections/${collection.slug}`,
+    lastModified: collection.updated_at || new Date().toISOString(),
+    changefreq: "weekly",
+    priority: 0.7,
+  }))
+
+  // Combine all routes
+  const allRoutes = [
+    ...staticRoutes,
+    ...productRoutes,
+    ...blogRoutes,
+    ...collectionRoutes,
+  ]
+
+  // Return valid XML for Next.js sitemap
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+    ...allRoutes.map((route) => `
+      <url>
+        <loc>${route.url}</loc>
+        <lastmod>${route.lastModified}</lastmod>
+        <changefreq>${route.changefreq}</changefreq>
+        <priority>${route.priority}</priority>
+      </url>
+    `),
+    '</urlset>'
+  ].join('')
 }

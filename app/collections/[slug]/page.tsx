@@ -15,6 +15,40 @@ import type { Collection, Product } from "@/lib/types/database"
 const sortOptions = ["Popular", "Price: Low to High", "Price: High to Low", "Rating"]
 
 export default function CollectionPage() {
+  // SEO: Dynamic meta tags and JSON-LD schema
+  const metaTitle = collection?.meta_title || collection?.name || "dekord Collections – Premium Charging Cables"
+  const metaDescription = collection?.meta_description || collection?.description || "Explore dekord cable collections, engineered for specific needs."
+  const metaImage = collection?.banner_image || "/dekord-logo-new.png"
+  const canonicalUrl = `https://dekord.online/collections/${collection?.slug}`
+
+  // JSON-LD Collection schema
+  const collectionSchema = collection ? {
+    "@context": "https://schema.org",
+    "@type": "Collection",
+    "name": collection.name,
+    "image": [metaImage],
+    "description": metaDescription,
+    "mainEntityOfPage": canonicalUrl
+  } : null
+  // ...existing code...
+  return (
+    <>
+      <head>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={metaImage} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={metaImage} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }} />
+      </head>
+      {/* ...existing code... */}
+    </>
+  )
   const params = useParams()
   const router = useRouter()
   const slug = params.slug as string

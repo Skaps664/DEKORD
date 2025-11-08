@@ -20,6 +20,45 @@ marked.setOptions({
 })
 
 export default function BlogPostPage() {
+  // SEO: Dynamic meta tags and JSON-LD schema
+  const metaTitle = post?.meta_title || post?.title || "dekord Blog – Premium Charging Cables"
+  const metaDescription = post?.meta_description || post?.excerpt || "Read the latest from dekord: premium charging cables, tech tips, and more."
+  const metaImage = post?.featured_image || "/dekord-logo-new.png"
+  const canonicalUrl = `https://dekord.online/blog/${post?.slug}`
+
+  // JSON-LD BlogPosting schema
+  const blogSchema = post ? {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": metaTitle,
+    "image": [metaImage],
+    "description": metaDescription,
+    "author": {
+      "@type": "Person",
+      "name": post.author_name || "dekord Team"
+    },
+    "datePublished": post.published_at,
+    "mainEntityOfPage": canonicalUrl
+  } : null
+  // ...existing code...
+  return (
+    <>
+      <head>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={metaImage} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={metaImage} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }} />
+      </head>
+      {/* ...existing code... */}
+    </>
+  )
   const params = useParams()
   const slug = params.slug as string
   const [post, setPost] = useState<BlogPost | null>(null)
