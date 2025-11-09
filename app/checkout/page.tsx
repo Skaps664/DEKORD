@@ -192,6 +192,12 @@ export default function CheckoutPage() {
         total_price: item.price * item.quantity
       }))
 
+      // Convert phone number starting with 0 to +92
+      let phone = formData.whatsappNumber
+      if (/^0\d{10}$/.test(phone)) {
+        phone = '+92' + phone.slice(1)
+      }
+
       // Create order
       const { data, error } = await createOrder({
         user_id: user.id,
@@ -203,7 +209,7 @@ export default function CheckoutPage() {
         total: total,
         payment_method: "cod",
         shipping_name: formData.fullName,
-        shipping_phone: formData.whatsappNumber,
+        shipping_phone: phone,
         shipping_address: formData.address,
         shipping_city: formData.city,
         shipping_province: formData.province,

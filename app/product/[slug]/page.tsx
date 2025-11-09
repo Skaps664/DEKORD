@@ -20,50 +20,6 @@ import { ProductReviews } from "@/components/product-reviews"
 import { trackViewContent } from "@/components/facebook-pixel"
 
 export default function ProductPage() {
-  // SEO: Dynamic meta tags and JSON-LD schema
-  const metaTitle = product?.meta_title || product?.name || "dekord – Premium Charging Cables"
-  const metaDescription = product?.meta_description || product?.description || "Shop dekord premium charging cables, engineered for durability and style."
-  const metaImage = product?.main_image || "/dekord-logo-new.png"
-  const canonicalUrl = `https://dekord.online/product/${product?.slug}`
-
-  // JSON-LD Product schema
-  const productSchema = product ? {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": product.name,
-    "image": [metaImage],
-    "description": metaDescription,
-    "sku": product.sku,
-    "brand": {
-      "@type": "Brand",
-      "name": "dekord"
-    },
-    "offers": {
-      "@type": "Offer",
-      "priceCurrency": "PKR",
-      "price": product.price,
-      "availability": "https://schema.org/InStock"
-    }
-  } : null
-  // ...existing code...
-  return (
-    <>
-      <head>
-        <title>{metaTitle}</title>
-        <meta name="description" content={metaDescription} />
-        <link rel="canonical" href={canonicalUrl} />
-        <meta property="og:title" content={metaTitle} />
-        <meta property="og:description" content={metaDescription} />
-        <meta property="og:image" content={metaImage} />
-        <meta property="og:url" content={canonicalUrl} />
-        <meta name="twitter:title" content={metaTitle} />
-        <meta name="twitter:description" content={metaDescription} />
-        <meta name="twitter:image" content={metaImage} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
-      </head>
-      {/* ...existing code... */}
-    </>
-  )
   const params = useParams()
   const router = useRouter()
   const slug = params.slug as string
@@ -135,7 +91,49 @@ export default function ProductPage() {
   return null
   }
 
+  // SEO: Dynamic meta tags and JSON-LD schema (after product is loaded)
+  const metaTitle = product.meta_title || product.name || "dekord – Premium Charging Cables"
+  const metaDescription = product.meta_description || product.description || "Shop dekord premium charging cables, engineered for durability and style."
+  const metaImage = product.main_image || "/dekord-logo-new.png"
+  const canonicalUrl = `https://dekord.online/product/${product.slug}`
+
+  // JSON-LD Product schema
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": [metaImage],
+    "description": metaDescription,
+    "sku": product.sku,
+    "brand": {
+      "@type": "Brand",
+      "name": "dekord"
+    },
+    "offers": {
+      "@type": "Offer",
+      "priceCurrency": "PKR",
+      "price": product.price,
+      "availability": "https://schema.org/InStock"
+    }
+  }
+
   return (
+    <>
+      <head>
+        <title>{metaTitle}</title>
+        <meta name="description" content={metaDescription} />
+        <link rel="canonical" href={canonicalUrl} />
+        <meta property="og:title" content={metaTitle} />
+        <meta property="og:description" content={metaDescription} />
+        <meta property="og:image" content={metaImage} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="product" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={metaTitle} />
+        <meta name="twitter:description" content={metaDescription} />
+        <meta name="twitter:image" content={metaImage} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }} />
+      </head>
     <main className="bg-background grain-texture text-foreground pt-16 md:pt-18 relative overflow-hidden">
       {/* Color Flash Overlay - Behind all components */}
       <AnimatePresence>
@@ -200,5 +198,6 @@ export default function ProductPage() {
         <ProductReviews productId={product.id} />
       </div>
     </main>
+    </>
   )
 }

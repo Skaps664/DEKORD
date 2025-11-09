@@ -176,8 +176,8 @@ export default function AuthPage() {
           className="hidden lg:flex lg:w-1/2 relative overflow-hidden"
         >
           <img
-            src="/minimal-abstract-geometric-pattern-with-soft-shape.jpg"
-            alt="Brand background"
+            src="/auth-imagee.webp"
+            alt="dekord signup page background"
             className="absolute inset-0 w-full h-full object-cover"
           />
 
@@ -187,15 +187,15 @@ export default function AuthPage() {
           <div className="relative z-10 flex flex-col justify-between px-12 py-12 w-full h-full">
             {/* Top Section - Defy Ordinary */}
             <motion.div initial={{ y: 40, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }}>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-black/20 backdrop-blur-sm rounded-full">
-                <Zap className="w-4 h-4" />
-                <span className="text-sm font-medium text-black">Defy Ordinary</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full">
+                <Zap className="w-4 h-4 text-white" />
+                <span className="text-sm font-medium text-white">Defy Ordinary</span>
               </div>
             </motion.div>
 
             {/* Bottom Section - Footer */}
             <motion.div
-              className="text-black text-sm"
+              className="text-white text-sm"
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.9 }}
@@ -208,9 +208,10 @@ export default function AuthPage() {
         {/* Right Side - Auth Form */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-16 bg-white">
           <motion.div
+            layout
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.3, layout: { duration: 0.28, ease: [0.22, 0.8, 0.2, 1] } }}
             className="w-full max-w-md"
           >
             {/* Mobile Logo with Gradient */}
@@ -312,91 +313,107 @@ export default function AuthPage() {
             </div>
 
             {/* Form */}
-            <AnimatePresence mode="wait">
-              <motion.form
-                key={isSignIn ? "signin" : "signup"}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                onSubmit={handleSubmit}
-                className="space-y-4"
+            <motion.form
+              layout
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, layout: { duration: 0.28, ease: [0.22, 0.8, 0.2, 1] } }}
+              onSubmit={handleSubmit}
+              className="space-y-4"
+            >
+              <motion.div
+                layout
+                initial={false}
+                animate={isSignIn ? { height: 0, opacity: 0, marginBottom: 0 } : { height: "auto", opacity: 1, marginBottom: 16 }}
+                style={{ overflow: "hidden" }}
+                transition={{ duration: 0.28 }}
               >
-                {!isSignIn && (
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all outline-none text-slate-900 placeholder:text-slate-400 text-base"
-                    placeholder="Full Name"
-                    required
-                  />
-                )}
-
                 <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                  type="text"
+                  name="name"
+                  value={formData.name}
                   onChange={handleChange}
                   className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all outline-none text-slate-900 placeholder:text-slate-400 text-base"
-                  placeholder="Email"
+                  placeholder="Full Name"
+                  required={!isSignIn}
+                />
+              </motion.div>
+
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all outline-none text-slate-900 placeholder:text-slate-400 text-base"
+                placeholder="Email"
+                required
+              />
+
+              <motion.div
+                layout
+                initial={false}
+                animate={isSignIn ? { height: 0, opacity: 0, marginBottom: 0 } : { height: "auto", opacity: 1, marginBottom: 16 }}
+                style={{ overflow: "hidden" }}
+                transition={{ duration: 0.28 }}
+              >
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all outline-none text-slate-900 placeholder:text-slate-400 text-base"
+                  placeholder="Phone Number"
+                  required={!isSignIn}
+                />
+              </motion.div>
+
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 pr-12 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all outline-none text-slate-900 placeholder:text-slate-400 text-base"
+                  placeholder="Password"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
 
-                {!isSignIn && (
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all outline-none text-slate-900 placeholder:text-slate-400 text-base"
-                    placeholder="Phone Number"
-                    required
-                  />
-                )}
+              <motion.div
+                layout
+                initial={false}
+                animate={isSignIn ? { height: 0, opacity: 0, marginBottom: 0 } : { height: "auto", opacity: 1, marginBottom: 16 }}
+                style={{ overflow: "hidden" }}
+                transition={{ duration: 0.28 }}
+              >
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all outline-none text-slate-900 placeholder:text-slate-400 text-base"
+                  placeholder="Confirm Password"
+                  required={!isSignIn}
+                />
+              </motion.div>
 
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 pr-12 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all outline-none text-slate-900 placeholder:text-slate-400 text-base"
-                    placeholder="Password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              {isSignIn && (
+                <div className="flex justify-end">
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-sm text-slate-600 hover:text-slate-900 transition-colors font-medium"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
+                    Forgot password?
+                  </Link>
                 </div>
-
-                {!isSignIn && (
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-slate-900 focus:border-transparent transition-all outline-none text-slate-900 placeholder:text-slate-400 text-base"
-                    placeholder="Confirm Password"
-                    required
-                  />
-                )}
-
-                {isSignIn && (
-                  <div className="flex justify-end">
-                    <Link
-                      href="/auth/forgot-password"
-                      className="text-sm text-slate-600 hover:text-slate-900 transition-colors font-medium"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
-                )}
+              )}
 
                 <motion.button
                   type="submit"
@@ -409,7 +426,6 @@ export default function AuthPage() {
                   {loading ? "Processing..." : isSignIn ? "Sign In" : "Create Account"}
                 </motion.button>
               </motion.form>
-            </AnimatePresence>
 
             {/* Toggle with Mobile Spacing */}
             <motion.div
