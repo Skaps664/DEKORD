@@ -410,7 +410,7 @@ export default function CheckoutPage() {
             transition={{ delay: 0.6 }}
             className="text-sm text-muted-foreground mb-6"
           >
-            We will reach out to you on WhatsApp shortly to confirm your order.
+            We will reach out to you on WhatsApp or Email shortly to confirm your order.
           </motion.p>
 
           <motion.div
