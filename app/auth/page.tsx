@@ -144,7 +144,10 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200 p-4 lg:p-8">
+    <div
+      className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200 p-4 lg:p-8"
+      style={{ paddingTop: "72px" }}
+    >
       <style jsx global>{`
         @keyframes blob {
           0%, 100% { transform: translate(0, 0) scale(1); }
@@ -167,6 +170,7 @@ export default function AuthPage() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-6xl flex flex-col-reverse lg:flex-row bg-white rounded-xl shadow-2xl overflow-hidden"
+        style={{ maxHeight: 'calc(100vh - 96px)' }}
       >
         {/* Left Side - Brand/Visual */}
         <motion.div
@@ -206,7 +210,7 @@ export default function AuthPage() {
         </motion.div>
 
         {/* Right Side - Auth Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-16 bg-white">
+  <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8 bg-white">
           <motion.div
             layout
             initial={{ opacity: 0, x: 40 }}

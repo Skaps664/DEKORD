@@ -22,8 +22,9 @@ interface OrderEmailData {
 }
 
 function getEmailContent(type: string, data: OrderEmailData) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dekord.online'
-  
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dekord.online';
+  const confirmUrl = `${baseUrl}/order-confirmation/${data.orderId}`;
+
   switch (type) {
     case 'placed':
       return {
@@ -66,12 +67,13 @@ function getEmailContent(type: string, data: OrderEmailData) {
         `).join('')}
         <div class="total">Total: Rs. ${Number(data.total).toLocaleString()}</div>
       </div>
-      
-      <p><strong>Please confirm your order via WhatsApp within 24 hours.</strong></p>
-      
-      <a href="${baseUrl}/account/orders" class="button">View Order Status</a>
-      
-      <p>If you have any questions, reply to this email or contact us.</p>
+
+      <p><strong>Please confirm your order by clicking on the button below.</strong></p>
+
+      <a href="${confirmUrl}" class="button">CONFIRM ORDER</a>
+      <p>This helps us to cater our precious customers more effectively.</p>
+
+      <p>If you have any questions, you can contact us.</p>
     </div>
     <div class="footer">
       <p>dekord | Premium Charging Cables</p>

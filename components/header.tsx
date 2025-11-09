@@ -73,7 +73,7 @@ export function Header() {
                 setMenuOpen((v) => !v)
                 setCartOpen(false)
               }}
-              className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -ml-1 md:-ml-0.5"
+              className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -ml-1 md:-ml-0.5 rounded-full hover:bg-neutral-100 transition-colors"
             >
               {menuOpen ? (
                 <X className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
@@ -128,7 +128,7 @@ export function Header() {
                   setMenuOpen(false)
                 }}
                 className={cn(
-                  "flex-shrink-0 relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -mr-1 md:-mr-0.5",
+                  "flex-shrink-0 relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -mr-1 md:-mr-0.5 rounded-full hover:bg-neutral-100 transition-colors",
                   isShaking && "animate-shake"
                 )}
               >
@@ -137,7 +137,7 @@ export function Header() {
                   <span
                     aria-hidden="true"
                     className={cn(
-                      "absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] leading-none font-medium",
+                      "absolute -top-0.5 -right-0.5 inline-flex items-center justify-center h-4 min-w-4 px-1 rounded-full text-[10px] leading-none font-medium rounded-full hover:bg-neutral-100 transition-colors",
                       badgeColor,
                     )}
                   >

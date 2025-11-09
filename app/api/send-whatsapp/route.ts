@@ -47,7 +47,7 @@ function getMessage(type: string, data: WhatsAppMessageData) {
 
 Hi ${data.customerName}! 👋
 
-Thank you so much for placing your order with *dekord*! We're excited to get your premium charging cables to you.
+Thank you so much for placing your order with *dekord*!
 
 📦 *Order Details:*
 Order Number: *#${data.orderNumber}*
@@ -58,13 +58,10 @@ ${itemsList}
 💰 *Total: Rs. ${Number(data.total).toLocaleString()}*
 
 ⚠️ *IMPORTANT - Please Confirm Your Order*
-To proceed with your order, please confirm it within *24 hours* by clicking the link below:
+To proceed with your order, please confirm by clicking the link below:
 
 👉 ${confirmUrl}
 
-Have questions? Just reply to this message!
-
-Thank you for choosing *dekord*! 🙏
 - Team dekord`
 
     case 'processing':
