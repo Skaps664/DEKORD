@@ -42,14 +42,6 @@ const InstagramFeed = dynamic(() => import("@/components/instagram-feed").then(m
 })
 
 export default function HomePage() {
-  const sampleImages = [
-    { src: "/1.webp", alt: "Device hinge and button macro" },
-    { src: "/2.webp", alt: "Ribbed camera bar with lens" },
-    { src: "/3.webp", alt: "Minimal controller front view" },
-    { src: "/4.webp", alt: "Control panel with metal knobs" },
-    { src: "/5.webp", alt: "Dual thumbsticks R21 macro" },
-  ]
-
   return (
     <main className="min-h-screen">
       {/* Header removed: now provided by layout */}
@@ -62,8 +54,8 @@ export default function HomePage() {
       <MaterialsSection />
       <NewsletterSection />
       <FullBleedDuo
-        left={{ src: "/minimalist-oak-chair.jpg", alt: "Minimalist oak chair" }}
-        right={{ src: "/modern-walnut-table.jpg", alt: "Modern walnut table" }}
+        left={{ src: "/duo-1.webp", alt: "Minimalist oak chair" }}
+        right={{ src: "/duo-3.webp", alt: "Modern walnut table" }}
         priority
       />
       <FAQsSection />

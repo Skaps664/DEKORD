@@ -52,8 +52,8 @@ export function HeroSection() {
         transition={{ duration: 1.2, ease: [0.21, 0.47, 0.32, 0.98] }}
       >
         <Image
-          src="/images/design-mode/u3195299943_une_vue_sur_lespace_toil_--ar_11_--sref_httpss.mj_f1cd1575-c301-46fa-8b30-665ae1ab22a0_3_bloom_subtle_6x.png.jpeg"
-          alt="dekord - Premium braided charging cables engineered for durability and style"
+          src="/hero.webp"
+          alt="dekord hero image - Premium braided charging cables"
           fill
           className="object-cover"
           priority

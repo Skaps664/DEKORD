@@ -19,9 +19,9 @@ export function FullBleedDuo({
     <section className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
         {/* Left image */}
-        <div className="relative h-[50vh] md:h-[70vh]">
+        <div className="relative w-full aspect-square">
           <Image
-            src={left.src || "/placeholder.svg"}
+            src={left.src || "/duo-1.webp"}
             alt={left.alt}
             fill
             sizes="(min-width: 768px) 50vw, 100vw"
@@ -31,9 +31,9 @@ export function FullBleedDuo({
         </div>
 
         {/* Right image */}
-        <div className="relative h-[50vh] md:h-[70vh]">
+        <div className="relative w-full aspect-square">
           <Image
-            src={right.src || "/placeholder.svg"}
+            src={right.src || "/duo-2.webp"}
             alt={right.alt}
             fill
             sizes="(min-width: 768px) 50vw, 100vw"

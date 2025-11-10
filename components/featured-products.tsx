@@ -11,7 +11,7 @@ const featuredProducts = [
     id: "4",
     name: "Verde Modular Chair",
     price: "Rs. 4,890",
-    image: "/green-velvet-modular-chair.png",
+    image: "/feat-1.webp",
     badge: "New" as const,
     materials: ["Copper Frame", "Premium Velvet"],
     swatches: [
@@ -30,7 +30,7 @@ const featuredProducts = [
     id: "7",
     name: "Terracotta Cloud Chair",
     price: "Rs. 5,250",
-    image: "/terracotta-cloud-chair.png",
+    image: "/feat-2.webp",
     badge: "New" as const,
     materials: ["Copper Frame", "Terracotta Velvet"],
     swatches: [
@@ -49,7 +49,7 @@ const featuredProducts = [
     id: "8",
     name: "Sage Copper Lounge",
     price: "Rs. 4,675",
-    image: "/sage-copper-lounge-chair.png",
+    image: "/feat-3.webp",
     badge: "Limited" as const,
     materials: ["Copper Frame", "Sage Velvet"],
     swatches: [

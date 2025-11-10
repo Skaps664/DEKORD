@@ -9,63 +9,28 @@ const collections = [
   {
     id: "dek-series",
     name: "DEK SERIES",
-    image: "/modern-armchair-pillows.png",
+    image: "/duo-1.webp",
     count: "Premium Cables",
   },
   {
     id: "weev-series",
     name: "WEEV SERIES",
-    image: "/modular-cushion-bench.png",
+    image: "/duo-3.webp",
     count: "Hand Crafted",
   },
   {
     id: "featured",
     name: "FEATURED",
-    image: "/cloud-white-sofa.png",
+    image: "/duo-4.webp",
     count: "Best Sellers",
   },
   {
     id: "type-c",
     name: "USB-C CABLES",
-    image: "/distressed-artistic-chair.png",
+    image: "/duo-5.webp",
     count: "60-100W PD",
   },
-  {
-    id: "lightning",
-    name: "LIGHTNING",
-    image: "/green-modular-loveseat.png",
-    count: "For iPhone",
-  },
-  {
-    id: "braided",
-    name: "BRAIDED",
-    image: "/braided-rope-loveseat.png",
-    count: "Extra Durable",
-  },
-  {
-    id: "fast-charging",
-    name: "FAST CHARGING",
-    image: "/colorful-patchwork-sofa.png",
-    count: "100W Power",
-  },
-  {
-    id: "multi-cable",
-    name: "MULTI CABLE",
-    image: "/minimalist-boucle-loveseat.png",
-    count: "3-in-1",
-  },
-  {
-    id: "accessories",
-    name: "ACCESSORIES",
-    image: "/abstract-artistic-sofa.png",
-    count: "Tech Essentials",
-  },
-  {
-    id: "premium",
-    name: "PREMIUM",
-    image: "/textured-cream-loveseat.png",
-    count: "Luxury Tech",
-  },
+
 ]
 
 export function CollectionStrip() {
@@ -90,8 +55,14 @@ export function CollectionStrip() {
 
   const x = useTransform(scrollYProgress, [0, 1], [0, -100])
 
+  // To create the illusion of an infinite, endlessly draggable strip
+  // we repeat the base `collections` array multiple times. This keeps
+  // the implementation simple and avoids complex position-reset logic.
+  const repeatTimes = 10 // increase for longer apparent infinity
+  const displayed = Array.from({ length: collections.length * repeatTimes }).map((_, i) => collections[i % collections.length])
+
   const itemWidth = 320 // 320px (w-80) + 32px gap = 352px per item
-  const totalWidth = collections.length * (itemWidth + 32) - 32 // subtract last gap
+  const totalWidth = displayed.length * (itemWidth + 32) - 32 // subtract last gap
   const maxDrag = Math.max(0, totalWidth - containerWidth + 48) // add padding
 
   return (
@@ -117,9 +88,9 @@ export function CollectionStrip() {
           dragConstraints={{ left: -maxDrag, right: 0 }}
           dragElastic={0.1}
         >
-          {collections.map((collection, index) => (
+          {displayed.map((collection, index) => (
             <motion.div
-              key={collection.id}
+              key={`${collection.id}-${index}`}
               className="flex-shrink-0 w-80 group cursor-pointer"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}

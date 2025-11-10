@@ -69,7 +69,7 @@ export function CinematicBanner() {
               >
                 {/* Use ParallaxImage with a placeholder that follows guidelines */}
                 <ParallaxImage
-                  src="/oak-wood-chair-detail-macro.jpg"
+                  src="/cine-1.webp"
                   alt="Close-up of dekord braided cable detail"
                   className="absolute inset-0"
                   parallaxOffset={14}
@@ -84,7 +84,7 @@ export function CinematicBanner() {
                 className="relative h-[240px] sm:h-[360px] lg:h-[440px] rounded-[var(--radius-lg)] overflow-hidden ring-1 ring-border"
               >
                 <ParallaxImage
-                  src="/walnut-dining-table-with-soft-light.jpg"
+                  src="/cine-2.webp"
                   alt="dekord USB-C cable with reinforced connector"
                   className="absolute inset-0"
                   parallaxOffset={18}
