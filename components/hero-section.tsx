@@ -1,7 +1,7 @@
 "use client"
 
+import { useState, useEffect, useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { useRef } from "react"
 import Image from "next/image"
 import { PackageCheck, Rocket, ShieldCheck } from "lucide-react" // Added PackageCheck, Rocket, and ShieldCheck icon imports
 import { Reveal } from "./reveal"
@@ -10,6 +10,19 @@ import { AnimatedText } from "./animated-text"
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)")
+    const onChange = (e: MediaQueryListEvent | MediaQueryList) => setIsDesktop((e as MediaQueryListEvent).matches ?? (e as MediaQueryList).matches)
+    setIsDesktop(mq.matches)
+    if (mq.addEventListener) mq.addEventListener("change", onChange)
+    else mq.addListener(onChange)
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener("change", onChange)
+      else mq.removeListener(onChange)
+    }
+  }, [])
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -42,29 +55,33 @@ export function HeroSection() {
   }
 
   return (
-    <section ref={containerRef} className="relative h-screen overflow-hidden">
-      {/* Background Image with Cinematic Effects */}
+    <section ref={containerRef} className="relative w-full overflow-hidden">
+      {/* Background Image with intrinsic aspect ratio: width fills viewport, height adapts */}
       <motion.div
-        className="absolute inset-0"
+        className="relative w-full"
         style={{ scale: imageScale, y: imageY }}
         initial={{ scale: 1.05 }}
         animate={{ scale: 1 }}
         transition={{ duration: 1.2, ease: [0.21, 0.47, 0.32, 0.98] }}
       >
-        <Image
-          src="/hero.webp"
-          alt="dekord hero image - Premium braided charging cables"
-          fill
-          className="object-cover"
-          priority
-          sizes="100vw"
-        />
-        {/* Increase overlay opacity for stronger contrast behind text */}
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="relative w-full">
+          <Image
+            src={isDesktop ? "/her-4.webp" : "/her-2.webp"}
+            alt="dekord hero image - Premium braided charging cables"
+            width={1920}
+            height={1080}
+            className="w-full h-auto object-contain"
+            priority
+            sizes="100vw"
+          />
+
+          {/* Increase overlay opacity for stronger contrast behind text */}
+          <div className="absolute inset-0 bg-black/60 pointer-events-none" />
+        </div>
       </motion.div>
 
-      {/* Content */}
-      <motion.div className="relative z-10 h-full flex items-center justify-center" style={{ y: contentY }}>
+      {/* Content - absolutely overlayed on top of the image and centered */}
+      <motion.div className="absolute inset-0 z-10 flex items-center justify-center" style={{ y: contentY }}>
         {/* Force visible text color to avoid theme contrast issues */}
         <div className="container-custom text-center text-white px-2 sm:px-2 md:px-3">
           <Reveal>

@@ -104,18 +104,30 @@ export default function CatalogPage() {
   return (
     <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18">
       {/* Hero */}
-      <section className="relative py-16 md:py-24 bg-gradient-to-br from-neutral-50 to-white dark:from-neutral-950 dark:to-neutral-900">
-        <div className="container-custom">
+      <section className="relative py-16 md:py-24">
+        {/* Background image (fills the section) */}
+        <div className="absolute inset-0 ">
+          <Image
+            src="/test-3.jpg"
+            alt="Catalog hero background"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/20" />
+        </div>
+
+        <div className="container-custom relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="max-w-4xl"
           >
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-foreground mb-4">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white/70 mb-4">
               Full Catalog
             </h1>
-            <p className="text-lg text-muted-foreground mb-8">
+            <p className="text-lg text-white mb-8">
               Browse our complete collection of premium charging cables and accessories
             </p>
 

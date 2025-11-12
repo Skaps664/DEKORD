@@ -58,8 +58,18 @@ export default function CollectionsPage() {
     <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18">
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-neutral-50 to-neutral-100 dark:from-neutral-950 dark:to-neutral-900" />
-        
+        {/* Background image for collections hero */}
+        <div className="absolute inset-0">
+          <Image
+            src="/test-3.jpg"
+            alt="Collections hero background"
+            fill
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-black/25" />
+        </div>
+
         <div className="container-custom relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -73,10 +83,10 @@ export default function CollectionsPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="inline-block mb-4 px-4 py-2 rounded-full bg-foreground/5 backdrop-blur-sm"
             >
-              <p className="text-sm font-medium text-foreground">Explore Our Collections</p>
+              <p className="text-sm font-medium text-white">Explore Our Collections</p>
             </motion.div>
             
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white/70 mb-6">
               Engineered for
               <br />
               <span className="bg-gradient-to-r from-neutral-900 to-neutral-600 dark:from-white dark:to-neutral-400 bg-clip-text text-transparent">
@@ -84,7 +94,7 @@ export default function CollectionsPage() {
               </span>
             </h1>
             
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-white max-w-2xl mx-auto">
               From premium DEK series to versatile multi-cables, discover the perfect charging solution for your lifestyle
             </p>
           </motion.div>

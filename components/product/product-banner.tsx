@@ -8,7 +8,7 @@ export function ProductBanner() {
       <div className="relative overflow-hidden rounded-2xl ring-1 ring-border">
         <div className="relative h-[28vh] sm:h-[36vh] md:h-[48vh]">
           <Image
-            src="/placeholder.svg"
+            src="/her-1.webp"
             alt="Editorial banner with USB‑C cable and phone"
             fill
             className="object-cover"
@@ -21,7 +21,7 @@ export function ProductBanner() {
               <h3 className={cn("text-pretty font-semibold leading-tight", "text-lg sm:text-2xl md:text-4xl")}>
                 Elevate the everyday
               </h3>
-              <p className="text-xs sm:text-sm md:text-base text-muted-foreground mt-1 sm:mt-2">
+              <p className="text-xs sm:text-sm md:text-base text-black mt-1 sm:mt-2">
                 Designed to pair with modern wardrobes and minimal workspaces—form, function, and longevity as one.
               </p>
               <div className="mt-2 sm:mt-3 md:mt-4">

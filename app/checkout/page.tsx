@@ -345,6 +345,18 @@ export default function CheckoutPage() {
     }
   }
 
+  // When order is successful, scroll to top so the success card is visible
+  useEffect(() => {
+    if (orderSuccess) {
+      // Allow the DOM to update then scroll to top smoothly
+      setTimeout(() => {
+        if (typeof window !== "undefined") {
+          window.scrollTo({ top: 0, behavior: "smooth" })
+        }
+      }, 50)
+    }
+  }, [orderSuccess])
+
   const isFormValid = formData.fullName && 
                       formData.whatsappNumber && 
                       formData.address && 

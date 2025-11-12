@@ -16,7 +16,7 @@ export function SpecialtyShowcase() {
         <article className="rounded-xl ring-1 ring-border overflow-hidden bg-card/40">
           <div className="relative aspect-[4/5]">
             <Image
-              src="/placeholder.svg"
+              src="/spec-1.webp"
               alt="Macro of braided jacket texture"
               fill
               className="object-cover"
@@ -35,7 +35,7 @@ export function SpecialtyShowcase() {
         <article className="rounded-xl ring-1 ring-border overflow-hidden bg-card/40">
           <div className="relative aspect-[4/5]">
             <Image
-              src="/placeholder.svg"
+              src="/spec-2.webp"
               alt="Reinforced connector close-up"
               fill
               className="object-cover"
@@ -54,7 +54,7 @@ export function SpecialtyShowcase() {
         <article className="rounded-xl ring-1 ring-border overflow-hidden bg-card/40">
           <div className="relative aspect-[4/5]">
             <Image
-              src="/placeholder.svg"
+              src="/spec-3.webp"
               alt="USB‑C to USB‑C fast charging"
               fill
               className="object-cover"
@@ -73,7 +73,7 @@ export function SpecialtyShowcase() {
         <article className="rounded-xl ring-1 ring-border overflow-hidden bg-card/40">
           <div className="relative aspect-[4/5]">
             <Image
-              src="/placeholder.svg"
+              src="/spec-4.webp"
               alt="Cable coiled neatly on desk"
               fill
               className="object-cover"

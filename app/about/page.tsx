@@ -277,7 +277,7 @@ export default function AboutPage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-3xl blur-3xl" />
                 <div className="relative aspect-square rounded-3xl overflow-hidden border border-border/50">
                   <Image
-                    src="/images/design-mode/u3195299943_une_vue_sur_lespace_toil_--ar_11_--sref_httpss.mj_f1cd1575-c301-46fa-8b30-665ae1ab22a0_3_bloom_subtle_6x.png.jpeg"
+                    src="/her-2.webp"
                     alt="dekord Story"
                     fill
                     className="object-cover"

@@ -84,7 +84,7 @@ export function CinematicBanner() {
                 className="relative h-[240px] sm:h-[360px] lg:h-[440px] rounded-[var(--radius-lg)] overflow-hidden ring-1 ring-border"
               >
                 <ParallaxImage
-                  src="/cine-2.webp"
+                  src="/auth-1.webp"
                   alt="dekord USB-C cable with reinforced connector"
                   className="absolute inset-0"
                   parallaxOffset={18}

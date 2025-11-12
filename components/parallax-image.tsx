@@ -22,14 +22,17 @@ export function ParallaxImage({ src, alt, className, parallaxOffset = 12 }: Para
 
   return (
     <div ref={ref} className={className}>
-      <motion.div style={{ y }}>
-        <Image
-          src={src || "/placeholder.svg"}
-          alt={alt}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+      <motion.div style={{ y }} className="absolute inset-0">
+        {/* Ensure the Image has a positioned parent with explicit size for `fill` to work */}
+        <div className="relative w-full h-full">
+          <Image
+            src={src || "/placeholder.svg"}
+            alt={alt}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        </div>
       </motion.div>
     </div>
   )
