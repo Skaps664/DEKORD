@@ -526,7 +526,7 @@ export default function CheckoutPage() {
                         name="whatsappNumber"
                         value={formData.whatsappNumber}
                         onChange={handleInputChange}
-                        placeholder="+92 300 1234567"
+                        placeholder="03331234567"
                         required
                         className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-border bg-background focus:ring-2 focus:ring-foreground/20 focus:border-foreground transition-all outline-none text-sm"
                       />

@@ -8,7 +8,7 @@ export function ProductBanner() {
       <div className="relative overflow-hidden rounded-2xl ring-1 ring-border">
         <div className="relative h-[28vh] sm:h-[36vh] md:h-[48vh]">
           <Image
-            src="/her-1.webp"
+            src="/prod-ban-1.webp"
             alt="Editorial banner with USB‑C cable and phone"
             fill
             className="object-cover"

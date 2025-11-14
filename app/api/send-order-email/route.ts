@@ -48,11 +48,11 @@ function getEmailContent(type: string, data: OrderEmailData) {
 <body>
   <div class="container">
     <div class="header">
-      <h1>Thank You for Your Order!</h1>
+      <h1>Thank You and please Confirm Your Order!</h1>
     </div>
     <div class="content">
       <p>Hi ${data.customerName},</p>
-      <p>We've received your order and will send you a confirmation on WhatsApp shortly.</p>
+      <p>We've received your order and please confirm you order by clicking on button below or we will send you a confirmation on WhatsApp shortly.</p>
       
       <div class="order-details">
         <h2>Order #${data.orderNumber}</h2>
@@ -118,7 +118,7 @@ function getEmailContent(type: string, data: OrderEmailData) {
       
       <p>You'll receive tracking information once your order ships.</p>
       
-      <a href="${baseUrl}/account/orders" class="button">Track Your Order</a>
+      <a href="${baseUrl}/account/orders" class="button">View Your Order</a>
     </div>
     <div class="footer">
       <p>dekord | Premium Charging Cables</p>
@@ -164,6 +164,7 @@ function getEmailContent(type: string, data: OrderEmailData) {
       </div>
       
       <p>You should receive your order within 3-5 business days.</p>
+      <p>Please keep an eye on tracking and have the amount ready before the parcel arriaves.</p>
     </div>
     <div class="footer">
       <p>dekord | Premium Charging Cables</p>

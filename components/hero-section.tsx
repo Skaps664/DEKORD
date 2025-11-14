@@ -1,28 +1,17 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Image from "next/image"
-import { PackageCheck, Rocket, ShieldCheck } from "lucide-react" // Added PackageCheck, Rocket, and ShieldCheck icon imports
 import { Reveal } from "./reveal"
-import { BlurPanel } from "./blur-panel"
 import { AnimatedText } from "./animated-text"
+import { HeroText } from "./hero-text"
+
 
 export function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [isDesktop, setIsDesktop] = useState(false)
 
-  useEffect(() => {
-    const mq = window.matchMedia("(min-width: 1024px)")
-    const onChange = (e: MediaQueryListEvent | MediaQueryList) => setIsDesktop((e as MediaQueryListEvent).matches ?? (e as MediaQueryList).matches)
-    setIsDesktop(mq.matches)
-    if (mq.addEventListener) mq.addEventListener("change", onChange)
-    else mq.addListener(onChange)
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", onChange)
-      else mq.removeListener(onChange)
-    }
-  }, [])
+  
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -65,23 +54,23 @@ export function HeroSection() {
         transition={{ duration: 1.2, ease: [0.21, 0.47, 0.32, 0.98] }}
       >
         <div className="relative w-full">
-          <Image
-            src={isDesktop ? "/her-4.webp" : "/her-2.webp"}
-            alt="dekord hero image - Premium braided charging cables"
-            width={1920}
-            height={1080}
-            className="w-full h-auto object-contain"
-            priority
-            sizes="100vw"
-          />
+          <picture>
+            <source srcSet="/test-11.webp" media="(min-width: 1024px)" />
+            <Image
+              src="/test-12.webp"
+              alt="dekord hero image - Premium braided charging cables"
+              width={1920}
+              height={1080}
+              className="w-full h-auto object-contain"
+              priority
+              sizes="100vw"
+            />
+          </picture>
 
           {/* Increase overlay opacity for stronger contrast behind text */}
           <div className="absolute inset-0 bg-black/60 pointer-events-none" />
         </div>
-      </motion.div>
-
-      {/* Content - absolutely overlayed on top of the image and centered */}
-      <motion.div className="absolute inset-0 z-10 flex items-center justify-center" style={{ y: contentY }}>
+      </motion.div><motion.div className="absolute inset-0 z-10 flex items-center justify-center" style={{ y: contentY }}>
         {/* Force visible text color to avoid theme contrast issues */}
         <div className="container-custom text-center text-white px-2 sm:px-2 md:px-3">
           <Reveal>
@@ -94,45 +83,12 @@ export function HeroSection() {
               </div>
             </h1>
           </Reveal>
-
-          <Reveal delay={0.2}>
-            {/* Ensure paragraph also has visible color */}
-            <motion.p
-              className="text-base sm:text-lg md:text-xl text-white/90 mb-12 leading-relaxed px-2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
-            >
-              Experience blazing-fast charging with dekord braided cables – engineered for durability, reliability, and style.
-            </motion.p>
-          </Reveal>
         </div>
       </motion.div>
+ 
+      {/* Text content moved below the hero image - uses HeroText component */}
+      <HeroText contentY={contentY} />
 
-      {/* Info Strip */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 z-20 flex justify-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 1.2, ease: [0.21, 0.47, 0.32, 0.98] }}
-      >
-        <BlurPanel className="mx-4 sm:mx-6 mb-4 sm:mb-6 px-4 sm:px-6 py-3 sm:py-4 bg-black/24 backdrop-blur-md border-white/20">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-white/90">
-            <div className="flex items-center gap-2">
-              <PackageCheck className="w-4 h-4 text-green-400" />
-              <span className="text-xs sm:text-sm">100% Pure Copper</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Rocket className="w-4 h-4 text-amber-400" />
-              <span className="text-xs sm:text-sm">Fast PD Charging</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-blue-400" />
-              <span className="text-xs sm:text-sm">1 Year Warranty</span>
-            </div>
-          </div>
-        </BlurPanel>
-      </motion.div>
     </section>
   )
 }
