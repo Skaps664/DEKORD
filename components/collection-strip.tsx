@@ -25,10 +25,10 @@ const collections = [
     count: "Best Sellers",
   },
   {
-    id: "type-c",
-    name: "USB-C CABLES",
+    id: "basics",
+    name: "BASICS",
     image: "/duo-5.webp",
-    count: "60-100W PD",
+    count: "15-33W PD",
   },
 
 ]

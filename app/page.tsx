@@ -3,6 +3,8 @@ import dynamic from 'next/dynamic'
 import { HeroSection } from "@/components/hero-section"
 import { FeaturedProducts } from "@/components/featured-products"
 import { CinematicBanner } from "@/components/cinematic-banner"
+import InfiniteGallery from '@/components/infinite-gallery'
+import { Reveal } from '@/components/reveal'
 
 // Lazy load components below the fold for better performance
 const ComparisonSection = dynamic(() => import("@/components/comparison-section").then(mod => ({ default: mod.ComparisonSection })), {

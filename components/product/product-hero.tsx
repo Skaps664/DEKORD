@@ -75,10 +75,10 @@ export function ProductHero({ product }: ProductHeroProps = {}) {
               {product?.description || 'A statement cable built for speed and longevity. Premium braid, reinforced strain relief, and a satin-soft touch that complements your everyday carry.'}
             </p>
             <div className="mt-4 sm:mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <Button onClick={handleBuyNow} className="h-10 md:h-11 px-5">{"Buy now"}</Button>
+              {/* <Button onClick={handleBuyNow} className="h-10 md:h-11 px-5">{"Buy now"}</Button>
               <Button onClick={handleAddToCart} variant="outline" className="h-10 md:h-11 px-5 bg-transparent">
                 {"Add to cart"}
-              </Button>
+              </Button> */}
               <button 
                 onClick={scrollToReviews}
                 className="flex items-center hover:opacity-80 transition-opacity cursor-pointer"

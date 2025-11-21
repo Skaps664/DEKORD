@@ -147,67 +147,46 @@ export default function CatalogPage() {
       </section>
 
       {/* Filters & Controls */}
-      <section className="sticky py-4 top-16 md:top-18 z-30 bg-background/95 backdrop-blur-md border-b border-border">
-        <div className="container-custom py-8 md:py-10">
-          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-            {/* Categories */}
-            <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 w-full sm:w-auto scrollbar-hide">
-              {categories.map((category) => (
-                <motion.button
-                  key={category}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setSelectedCategory(category)}
-                  className={cn(
-                    "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
-                    selectedCategory === category
-                      ? "bg-foreground text-background"
-                      : "bg-muted text-foreground hover:bg-muted/80"
-                  )}
-                >
-                  {category}
-                </motion.button>
-              ))}
-            </div>
+<section className="py-4 top-16 md:top-18 z-30 bg-background/95 backdrop-blur-md border-b border-border">
+  <div className="container-custom py-4 md:py-8 md:py-10">
+    <div className="flex flex-col gap-3 md:gap-4">
+      {/* Categories Row */}
+      <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
+        {categories.map((category) => (
+          <motion.button
+            key={category}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setSelectedCategory(category)}
+            className={cn(
+              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all flex-shrink-0",
+              selectedCategory === category
+                ? "bg-foreground text-background"
+                : "bg-muted text-foreground hover:bg-muted/80"
+            )}
+          >
+            {category}
+          </motion.button>
+        ))}
+      </div>
 
-            {/* View Controls */}
-            <div className="flex gap-3 items-center flex-shrink-0">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 rounded-lg border border-border bg-background text-sm focus:ring-2 focus:ring-foreground/20 outline-none"
-              >
-                {sortOptions.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-
-              <div className="flex gap-1 border border-border rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={cn(
-                    "p-2 rounded transition-colors",
-                    viewMode === "grid" ? "bg-foreground text-background" : "text-muted-foreground"
-                  )}
-                >
-                  <Grid3x3 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={cn(
-                    "p-2 rounded transition-colors",
-                    viewMode === "list" ? "bg-foreground text-background" : "text-muted-foreground"
-                  )}
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* View Controls Row - Only on Desktop inline, Mobile gets its own row */}
+      <div className="flex gap-3 items-center justify-end md:absolute md:top-8 md:right-4">
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+          className="px-4 py-2 rounded-lg border border-border bg-background text-sm focus:ring-2 focus:ring-foreground/20 outline-none w-full md:w-auto"
+        >
+          {sortOptions.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* Products */}
       <section className="py-12">

@@ -20,55 +20,56 @@ export function UserVideoReviews() {
   }, [])
   
   const videoReviews = [
-    {
-      id: 1,
-      name: "Sarah M.",
-      role: "Product Designer",
-      videoSrc: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      quote: "The cable quality is exceptional. Every detail matters.",
-      timestamp: "2 weeks ago",
-    },
-    {
-      id: 2,
-      name: "Alex K.",
-      role: "Creative Director",
-      videoSrc: "https://www.youtube.com/embed/jNQXAC9IVRw",
-      quote: "Finally found cables that match my aesthetic.",
-      timestamp: "1 week ago",
-    },
-    {
-      id: 3,
-      name: "Jordan P.",
-      role: "Tech Enthusiast",
-      videoSrc: "https://www.youtube.com/embed/9bZkp7q19f0",
-      quote: "Durability and design in perfect harmony.",
-      timestamp: "3 days ago",
-    },
-    {
-      id: 4,
-      name: "Casey L.",
-      role: "Minimalist",
-      videoSrc: "https://www.youtube.com/embed/tYzMGcUty6s",
-      quote: "Worth every penny. Outstanding craftsmanship.",
-      timestamp: "1 day ago",
-    },
-    {
-      id: 5,
-      name: "Morgan R.",
-      role: "Content Creator",
-      videoSrc: "https://www.youtube.com/embed/dQw4w9WgXcQ",
-      quote: "Perfect for my daily tech setup. Love it!",
-      timestamp: "5 days ago",
-    },
-    {
-      id: 6,
-      name: "Taylor W.",
-      role: "Entrepreneur",
-      videoSrc: "https://www.youtube.com/embed/jNQXAC9IVRw",
-      quote: "Best charging cables I've ever owned.",
-      timestamp: "1 week ago",
-    },
-  ]
+  {
+    id: 1,
+    name: "Hamza Bhatti",
+    role: "Tech YouTuber – HB Tech Reviews",
+    videoSrc: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    quote: "Bhai honestly, cable quality next level hai. Fast charging bhi stable and build bhi solid.",
+    timestamp: "2 weeks ago",
+  },
+  {
+    id: 2,
+    name: "Ayesha Khan",
+    role: "Content Creator – Lahore",
+    videoSrc: "https://www.youtube.com/embed/jNQXAC9IVRw",
+    quote: "Finally ek premium cable mili jo look bhi classy hai aur performance bhi zabardast.",
+    timestamp: "1 week ago",
+  },
+  {
+    id: 3,
+    name: "Bilal Siddiqui",
+    role: "Senior Engineer – Jazz Pakistan",
+    videoSrc: "https://www.youtube.com/embed/9bZkp7q19f0",
+    quote: "Network testing ke dauran hum bohat heavy usage karte hain. Yeh cable surprisingly durable nikli.",
+    timestamp: "3 days ago",
+  },
+  {
+    id: 4,
+    name: "Hira Shah",
+    role: "Minimal Lifestyle Influencer",
+    videoSrc: "https://www.youtube.com/embed/tYzMGcUty6s",
+    quote: "Simple, clean, and reliable. Mujhe aesthetics matter karte hain and this fits perfectly.",
+    timestamp: "1 day ago",
+  },
+  {
+    id: 5,
+    name: "Faizan Ch.",
+    role: "Founder – FZ Gadgets Store",
+    videoSrc: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    quote: "Daily sales ke liye display pe rakhi hoti hain. Customers ka feedback bhi top-notch hai.",
+    timestamp: "5 days ago",
+  },
+  {
+    id: 6,
+    name: "Rimsha Rehman",
+    role: "Entrepreneur – Karachi",
+    videoSrc: "https://www.youtube.com/embed/jNQXAC9IVRw",
+    quote: "Main ne itne cables try kiye, but yeh wali literally long-lasting hain. Worth the price.",
+    timestamp: "1 week ago",
+  },
+];
+
 
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
@@ -81,6 +82,15 @@ export function UserVideoReviews() {
   const itemWidth = 340 // width + gap
   const totalWidth = videoReviews.length * itemWidth - 32
   const maxDrag = Math.max(0, totalWidth - containerWidth + 48)
+
+  // To create the illusion of an infinite, endlessly draggable strip
+  // we repeat the base `videoReviews` array multiple times. This keeps
+  // the implementation simple and avoids complex position-reset logic.
+  const repeatTimes = 10 // increase for longer apparent infinity
+  const displayedReviews = Array.from({ length: videoReviews.length * repeatTimes }).map((_, i) => videoReviews[i % videoReviews.length])
+
+  const updatedTotalWidth = displayedReviews.length * itemWidth - 32
+  const updatedMaxDrag = Math.max(0, updatedTotalWidth - containerWidth + 48)
 
   return (
     <section ref={containerRef} className="w-full py-12 sm:py-16 md:py-20 bg-background overflow-hidden">
@@ -104,12 +114,12 @@ export function UserVideoReviews() {
           className="flex gap-6 px-2 sm:px-3 md:px-4"
           style={{ x }}
           drag="x"
-          dragConstraints={{ left: -maxDrag, right: 0 }}
+          dragConstraints={{ left: -updatedMaxDrag, right: 0 }}
           dragElastic={0.1}
         >
-          {videoReviews.map((review) => (
+          {displayedReviews.map((review, index) => (
             <motion.div
-              key={review.id}
+              key={`${review.id}-${index}`}
               className="flex-shrink-0 w-80 group cursor-pointer"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.3, ease: [0.21, 0.47, 0.32, 0.98] }}
@@ -146,7 +156,7 @@ export function UserVideoReviews() {
                       <p className="text-sm font-medium text-foreground">{review.name}</p>
                       <p className="text-xs text-muted-foreground">{review.role}</p>
                     </div>
-                    <p className="text-xs text-muted-foreground/70">{review.timestamp}</p>
+                    {/* <p className="text-xs text-muted-foreground/70">{review.timestamp}</p> */}
                   </div>
                 </div>
               </div>

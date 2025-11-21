@@ -4,6 +4,7 @@ import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Image from "next/image"
 import { Reveal } from "./reveal"
+import { BlurPanel } from "./blur-panel"
 import { AnimatedText } from "./animated-text"
 import { HeroText } from "./hero-text"
 
@@ -17,7 +18,7 @@ export function HeroSection() {
     offset: ["start start", "end start"],
   })
 
-  const imageScale = useTransform(scrollYProgress, [0, 1], [1.05, 0.95]) // Reduced hero image shrink from 15% to 5%
+  const imageScale = useTransform(scrollYProgress, [0, 1], [1.00, 0.95]) // Reduced hero image shrink from 15% to 5%
   const imageY = useTransform(scrollYProgress, [0, 1], [0, -50])
   const contentY = useTransform(scrollYProgress, [0, 1], [0, 100])
 
@@ -55,7 +56,7 @@ export function HeroSection() {
       >
         <div className="relative w-full">
           <picture>
-            <source srcSet="/test-11.webp" media="(min-width: 1024px)" />
+            <source srcSet="/test-15.webp" media="(min-width: 1024px)" />
             <Image
               src="/test-12.webp"
               alt="dekord hero image - Premium braided charging cables"
@@ -68,25 +69,10 @@ export function HeroSection() {
           </picture>
 
           {/* Increase overlay opacity for stronger contrast behind text */}
-          <div className="absolute inset-0 bg-black/60 pointer-events-none" />
-        </div>
-      </motion.div><motion.div className="absolute inset-0 z-10 flex items-center justify-center" style={{ y: contentY }}>
-        {/* Force visible text color to avoid theme contrast issues */}
-        <div className="container-custom text-center text-white px-2 sm:px-2 md:px-3">
-          <Reveal>
-            <h1 className="leading-none tracking-tight mb-6 drop-shadow-2xl">
-              <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold w-full text-center">
-                <AnimatedText text="WHY ORDINARY" delay={0.5} />
-              </div>
-              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light italic mt-2 w-full text-center">
-                <AnimatedText text="when you can defy-ordinary" delay={1.1} />
-              </div>
-            </h1>
-          </Reveal>
+          <div className="absolute inset-0  pointer-events-none" />
         </div>
       </motion.div>
- 
-      {/* Text content moved below the hero image - uses HeroText component */}
+      {/* Info strip below the text */}
       <HeroText contentY={contentY} />
 
     </section>

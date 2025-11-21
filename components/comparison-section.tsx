@@ -39,8 +39,8 @@ const FEATURES = [
   "Durability Tested",
   "100% Pure Copper",
   "Double-Layer Insulation",
-  "Reinforced Connector Joints",
-  "High-Density Braided Jacket",
+  "Reinforced  Joints",
+  "High-Density Braided",
   "Stable PD Chipset",
 ]
 
@@ -74,7 +74,7 @@ export function ComparisonSection() {
                     Our Product
                   </TableHead>
                   <TableHead className="py-4 text-center text-neutral-900 px-2 lg:px-4 text-sm lg:text-base">
-                    Market Products
+                    Others
                   </TableHead>
                 </TableRow>
               </TableHeader>

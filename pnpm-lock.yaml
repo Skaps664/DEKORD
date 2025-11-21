@@ -231,6 +231,9 @@ importers:
       '@types/react-dom':
         specifier: ^18
         version: 18.3.7(@types/react@18.3.26)
+      '@types/three':
+        specifier: ^0.181.0
+        version: 0.181.0
       dotenv:
         specifier: ^17.2.3
         version: 17.2.3

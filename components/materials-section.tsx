@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import { Reveal } from "./reveal"
@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils"
 const materials = [
   {
     id: "dek",
-    name: "DEK Series",
+    name: "Lava Red",
     description: "Premium braided cables with reinforced connector joints",
     image: "/cool-1.webp",
     backgroundImage:
@@ -18,7 +18,7 @@ const materials = [
   },
   {
     id: "weev",
-    name: "WEEV Series",
+    name: "Army Green",
     description: "Hand-crafted cables with high-density braided jacket",
     image: "/cool-2.webp",
     backgroundImage: "/cool-2.webp",
@@ -26,7 +26,7 @@ const materials = [
   },
   {
     id: "featured",
-    name: "Featured",
+    name: "Yellows",
     description: "Our best-selling cables with stable PD chipset",
     image: "/cool-3.webp",
     backgroundImage: "/cool-3.webp",
@@ -36,10 +36,21 @@ const materials = [
 
 export function MaterialsSection() {
   const [activeMaterial, setActiveMaterial] = useState("dek")
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768)
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const activeMaterialData = materials.find((m) => m.id === activeMaterial) || materials[0]
 
   const AnimatedText = ({ text, delay = 0 }: { text: string; delay?: number }) => {
+    if (isMobile) {
+      return <span>{text}</span>
+    }
     return (
       <span>
         {text.split("").map((char, index) => (
@@ -62,7 +73,7 @@ export function MaterialsSection() {
   }
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden" id="materials">
+    <section className="relative min-h-[70vh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden" id="materials">
       <div className="absolute inset-0 z-0">
         {materials.map((material) => (
           <motion.div
@@ -84,8 +95,8 @@ export function MaterialsSection() {
         <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      <div className="absolute top-[120px] left-0 right-0 z-10">
-        <div className="container-custom text-white">
+      <div className="absolute top-[80px] sm:top-[120px] left-0 right-0 z-10">
+        <div className="container-custom text-white px-4 sm:px-6">
           <Reveal>
             <div>
               <AnimatePresence mode="wait">
@@ -95,12 +106,12 @@ export function MaterialsSection() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
-                  className="font-bold mb-6 text-7xl"
+                  className="font-bold mb-4 sm:mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
                 >
                   <AnimatedText text={activeMaterialData.name} delay={0.2} />
                 </motion.h2>
               </AnimatePresence>
-              <p className="text-lg text-white/90 leading-relaxed max-w-2xl">
+              <p className="text-base sm:text-lg text-white/90 leading-relaxed max-w-2xl break-words">
                 Every cable begins with the finest materials: 100% pure copper core, high-density braided jacket, and reinforced connector joints. Engineered for durability, reliability, and style.
               </p>
             </div>

@@ -8,10 +8,10 @@ interface ProductGalleryProps {
 export function ProductGallery({ product }: ProductGalleryProps = {}) {
   // Use product images if available, otherwise fall back to placeholder images
   const images = product ? [
-    product.main_image && { src: product.main_image, alt: product.name },
     product.image_2 && { src: product.image_2, alt: `${product.name} view 2` },
     product.image_3 && { src: product.image_3, alt: `${product.name} view 3` },
     product.image_4 && { src: product.image_4, alt: `${product.name} view 4` },
+    product.image_5 && { src: product.image_5, alt: `${product.name} view 5` },
   ].filter((img): img is { src: string; alt: string } => img !== null && img !== undefined) : [
     { src: "/usb-c-cable-macro-braid-texture.jpg", alt: "Macro braid texture" },
     { src: "/usb-c-connector-detail-minimal-lighting.jpg", alt: "Connector detail" },
