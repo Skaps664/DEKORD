@@ -1,6 +1,6 @@
 // Database service for Cart
 import { createClient } from '../supabase/client'
-import type { CartItem, CartItemWithProduct } from '../types/database'
+import type { CartItem, CartItemWithDetails } from '../types/database'
 
 export async function getCartItems(userId: string) {
   const supabase = createClient()
@@ -10,6 +10,10 @@ export async function getCartItems(userId: string) {
     .select(`
       *,
       product:products(*),
+      merch:merch(
+        *,
+        features:merch_features(*)
+      ),
       variant:product_variants(*)
     `)
     .eq('user_id', userId)
@@ -20,20 +24,25 @@ export async function getCartItems(userId: string) {
     return { data: null, error: error.message }
   }
   
-  return { data: data as CartItemWithProduct[], error: null }
+  return { data: data as CartItemWithDetails[], error: null }
 }
 
-export async function addToCart(userId: string, productId: string, variantId?: string, quantity: number = 1) {
+export async function addToCart(userId: string, productId?: string, merchId?: string, variantId?: string, quantity: number = 1) {
   const supabase = createClient()
   
   // Check if item already exists in cart
-  const { data: existing } = await supabase
+  let existingQuery = supabase
     .from('cart_items')
     .select('*')
     .eq('user_id', userId)
-    .eq('product_id', productId)
-    .eq('variant_id', variantId || null)
-    .single()
+  
+  if (productId) {
+    existingQuery = existingQuery.eq('product_id', productId).eq('variant_id', variantId || null)
+  } else if (merchId) {
+    existingQuery = existingQuery.eq('merch_id', merchId)
+  }
+  
+  const { data: existing } = await existingQuery.single()
   
   if (existing) {
     // Update quantity
@@ -56,7 +65,8 @@ export async function addToCart(userId: string, productId: string, variantId?: s
       .from('cart_items')
       .insert({
         user_id: userId,
-        product_id: productId,
+        product_id: productId || null,
+        merch_id: merchId || null,
         variant_id: variantId || null,
         quantity,
       })
@@ -135,7 +145,12 @@ export async function getCartTotal(userId: string) {
   }
   
   const total = cartItems.reduce((sum, item) => {
-    const price = item.variant?.price_override || item.product?.price || 0
+    let price = 0
+    if (item.product) {
+      price = item.variant?.price_override || item.product.price || 0
+    } else if (item.merch) {
+      price = item.merch.price || 0
+    }
     return sum + (price * item.quantity)
   }, 0)
   

@@ -128,7 +128,8 @@ export interface OrderItem {
 export interface CartItem {
   id: string
   user_id: string
-  product_id: string
+  product_id: string | null
+  merch_id: string | null
   variant_id: string | null
   quantity: number
   created_at: string
@@ -203,6 +204,16 @@ export interface CartItemWithProduct extends CartItem {
   variant?: ProductVariant
 }
 
+export interface CartItemWithMerch extends CartItem {
+  merch?: MerchWithFeatures
+}
+
+export interface CartItemWithDetails extends CartItem {
+  product?: Product
+  variant?: ProductVariant
+  merch?: MerchWithFeatures
+}
+
 export interface BlogPostWithAuthor extends BlogPost {
   author?: {
     full_name: string | null
@@ -228,6 +239,38 @@ export interface ReviewWithUser extends Review {
   user?: {
     full_name: string | null
   }
+}
+
+export interface Merch {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  price: number
+  sku: string | null
+  status: 'active' | 'draft' | 'archived'
+  quantity_available: number
+  meta_title: string | null
+  meta_description: string | null
+  image_1: string | null
+  image_2: string | null
+  image_3: string | null
+  image_4: string | null
+  image_5: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface MerchFeature {
+  id: string
+  merch_id: string
+  feature: string
+  sort_order: number
+  created_at: string
+}
+
+export interface MerchWithFeatures extends Merch {
+  features: MerchFeature[]
 }
 
 // API Response types

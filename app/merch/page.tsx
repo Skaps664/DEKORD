@@ -1,71 +1,68 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Reveal } from "@/components/reveal"
 import InfiniteGallery from "@/components/infinite-gallery"
 import { ProductSection } from "@/components/ProductSection"
 import { motion } from "framer-motion"
 import CreativityShowcase from "@/components/creativity-showcase"
-
-const merchItems = [
-  {
-    id: "tote-bag",
-    name: "Dekord Canvas Tote",
-    category: "Bags",
-    price: "Rs. 1,200",
-    images: ["/merch-tote.webp", "/merch-tote-2.webp", "/merch-tote-3.webp"],
-    description: "Premium canvas tote with dekord logo embroidery. Perfect for carrying your essentials in style.",
-    rating: 4.8,
-    reviews: 24,
-    badge: "Bestseller",
-    features: ["Premium Canvas", "Logo Embroidery", "Reinforced Handles", "Spacious Interior"],
-  },
-  {
-    id: "copper-mug",
-    name: "Copper Accent Mug",
-    category: "Mugs",
-    price: "Rs. 850",
-    images: ["/merch-mug.webp", "/merch-mug-2.webp", "/merch-mug-3.webp"],
-    description: "Elegant ceramic mug with copper accents. Keeps your drinks hot or cold for hours.",
-    rating: 4.9,
-    reviews: 18,
-    badge: "New Arrival",
-    features: ["Ceramic Body", "Copper Accents", "Thermal Retention", "Dishwasher Safe"],
-  },
-  {
-    id: "sticker-pack",
-    name: "Vinyl Sticker Pack",
-    category: "Stickers",
-    price: "Rs. 350",
-    images: ["/merch-stickers.webp", "/merch-stickers-2.webp", "/merch-stickers-3.webp"],
-    description: "Collection of 8 vinyl stickers featuring dekord designs. Waterproof and durable.",
-    rating: 4.6,
-    reviews: 31,
-    badge: "Popular",
-    features: ["8 Unique Designs", "Waterproof Vinyl", "Easy Application", "Long-lasting"],
-  },
-  {
-    id: "tshirt",
-    name: "Dekord Essential Tee",
-    category: "Apparel",
-    price: "Rs. 1,500",
-    images: ["/merch-tshirt.webp", "/merch-tshirt-2.webp", "/merch-tshirt-3.webp"],
-    description: "Comfortable cotton t-shirt with minimalist dekord logo. Premium quality and fit.",
-    rating: 4.7,
-    reviews: 15,
-    badge: "Limited Edition",
-    features: ["100% Cotton", "Premium Fit", "Screen Printed", "Pre-shrunk"],
-  },
-]
+import { getAllMerch } from "@/lib/services/merch"
+import type { MerchWithFeatures } from "@/lib/types/database"
+import Image from "next/image"
+import { useCart } from "@/contexts/cart-context"
 
 export default function MerchPage() {
+  const [merchItems, setMerchItems] = useState<MerchWithFeatures[]>([])
+  const [loading, setLoading] = useState(true)
   const [addedItemId, setAddedItemId] = useState<string | null>(null)
   const [quantities, setQuantities] = useState<Record<string, number>>({})
   const [currentImages, setCurrentImages] = useState<Record<string, number>>({})
+  
+  const { addItem, isLoading } = useCart()
 
-  const handleAddToCart = (itemId: string) => {
-    setAddedItemId(itemId)
-    setTimeout(() => setAddedItemId(null), 2000)
+  useEffect(() => {
+    loadMerch()
+  }, [])
+
+  async function loadMerch() {
+    const { data, error } = await getAllMerch()
+    if (error) {
+      console.error('Failed to load merch:', error)
+    } else if (data) {
+      setMerchItems(data)
+    }
+    setLoading(false)
+  }
+
+  const handleAddToCart = async (itemId: string) => {
+    const merch = merchItems.find(item => item.id === itemId)
+    if (!merch) return
+
+    try {
+      console.log('🔵 Adding merch to cart:', merch.id, merch.name)
+      
+      await addItem({
+        productId: undefined, // No product ID for merch
+        merchId: merch.id, // Use merch ID
+        productName: merch.name,
+        productImage: merch.image_1 || '', // Use first image
+        variantId: null, // Merch doesn't have variants
+        variantDetails: "Default",
+        color: undefined,
+        length: undefined,
+        price: parseFloat(merch.price.toString()),
+        quantity: getQuantity(itemId),
+        itemType: 'merch' // Specify this is merch
+      })
+      
+      console.log('✅ Successfully added merch to cart')
+      
+      // Show success feedback
+      setAddedItemId(itemId)
+      setTimeout(() => setAddedItemId(null), 2000)
+    } catch (error) {
+      console.error("❌ Failed to add merch to cart:", error)
+    }
   }
 
   const updateQuantity = (itemId: string, quantity: number) => {
@@ -87,8 +84,9 @@ export default function MerchPage() {
     const item = merchItems.find(item => item.id === itemId)
     if (!item) return
 
+    const images = [item.image_1, item.image_2, item.image_3, item.image_4, item.image_5].filter(Boolean)
     const currentIndex = getCurrentImageIndex(itemId)
-    const totalImages = item.images.length
+    const totalImages = images.length
 
     let newIndex
     if (direction === 'prev') {
@@ -101,6 +99,45 @@ export default function MerchPage() {
       ...prev,
       [itemId]: newIndex
     }))
+  }
+
+  // Transform merch data to match ProductSection interface
+  const transformMerchToProduct = (merch: MerchWithFeatures) => {
+    const images = [merch.image_1, merch.image_2, merch.image_3, merch.image_4, merch.image_5].filter(Boolean) as string[]
+
+    return {
+      id: merch.id,
+      name: merch.name,
+      category: "Merchandise",
+      price: `Rs. ${merch.price.toLocaleString()}`,
+      images,
+      description: merch.description || "",
+      rating: 4.8, // Default rating since we don't have reviews yet
+      reviews: 0, // Default review count
+      badge: merch.quantity_available < 10 ? "Limited Stock" : "Available",
+      features: merch.features?.map(f => f.feature) || []
+    }
+  }
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading merchandise...</p>
+        </div>
+      </main>
+    )
+  }
+
+  if (merchItems.length === 0) {
+    return (
+      <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground">No merchandise available at the moment.</p>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -220,60 +257,89 @@ export default function MerchPage() {
         </div>
       </section>
 
-      {/* Featured Product - Tote Bag */}
-      <ProductSection
-        product={merchItems[0]}
-        addedItemId={addedItemId}
-        quantities={quantities}
-        currentImages={currentImages}
-        onAddToCart={handleAddToCart}
-        onUpdateQuantity={updateQuantity}
-        onNavigateImage={navigateImage}
-        onSetCurrentImage={(itemId, index) => setCurrentImages(prev => ({ ...prev, [itemId]: index }))}
-      />
+      {/* Featured Product - First Item */}
+      {merchItems.length > 0 && (
+        <ProductSection
+          product={transformMerchToProduct(merchItems[0])}
+          addedItemId={addedItemId}
+          quantities={quantities}
+          currentImages={currentImages}
+          onAddToCart={handleAddToCart}
+          onUpdateQuantity={updateQuantity}
+          onNavigateImage={navigateImage}
+          onSetCurrentImage={(itemId, index) => setCurrentImages(prev => ({ ...prev, [itemId]: index }))}
+          isLoading={isLoading}
+        />
+      )}
 
-      {/* Mug Section */}
-      <ProductSection
-        product={merchItems[1]}
-        addedItemId={addedItemId}
-        quantities={quantities}
-        currentImages={currentImages}
-        onAddToCart={handleAddToCart}
-        onUpdateQuantity={updateQuantity}
-        onNavigateImage={navigateImage}
-        onSetCurrentImage={(itemId, index) => setCurrentImages(prev => ({ ...prev, [itemId]: index }))}
-        reverse={true}
-        backgroundColor="bg-muted/20"
-      />
+      {/* Second Item */}
+      {merchItems.length > 1 && (
+        <ProductSection
+          product={transformMerchToProduct(merchItems[1])}
+          addedItemId={addedItemId}
+          quantities={quantities}
+          currentImages={currentImages}
+          onAddToCart={handleAddToCart}
+          onUpdateQuantity={updateQuantity}
+          onNavigateImage={navigateImage}
+          onSetCurrentImage={(itemId, index) => setCurrentImages(prev => ({ ...prev, [itemId]: index }))}
+          reverse={true}
+          backgroundColor="bg-muted/20"
+          isLoading={isLoading}
+        />
+      )}
 
-      {/* Creativity Showcase */}
-      <CreativityShowcase   />
+      
 
-      {/* Sticker Pack Section */}
-      <ProductSection
-        product={merchItems[2]}
-        addedItemId={addedItemId}
-        quantities={quantities}
-        currentImages={currentImages}
-        onAddToCart={handleAddToCart}
-        onUpdateQuantity={updateQuantity}
-        onNavigateImage={navigateImage}
-        onSetCurrentImage={(itemId, index) => setCurrentImages(prev => ({ ...prev, [itemId]: index }))}
-      />
+      {/* Third Item */}
+      {merchItems.length > 2 && (
+        <ProductSection
+          product={transformMerchToProduct(merchItems[2])}
+          addedItemId={addedItemId}
+          quantities={quantities}
+          currentImages={currentImages}
+          onAddToCart={handleAddToCart}
+          onUpdateQuantity={updateQuantity}
+          onNavigateImage={navigateImage}
+          onSetCurrentImage={(itemId, index) => setCurrentImages(prev => ({ ...prev, [itemId]: index }))}
+          isLoading={isLoading}
+        />
+      )}
 
-      {/* T-Shirt Section */}
-      <ProductSection
-        product={merchItems[3]}
-        addedItemId={addedItemId}
-        quantities={quantities}
-        currentImages={currentImages}
-        onAddToCart={handleAddToCart}
-        onUpdateQuantity={updateQuantity}
-        onNavigateImage={navigateImage}
-        onSetCurrentImage={(itemId, index) => setCurrentImages(prev => ({ ...prev, [itemId]: index }))}
-        reverse={true}
-        backgroundColor="bg-muted/20"
-      />
+      {/* Fourth Item */}
+      {merchItems.length > 3 && (
+        <ProductSection
+          product={transformMerchToProduct(merchItems[3])}
+          addedItemId={addedItemId}
+          quantities={quantities}
+          currentImages={currentImages}
+          onAddToCart={handleAddToCart}
+          onUpdateQuantity={updateQuantity}
+          onNavigateImage={navigateImage}
+          onSetCurrentImage={(itemId, index) => setCurrentImages(prev => ({ ...prev, [itemId]: index }))}
+          reverse={true}
+          backgroundColor="bg-muted/20"
+          isLoading={isLoading}
+        />
+      )}
+
+      {/* Additional Items */}
+      {merchItems.slice(4).map((item, index) => (
+        <ProductSection
+          key={item.id}
+          product={transformMerchToProduct(item)}
+          addedItemId={addedItemId}
+          quantities={quantities}
+          currentImages={currentImages}
+          onAddToCart={handleAddToCart}
+          onUpdateQuantity={updateQuantity}
+          onNavigateImage={navigateImage}
+          onSetCurrentImage={(itemId, index) => setCurrentImages(prev => ({ ...prev, [itemId]: index }))}
+          reverse={index % 2 === 1}
+          backgroundColor={index % 2 === 1 ? "bg-muted/20" : undefined}
+          isLoading={isLoading}
+        />
+      ))}
 
       {/* 3D Gallery Section */}
       <section className="py-12 md:py-16">
@@ -313,6 +379,10 @@ export default function MerchPage() {
           />
         </div>
       </section>
+
+      {/* Creativity Showcase */}
+      <CreativityShowcase />
+
     </main>
   )
 }

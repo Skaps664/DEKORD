@@ -6,7 +6,8 @@ import { getCartItems, addToCart as addToCartDB, updateCartItemQuantity, removeF
 
 export interface CartItem {
   id?: string // DB id for logged-in users
-  productId: string
+  productId?: string | null
+  merchId?: string | null
   productName: string
   productImage: string
   variantId?: string | null
@@ -15,6 +16,7 @@ export interface CartItem {
   color?: string
   price: number
   quantity: number
+  itemType: 'product' | 'merch' // New field to distinguish item types
 }
 
 interface CartContextType {
@@ -71,16 +73,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
           const cartItems: CartItem[] = data.map((item: any) => ({
             id: item.id,
             productId: item.product_id,
-            productName: item.product?.name || 'Product',
-            productImage: item.product?.main_image || '',
+            merchId: item.merch_id,
+            productName: item.product?.name || item.merch?.name || 'Item',
+            productImage: item.product?.main_image || item.merch?.image || '',
             variantId: item.variant_id,
             variantDetails: item.variant && (item.variant.color || item.variant.length) 
               ? `${item.variant.color || ''} • ${item.variant.length || ''}`.replace(/^•\s*|\s*•$/g, '').trim()
               : undefined,
             length: item.variant?.length,
             color: item.variant?.color,
-            price: item.variant?.price_override || item.product?.price || 0,
+            price: item.variant?.price_override || item.product?.price || item.merch?.price || 0,
             quantity: item.quantity,
+            itemType: item.product_id ? 'product' : 'merch'
           }))
           setItems(cartItems)
         }
@@ -106,7 +110,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     console.log('🔵 Syncing local cart to database...')
     try {
       for (const item of items) {
-        await addToCartDB(uid, item.productId, item.variantId || undefined, item.quantity)
+        await addToCartDB(
+          uid, 
+          item.productId || undefined, 
+          item.merchId || undefined, 
+          item.variantId || undefined, 
+          item.quantity
+        )
       }
       // Clear local storage after sync
       localStorage.removeItem(CART_STORAGE_KEY)
@@ -116,9 +126,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('💥 Error syncing cart:', error)
     }
-  }
-
-  async function addItem(item: Omit<CartItem, 'id' | 'quantity'> & { quantity?: number }) {
+  }  async function addItem(item: Omit<CartItem, 'id' | 'quantity'> & { quantity?: number }) {
     const quantity = item.quantity || 1
     
     try {
@@ -126,7 +134,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       
       if (user) {
         // Add to database
-        const { error } = await addToCartDB(user.id, item.productId, item.variantId || undefined, quantity)
+        const { error } = await addToCartDB(
+          user.id, 
+          item.productId || undefined, 
+          item.merchId || undefined, 
+          item.variantId || undefined, 
+          quantity
+        )
         if (error) {
           console.error('Error adding to cart:', error)
           alert('Failed to add to cart')
@@ -138,7 +152,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
         // Add to localStorage
         setItems(prev => {
           const existingIndex = prev.findIndex(
-            i => i.productId === item.productId && i.variantId === item.variantId
+            i => {
+              if (item.itemType === 'merch') {
+                return i.merchId === item.merchId
+              } else {
+                return i.productId === item.productId && i.variantId === item.variantId
+              }
+            }
           )
           
           let newItems
@@ -172,7 +192,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       
       if (user) {
         // Find the cart item
-        const item = items.find(i => i.productId === productId && i.variantId === variantId)
+        const item = items.find(i => {
+          if (i.itemType === 'merch') {
+            return i.merchId === productId // productId param is used for merchId in this context
+          } else {
+            return i.productId === productId && i.variantId === variantId
+          }
+        })
         if (item?.id) {
           const { error } = await updateCartItemQuantity(item.id, quantity)
           if (error) {
@@ -184,11 +210,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       } else {
         // Update in localStorage
         setItems(prev => {
-          const newItems = prev.map(i =>
-            i.productId === productId && i.variantId === variantId
-              ? { ...i, quantity }
-              : i
-          ).filter(i => i.quantity > 0)
+          const newItems = prev.map(i => {
+            if (i.itemType === 'merch') {
+              return i.merchId === productId ? { ...i, quantity } : i
+            } else {
+              return i.productId === productId && i.variantId === variantId ? { ...i, quantity } : i
+            }
+          }).filter(i => i.quantity > 0)
           
           localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems))
           return newItems
@@ -204,7 +232,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       const { data: user } = await getCurrentUser()
       
       if (user) {
-        const item = items.find(i => i.productId === productId && i.variantId === variantId)
+        const item = items.find(i => {
+          if (i.itemType === 'merch') {
+            return i.merchId === productId // productId param is used for merchId in this context
+          } else {
+            return i.productId === productId && i.variantId === variantId
+          }
+        })
         if (item?.id) {
           const { error } = await removeFromCartDB(item.id)
           if (error) {
@@ -215,7 +249,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
       } else {
         setItems(prev => {
-          const newItems = prev.filter(i => !(i.productId === productId && i.variantId === variantId))
+          const newItems = prev.filter(i => {
+            if (i.itemType === 'merch') {
+              return i.merchId !== productId
+            } else {
+              return !(i.productId === productId && i.variantId === variantId)
+            }
+          })
           localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems))
           return newItems
         })
