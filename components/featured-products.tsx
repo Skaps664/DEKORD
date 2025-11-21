@@ -9,8 +9,8 @@ import { Reveal } from "./reveal"
 const featuredProducts = [
   {
     id: "4",
-    name: "Verde Modular Chair",
-    price: "Rs. 4,890",
+    name: "w-60 | Army Green",
+    price: "Rs. 950",
     image: "/feat-1.webp",
     badge: "New" as const,
     materials: ["Copper Frame", "Premium Velvet"],
@@ -28,8 +28,8 @@ const featuredProducts = [
   },
   {
     id: "7",
-    name: "Terracotta Cloud Chair",
-    price: "Rs. 5,250",
+    name: "w-60 | Ash White",
+    price: "Rs. 950",
     image: "/feat-2.webp",
     badge: "New" as const,
     materials: ["Copper Frame", "Terracotta Velvet"],
@@ -47,8 +47,8 @@ const featuredProducts = [
   },
   {
     id: "8",
-    name: "Sage Copper Lounge",
-    price: "Rs. 4,675",
+    name: "w-60 | Lava Red",
+    price: "Rs. 1050",
     image: "/feat-3.webp",
     badge: "Limited" as const,
     materials: ["Copper Frame", "Sage Velvet"],

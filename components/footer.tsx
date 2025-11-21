@@ -62,8 +62,7 @@ export function Footer() {
     SHOP: [
       { name: "Catalog", href: "/catalog" },
       { name: "Collections", href: "/collections" },
-      { name: "dek series", href: "/collections" },
-      { name: "weev series", href: "/collections" },
+      { name: "Our Merch", href: "/merch" },
     ],
     "Quick Links": [
       { name: "Warranty Policy", href: "/warranty-policy" },

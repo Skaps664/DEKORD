@@ -146,7 +146,7 @@ export default function MerchPage() {
       <section className="relative py-16 md:py-24">
         <div className="absolute inset-0">
           <Image
-            src="/merch-hero.webp"
+            src="/test-4.jpg"
             alt="Dekord Merchandise"
             fill
             className="object-cover"
@@ -225,7 +225,7 @@ export default function MerchPage() {
                   className="relative h-[240px] sm:h-[300px] lg:h-[360px] rounded-[var(--radius-lg)] overflow-hidden ring-1 ring-border bg-muted"
                 >
                   <Image
-                    src="/merch-stickers.webp"
+                    src="/duo-1.webp"
                     alt="Dekord sticker collection"
                     fill
                     className="object-cover"
@@ -240,7 +240,7 @@ export default function MerchPage() {
                   className="relative h-[240px] sm:h-[360px] lg:h-[440px] rounded-[var(--radius-lg)] overflow-hidden ring-1 ring-border bg-muted"
                 >
                   <Image
-                    src="/merch-notebook.webp"
+                    src="/auth-1.webp"
                     alt="Dekord hardcover notebook"
                     fill
                     className="object-cover"
