@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 
 interface ProductCardProps {
@@ -15,12 +16,13 @@ interface ProductCardProps {
     swatches: { name: string; color: string }[]
     quickLookImages: string[]
     dimensions: string
+    link?: string
   }
   onQuickLook: (product: any) => void
 }
 
 export function ProductCard({ product, onQuickLook }: ProductCardProps) {
-  return (
+  const cardContent = (
     <motion.div
       className="group relative bg-white overflow-hidden"
       style={{
@@ -98,4 +100,14 @@ export function ProductCard({ product, onQuickLook }: ProductCardProps) {
       </div>
     </motion.div>
   )
+
+  if (product.link) {
+    return (
+      <Link href={product.link} className="block">
+        {cardContent}
+      </Link>
+    )
+  }
+
+  return cardContent
 }

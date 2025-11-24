@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { ProductCard } from "./product-card"
 import { QuickLookModal } from "./quick-look-modal"
 import { Reveal } from "./reveal"
@@ -25,6 +26,7 @@ const featuredProducts = [
       "/placeholder.svg",
     ],
     dimensions: "W: 180cm × D: 90cm × H: 75cm",
+    link: "product/dek-w-60-lava-red",
   },
   {
     id: "7",
@@ -44,6 +46,7 @@ const featuredProducts = [
       "/placeholder.svg",
     ],
     dimensions: "W: 95cm × D: 85cm × H: 80cm",
+    link: "product/dek-w-60-lava-red",
   },
   {
     id: "8",
@@ -63,6 +66,7 @@ const featuredProducts = [
       "/placeholder.svg",
     ],
     dimensions: "W: 85cm × D: 90cm × H: 75cm",
+    link: "product/dek-w-60-lava-red",
   },
 ]
 
@@ -125,7 +129,9 @@ export function FeaturedProducts() {
               }}
             >
               <Reveal delay={index * 0.1}>
-                <ProductCard product={product} onQuickLook={handleQuickLook} />
+                <Link href={product.link} className="block">
+                  <ProductCard product={product} onQuickLook={handleQuickLook} />
+                </Link>
               </Reveal>
             </motion.div>
           ))}

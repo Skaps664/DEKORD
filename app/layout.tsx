@@ -164,6 +164,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="icon" href="/android-chrome-192x192.png" sizes="192x192" type="image/png" />
         <link rel="icon" href="/android-chrome-512x512.png" sizes="512x512" type="image/png" />
+        <meta name="facebook-domain-verification" content="jmk1olrq6a37ob5rbo3qwavnc05bwz" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
