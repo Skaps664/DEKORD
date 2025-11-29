@@ -87,20 +87,77 @@ export function FeaturedProducts() {
   return (
     <section className="py-12 sm:py-16 lg:py-32" id="featured-products">
       <div className="container-custom px-2 sm:px-2 md:px-3">
-        <Reveal>
+         {/* <Reveal>
           <div className="text-left mb-10 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl text-neutral-900 mb-4 lg:text-6xl">
               Featured <span className="italic font-light">Collection</span>
             </h2>
             <p className="text-base sm:text-lg text-neutral-600 max-w-2xl">
-              Discover our most beloved pieces, each crafted with meticulous attention to detail and timeless design
-              principles.
+              Discover our most beloved pieces, each crafted with meticulous attention to detail.
             </p>
           </div>
-        </Reveal>
+        </Reveal> */}
 
+        {/* Mobile: Horizontal scroll, Desktop: Grid */}
+        <div className="block md:hidden">
+          <motion.div
+            className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.2,
+                },
+              },
+            }}
+          >
+            <style dangerouslySetInnerHTML={{
+              __html: `
+                .scrollbar-hide::-webkit-scrollbar {
+                  display: none;
+                }
+                .scrollbar-hide {
+                  -ms-overflow-style: none;
+                  scrollbar-width: none;
+                }
+              `
+            }} />
+            {featuredProducts.map((product, index) => (
+              <motion.div
+                key={product.id}
+                className="flex-shrink-0 w-72"
+                variants={{
+                  hidden: { opacity: 0, x: 30 },
+                  visible: {
+                    opacity: 1,
+                    x: 0,
+                    transition: {
+                      duration: 0.6,
+                      ease: [0.21, 0.47, 0.32, 0.98],
+                    },
+                  },
+                }}
+              >
+                <Reveal delay={index * 0.1}>
+                  <Link href={product.link} className="block">
+                    <ProductCard product={product} onQuickLook={handleQuickLook} priority={index < 2} />
+                  </Link>
+                </Reveal>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Desktop: Grid layout */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6"
+          className="hidden md:grid md:grid-cols-3 gap-4 sm:gap-6"
           initial="hidden"
           animate="visible"
           variants={{
@@ -130,7 +187,7 @@ export function FeaturedProducts() {
             >
               <Reveal delay={index * 0.1}>
                 <Link href={product.link} className="block">
-                  <ProductCard product={product} onQuickLook={handleQuickLook} />
+                  <ProductCard product={product} onQuickLook={handleQuickLook} priority={true} />
                 </Link>
               </Reveal>
             </motion.div>

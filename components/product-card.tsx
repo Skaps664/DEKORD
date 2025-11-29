@@ -19,9 +19,10 @@ interface ProductCardProps {
     link?: string
   }
   onQuickLook: (product: any) => void
+  priority?: boolean
 }
 
-export function ProductCard({ product, onQuickLook }: ProductCardProps) {
+export function ProductCard({ product, onQuickLook, priority = false }: ProductCardProps) {
   const cardContent = (
     <motion.div
       className="group relative bg-white overflow-hidden"
@@ -62,6 +63,8 @@ export function ProductCard({ product, onQuickLook }: ProductCardProps) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              loading={priority ? "eager" : "lazy"}
+              priority={priority}
             />
           </motion.div>
         </div>

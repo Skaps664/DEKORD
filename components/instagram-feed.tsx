@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Instagram, ArrowUpRight } from "lucide-react"
 import { Reveal } from "./reveal"
 import { cn } from "@/lib/utils"
+import { useLazyLoad } from "@/hooks/use-lazy-load"
 
 type FeedItem = {
   id: string
@@ -26,6 +27,7 @@ const FEED: FeedItem[] = [
 export function InstagramFeed() {
   const handle = "@dekord.pk"
   const url = "https://instagram.com/dekord.pk"
+  const { ref, isIntersecting } = useLazyLoad({ threshold: 0.1, rootMargin: '100px' })
 
   return (
     <section className="py-16 md:py-24">
@@ -55,8 +57,8 @@ export function InstagramFeed() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
-            {FEED.map((item) => (
+          <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+            {isIntersecting && FEED.map((item) => (
               <a
                 key={item.id}
                 href={url}
@@ -72,6 +74,7 @@ export function InstagramFeed() {
                   height={640}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   sizes="(max-width: 768px) 50vw, 25vw"
+                  loading="lazy"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
               </a>

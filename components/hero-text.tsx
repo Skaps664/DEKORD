@@ -57,7 +57,7 @@ export function HeroText() {
                 <AnimatedText text="WHY ORDINARY" delay={0.5} />
               </div>
               <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-light italic mt-2 text-black/90">
-                <AnimatedText text="when you can defy-ordinary" delay={1.1} />
+                <AnimatedText text="from design to durability, every inch defies ordinary" delay={1.1} />
               </div>
             </h1>
           </Reveal>

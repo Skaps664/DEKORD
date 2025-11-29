@@ -88,7 +88,7 @@ export function MaterialsSection() {
               alt={`${material.name} interior scene`}
               fill
               className="object-cover"
-              priority
+              loading="lazy"
             />
           </motion.div>
         ))}

@@ -8,6 +8,7 @@ import CartDropPanel from "./cart-drop-panel"
 import { TopDropMenu } from "./top-drop-menu"
 import { useCart } from "@/contexts/cart-context"
 import { getCurrentUser } from "@/lib/services/auth"
+import { createClient } from "@/lib/supabase/client"
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -18,9 +19,20 @@ export function Header() {
   const { itemCount } = useCart()
   const [prevItemCount, setPrevItemCount] = useState(0)
 
-  // Check if user is logged in
+  // Check if user is logged in and listen for auth state changes
   useEffect(() => {
     checkAuthStatus()
+    
+    // Listen for auth state changes
+    const supabase = createClient()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('🔄 Auth state changed:', event, !!session?.user)
+      setIsLoggedIn(!!session?.user)
+    })
+    
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [])
 
   async function checkAuthStatus() {

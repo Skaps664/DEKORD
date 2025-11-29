@@ -9,9 +9,10 @@ interface ParallaxImageProps {
   alt: string
   className?: string
   parallaxOffset?: number
+  priority?: boolean
 }
 
-export function ParallaxImage({ src, alt, className, parallaxOffset = 12 }: ParallaxImageProps) {
+export function ParallaxImage({ src, alt, className, parallaxOffset = 12, priority = false }: ParallaxImageProps) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -31,6 +32,8 @@ export function ParallaxImage({ src, alt, className, parallaxOffset = 12 }: Para
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            loading={priority ? "eager" : "lazy"}
+            priority={priority}
           />
         </div>
       </motion.div>

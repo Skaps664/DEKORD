@@ -43,6 +43,10 @@ const InstagramFeed = dynamic(() => import("@/components/instagram-feed").then(m
   loading: () => <div className="min-h-[400px]" />
 })
 
+const SocialFollow = dynamic(() => import("@/components/social-follow").then(mod => ({ default: mod.SocialFollow })), {
+  loading: () => <div className="min-h-[200px]" />
+})
+
 export default function HomePage() {
   return (
     <main className="min-h-screen">
@@ -54,15 +58,15 @@ export default function HomePage() {
       <CollectionStrip />
       <CredibilityBadges />
       <MaterialsSection />
-      <NewsletterSection />
+      <FAQsSection />
+{/* <NewsletterSection /> */}
       <FullBleedDuo
         left={{ src: "/duo-1.webp", alt: "Minimalist oak chair" }}
         right={{ src: "/duo-3.webp", alt: "Modern walnut table" }}
-        priority
       />
-      <FAQsSection />
       <UserVideoReviews />
-      <InstagramFeed />
+      {/* <InstagramFeed /> */}
+      <SocialFollow />
       {/* Footer removed: now provided by layout */}
     </main>
   )
