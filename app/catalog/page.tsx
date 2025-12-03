@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
@@ -15,7 +15,7 @@ import { RatingDisplay } from "@/components/rating-display"
 const categories = ["All", "USB-C", "Lightning", "Multi", "Bundle", "Magnetic"]
 const sortOptions = ["Popular", "Price: Low to High", "Price: High to Low", "Rating"]
 
-export default function CatalogPage() {
+function CatalogContent() {
   const searchParams = useSearchParams()
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [selectedCategory, setSelectedCategory] = useState("All")
@@ -346,5 +346,13 @@ export default function CatalogPage() {
         </div>
       </section>
     </main>
+  )
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <CatalogContent />
+    </Suspense>
   )
 }
