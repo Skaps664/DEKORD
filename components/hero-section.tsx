@@ -56,9 +56,9 @@ export function HeroSection() {
       >
         <div className="relative w-full">
           <picture>
-            <source srcSet="/hero-5.webp" media="(min-width: 1024px)" />
+            <source srcSet="/test-11.webp" media="(min-width: 1024px)" />
             <Image
-              src="/hero-6.webp"
+              src="/test-12.webp"
               alt="dekord hero image - Premium braided charging cables"
               width={1920}
               height={1080}
