@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { Filter, Grid3x3, List, Search, ShoppingBag, Star, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/contexts/cart-context"
@@ -15,6 +16,7 @@ const categories = ["All", "USB-C", "Lightning", "Multi", "Bundle", "Magnetic"]
 const sortOptions = ["Popular", "Price: Low to High", "Price: High to Low", "Rating"]
 
 export default function CatalogPage() {
+  const searchParams = useSearchParams()
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [sortBy, setSortBy] = useState("Popular")
@@ -24,6 +26,14 @@ export default function CatalogPage() {
   const [loading, setLoading] = useState(true)
   
   const { addItem, isLoading } = useCart()
+
+  // Load search query from URL on mount
+  useEffect(() => {
+    const urlSearch = searchParams.get('search')
+    if (urlSearch) {
+      setSearchQuery(urlSearch)
+    }
+  }, [searchParams])
 
   // Fetch products on mount
   useEffect(() => {

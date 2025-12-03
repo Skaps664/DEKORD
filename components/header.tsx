@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { Menu, ShoppingBag, X } from "lucide-react"
+import { Menu, ShoppingBag, X, Search } from "lucide-react"
 import CartDropPanel from "./cart-drop-panel"
 import { TopDropMenu } from "./top-drop-menu"
+import { SearchPanel } from "./search-panel"
 import { useCart } from "@/contexts/cart-context"
 import { getCurrentUser } from "@/lib/services/auth"
 import { createClient } from "@/lib/supabase/client"
@@ -14,6 +15,7 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
+  const [searchOpen, setSearchOpen] = useState(false)
   const [isShaking, setIsShaking] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const { itemCount } = useCart()
@@ -76,23 +78,41 @@ export function Header() {
       >
         <div className="w-full">
           <div className="flex items-center justify-between h-16 md:h-18 px-2 sm:px-3 md:px-4">
-            {/* Menu icon on left */}
-            <button
-              type="button"
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={menuOpen}
-              onClick={() => {
-                setMenuOpen((v) => !v)
-                setCartOpen(false)
-              }}
-              className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -ml-1 md:-ml-0.5 rounded-full hover:bg-neutral-100 transition-colors"
-            >
-              {menuOpen ? (
-                <X className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
-              ) : (
-                <Menu className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
-              )}
-            </button>
+            {/* Left side icons - Menu and Search */}
+            <div className="flex items-center gap-1 md:gap-2">
+              <button
+                type="button"
+                aria-label={menuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={menuOpen}
+                onClick={() => {
+                  setMenuOpen((v) => !v)
+                  setCartOpen(false)
+                  setSearchOpen(false)
+                }}
+                className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -ml-1 md:-ml-0.5 rounded-full hover:bg-neutral-100 transition-colors"
+              >
+                {menuOpen ? (
+                  <X className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
+                ) : (
+                  <Menu className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
+                )}
+              </button>
+
+              {/* Search Icon */}
+              <button
+                type="button"
+                aria-label={searchOpen ? "Close search" : "Open search"}
+                aria-expanded={searchOpen}
+                onClick={() => {
+                  setSearchOpen((v) => !v)
+                  setMenuOpen(false)
+                  setCartOpen(false)
+                }}
+                className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 rounded-full hover:bg-neutral-100 transition-colors"
+              >
+                <Search className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)} aria-hidden="true" />
+              </button>
+            </div>
 
             {/* Logo centered */}
             <motion.div
@@ -144,6 +164,7 @@ export function Header() {
                 onClick={() => {
                   setCartOpen((v) => !v)
                   setMenuOpen(false)
+                  setSearchOpen(false)
                 }}
                 className={cn(
                   "flex-shrink-0 relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -mr-1 md:-mr-0.5 rounded-full hover:bg-neutral-100 transition-colors",
@@ -173,6 +194,8 @@ export function Header() {
       <TopDropMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       {/* Floating cart dropdown panel */}
       <CartDropPanel open={cartOpen} onClose={() => setCartOpen(false)} />
+      {/* Search panel */}
+      <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   )
 }

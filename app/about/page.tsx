@@ -32,8 +32,8 @@ export default function AboutPage() {
   const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
 
   const stats = [
-    { number: "10K+", label: "Happy Customers", icon: Users },
-    { number: "50K+", label: "Cables Sold", icon: Box },
+    { number: "1K+", label: "Community Responses", icon: Users },
+    { number: "15+", label: "Experiments Conducted", icon: Box },
     { number: "99.9%", label: "Uptime Guarantee", icon: ShieldCheck },
     { number: "24/7", label: "Customer Support", icon: Heart },
   ]
@@ -72,17 +72,17 @@ export default function AboutPage() {
       description: "Started with a simple question: Why do charging cables always break? We set out to change that."
     },
     {
-      year: "2024",
+      year: "2025",
       title: "First Product Launch",
       description: "Released our flagship braided cables with 1 Year warranty. Customers loved the durability and style."
     },
     {
-      year: "2025",
+      year: "2026",
       title: "Going Global",
       description: "Expanded to international markets. Now shipping premium tech gadgets worldwide with the same quality promise."
     },
     {
-      year: "2026",
+      year: "2027",
       title: "Future Vision",
       description: "Planning to launch our own line of smart accessories and IoT devices. The future is exciting!"
     },
@@ -527,7 +527,7 @@ export default function AboutPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Heart className="w-5 h-5 text-red-500" />
-                <span>Trusted by 10K+</span>
+                <span>Trusted by 1000+</span>
               </div>
             </div>
           </motion.div>
