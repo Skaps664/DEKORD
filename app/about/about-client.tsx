@@ -1,65 +1,53 @@
-import type { Metadata } from "next"
-import { AboutPageClient } from "./about-client"
+"use client"
 
-export const metadata: Metadata = {
-  title: "About dekord – Defying Ordinary Since Day One",
-  description: "Learn about dekord's mission to create premium charging cables and tech accessories that blend power, durability, and style. Based in Peshawar, Pakistan, we're redefining what tech essentials should be.",
-  keywords: ["about dekord", "dekord story", "premium cable manufacturer", "tech accessories Pakistan", "Peshawar tech company", "charging cable innovation"],
-  alternates: {
-    canonical: "https://dekord.online/about",
-  },
-  openGraph: {
-    title: "About dekord – Defying Ordinary Since Day One",
-    description: "Learn about dekord's mission to create premium charging cables and tech accessories that blend power, durability, and style.",
-    url: "https://dekord.online/about",
-    siteName: "dekord",
-    images: [{ url: "/dekord-logo-new.png", width: 1200, height: 630, alt: "About dekord" }],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "About dekord – Defying Ordinary Since Day One",
-    description: "Learn about dekord's mission to create premium charging cables and tech accessories that blend power, durability, and style.",
-    images: ["/dekord-logo-new.png"],
-  },
-}
+import { motion, useScroll, useTransform } from "framer-motion"
+import { useRef } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { 
+  Zap, 
+  Target, 
+  Heart, 
+  Lightbulb, 
+  Rocket, 
+  Users, 
+  Award,
+  ShieldCheck,
+  Cpu,
+  TrendingUp,
+  Sparkles,
+  Globe,
+  Box,
+  ArrowRight
+} from "lucide-react"
 
-export default function AboutPage() {
-  // AboutPage Schema
-  const aboutSchema = {
-    "@context": "https://schema.org",
-    "@type": "AboutPage",
-    "name": "About dekord",
-    "description": "Learn about dekord's mission to create premium charging cables and tech accessories",
-    "url": "https://dekord.online/about",
-    "mainEntity": {
-      "@type": "Organization",
-      "name": "dekord",
-      "url": "https://dekord.online",
-      "logo": "https://dekord.online/dekord-logo-new.png",
-      "foundingLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Peshawar",
-          "addressCountry": "Pakistan"
-        }
-      },
-      "slogan": "Defy Ordinary",
-      "description": "Premium charging cables and tech accessories that blend power, durability, and style."
-    }
-  }
-  
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutSchema) }}
-      />
-      <AboutPageClient />
-    </>
-  )
-}
+export function AboutPageClient() {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end start"],
+  })
+
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 200])
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+
+  const stats = [
+    { number: "1K+", label: "Community Responses", icon: Users },
+    { number: "15+", label: "Experiments Conducted", icon: Box },
+    { number: "99.9%", label: "Uptime Guarantee", icon: ShieldCheck },
+    { number: "24/7", label: "Customer Support", icon: Heart },
+  ]
+
+  const values = [
+    {
+      icon: Zap,
+      title: "Innovation First",
+      description: "We don't just follow trends – we create them. Every product is engineered with cutting-edge technology to push the boundaries of what's possible.",
+      gradient: "from-yellow-500 to-orange-500"
+    },
+    {
+      icon: Heart,
+      title: "Passion for Quality",
       description: "We're obsessed with perfection. Every cable, every connector, every detail is crafted with love and tested to withstand the toughest conditions.",
       gradient: "from-red-500 to-pink-500"
     },
@@ -505,41 +493,6 @@ export default function AboutPage() {
                     Join Our Journey
                   </Link>
                 </div>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/20 to-transparent" />
-        <div className="container-custom relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center max-w-4xl mx-auto"
-          >
-            <Award className="w-20 h-20 text-yellow-500 mx-auto mb-8" />
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-foreground">
-              Experience the dekord Difference
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-              Join thousands of satisfied customers who've discovered what true quality feels like. Every product backed by our 1 Year warranty and 24/7 support.
-            </p>
-            <div className="flex flex-wrap gap-6 justify-center items-center text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-green-500" />
-                <span>1 Year Warranty</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Zap className="w-5 h-5 text-yellow-500" />
-                <span>Fast Shipping</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Heart className="w-5 h-5 text-red-500" />
-                <span>Trusted by 1000+</span>
               </div>
             </div>
           </motion.div>

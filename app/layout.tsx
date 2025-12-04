@@ -9,6 +9,7 @@ import { GoogleAnalytics } from "@/components/google-analytics"
 import { CartProvider } from "@/contexts/cart-context"
 import { Analytics } from '@vercel/analytics/react'
 import LoadingBar from "@/components/loading-bar"
+import { PerformanceMonitor } from "@/components/performance-monitor"
 
 
 const inter = Inter({
@@ -155,6 +156,22 @@ export default function RootLayout({
     }
   };
 
+  // Structured data for WebSite with Search
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "dekord",
+    "url": "https://dekord.online",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://dekord.online/catalog?search={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
   return (
     <html lang="en" className={`${inter.variable} ${geistMono.variable} ${instrumentSerif.variable} antialiased`}>
       <head>
@@ -165,12 +182,21 @@ export default function RootLayout({
         <link rel="icon" href="/android-chrome-192x192.png" sizes="192x192" type="image/png" />
         <link rel="icon" href="/android-chrome-512x512.png" sizes="512x512" type="image/png" />
         <meta name="facebook-domain-verification" content="jmk1olrq6a37ob5rbo3qwavnc05bwz" />
+        <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+        <link rel="dns-prefetch" href="//www.google-analytics.com" />
+        <link rel="dns-prefetch" href="//www.facebook.com" />
+        <link rel="preconnect" href="https://awkcvltduqojgdgdjhca.supabase.co" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
       </head>
       <body className="font-sans bg-neutral-50 text-neutral-900 overflow-x-hidden grain-texture">
+        <PerformanceMonitor />
         <GoogleAnalytics />
         <FacebookPixel />
         <LoadingBar />

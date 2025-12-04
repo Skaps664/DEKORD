@@ -4,6 +4,18 @@ import { useState } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Mail, Phone, MapPin, Send, Zap, Package, Headphones } from "lucide-react"
 import { FAQsSection } from "@/components/faqs-section"
+import type { Metadata } from "next"
+
+// Note: Metadata export only works in Server Components
+// Add metadata via layout or convert to server component in future
+export const metadata: Metadata = {
+  title: "Contact dekord – Get in Touch with Us",
+  description: "Have questions about dekord products? Contact our team for support, inquiries, or partnerships.",
+  keywords: ["contact dekord", "customer support", "tech support Pakistan", "dekord Peshawar"],
+  alternates: {
+    canonical: "https://dekord.online/contact",
+  },
+}
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({

@@ -41,9 +41,48 @@ const nextConfig = {
   // SEO: Trailing slash consistency
   trailingSlash: false,
   
+  // Performance: Enable SWC minification (faster builds)
+  swcMinify: true,
+  
   // Performance: Enable experimental features
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-accordion'],
+    optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-accordion', '@supabase/supabase-js'],
+    // Enable partial prerendering for better performance
+    ppr: false, // Set to true when stable
+  },
+  
+  // Performance: Optimize production builds
+  productionBrowserSourceMaps: false,
+  
+  // Performance: Configure webpack for better chunking
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Optimize client-side bundle
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // Vendor chunk
+          vendor: {
+            name: 'vendor',
+            chunks: 'all',
+            test: /node_modules/,
+            priority: 20
+          },
+          // Common components chunk
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            priority: 10,
+            reuseExistingChunk: true,
+            enforce: true
+          }
+        }
+      }
+    }
+    return config
   },
   
   // Security headers

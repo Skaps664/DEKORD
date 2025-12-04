@@ -1,92 +1,20 @@
-import type { Metadata } from "next"
-import { notFound } from "next/navigation"
+"use client"
+
+import { useState, useEffect } from "react"
+import { useParams, useRouter } from "next/navigation"
+import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
+import Link from "next/link"
+import { ArrowLeft, Filter, Grid3x3, List, Search, ShoppingBag, Check, Loader2 } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useCart } from "@/contexts/cart-context"
 import { getCollectionBySlug } from "@/lib/services/collections"
-import CollectionClient from "./collection-client"
+import { RatingDisplay } from "@/components/rating-display"
+import type { Collection, Product } from "@/lib/types/database"
 
-interface PageProps {
-  params: Promise<{ slug: string }>
-}
+const sortOptions = ["Popular", "Price: Low to High", "Price: High to Low", "Rating"]
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { slug } = await params
-  const { data: collection, error } = await getCollectionBySlug(slug)
-
-  if (error || !collection) {
-    return {
-      title: "Collection Not Found | dekord",
-      description: "The collection you're looking for doesn't exist.",
-    }
-  }
-
-  const title = collection.meta_title || `${collection.name} - Premium Charging Cables Collection | dekord`
-  const description = collection.meta_description || collection.description || `Explore ${collection.name} collection - Premium ${collection.category} charging cables. Fast charging, durable, made in Pakistan.`
-  const image = collection.banner_image || "/dekord-logo-new.png"
-
-  return {
-    title,
-    description,
-    keywords: [
-      collection.name,
-      `${collection.category} collection`,
-      "charging cables collection",
-      "premium cables Pakistan",
-      "USB-C collection",
-      "dekord collections"
-    ],
-    openGraph: {
-      title,
-      description,
-      images: [
-        {
-          url: image,
-          width: 1200,
-          height: 630,
-          alt: collection.name,
-        },
-      ],
-      type: "website",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [image],
-    },
-  }
-}
-
-export default async function CollectionPage({ params }: PageProps) {
-  const { slug } = await params
-  const { data: collection, error } = await getCollectionBySlug(slug)
-
-  if (error || !collection) {
-    notFound()
-  }
-
-  // JSON-LD Collection schema
-  const collectionSchema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": collection.name,
-    "image": [collection.banner_image || "/dekord-logo-new.png"],
-    "description": collection.description,
-    "mainEntityOfPage": `https://dekord.online/collections/${collection.slug}`,
-    "provider": {
-      "@type": "Organization",
-      "name": "dekord"
-    }
-  }
-
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
-      />
-      <CollectionClient collection={collection} />
-    </>
-  )
-}
+export default function CollectionPage() {
   const params = useParams()
   const router = useRouter()
   const slug = params.slug as string
