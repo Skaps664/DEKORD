@@ -117,8 +117,6 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-  return (
-    <main className="min-h-screen">
       {/* Header removed: now provided by layout */}
       <HeroSection />
       <FeaturedProducts />
@@ -135,7 +133,6 @@ export default function HomePage() {
       />
       <UserVideoReviews />
       {/* <InstagramFeed /> */}
-      <SocialFollow />
       <SocialFollow />
       {/* Footer removed: now provided by layout */}
     </main>

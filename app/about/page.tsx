@@ -60,9 +60,6 @@ export default function AboutPage() {
     </>
   )
 }
-      description: "We're obsessed with perfection. Every cable, every connector, every detail is crafted with love and tested to withstand the toughest conditions.",
-      gradient: "from-red-500 to-pink-500"
-    },
     {
       icon: Target,
       title: "Customer Focused",

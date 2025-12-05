@@ -1,49 +1,16 @@
-import type { Metadata } from "next"
-import { CatalogClient } from "./catalog-client"
+"use client"
 
-export const metadata: Metadata = {
-  title: "Shop Premium Charging Cables – dekord Catalog",
-  description: "Browse dekord's complete collection of premium 60W-100W charging cables, USB-C cables, Lightning cables, and tech accessories. Fast charging, durable, stylish.",
-  keywords: ["charging cable catalog", "buy USB-C cables", "premium cables Pakistan", "fast charging cables", "dekord products", "tech accessories shop"],
-  alternates: {
-    canonical: "https://dekord.online/catalog",
-  },
-  openGraph: {
-    title: "Shop Premium Charging Cables – dekord Catalog",
-    description: "Browse dekord's complete collection of premium charging cables and tech accessories.",
-    url: "https://dekord.online/catalog",
-    siteName: "dekord",
-    images: [{ url: "/dekord-logo-new.png", width: 1200, height: 630, alt: "dekord Catalog" }],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Shop Premium Charging Cables – dekord Catalog",
-    description: "Browse dekord's complete collection of premium charging cables and tech accessories.",
-    images: ["/dekord-logo-new.png"],
-  },
-}
-
-export default function CatalogPage() {
-  // CollectionPage Schema for catalog
-  const catalogSchema = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    "name": "dekord Product Catalog",
-    "description": "Browse our complete collection of premium charging cables and tech accessories",
-    "url": "https://dekord.online/catalog"
-  }
-  
-  return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(catalogSchema) }}
-      />
-      <CatalogClient />
-    </>
-  )
-}
+import { useState, useEffect, Suspense } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
+import Link from "next/link"
+import { useSearchParams } from "next/navigation"
+import { Filter, Grid3x3, List, Search, ShoppingBag, Star, Check } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useCart } from "@/contexts/cart-context"
+import { getAllProducts } from "@/lib/services/products"
+import type { Product } from "@/lib/types/database"
+import { RatingDisplay } from "@/components/rating-display"
 
 const categories = ["All", "USB-C", "Lightning", "Multi", "Bundle", "Magnetic"]
 const sortOptions = ["Popular", "Price: Low to High", "Price: High to Low", "Rating"]

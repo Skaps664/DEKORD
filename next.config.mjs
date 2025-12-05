@@ -41,9 +41,6 @@ const nextConfig = {
   // SEO: Trailing slash consistency
   trailingSlash: false,
   
-  // Performance: Enable SWC minification (faster builds)
-  swcMinify: true,
-  
   // Performance: Enable experimental features
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', '@radix-ui/react-accordion', '@supabase/supabase-js'],
