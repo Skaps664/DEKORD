@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Menu, ShoppingBag, X, Search } from "lucide-react"
 import CartDropPanel from "./cart-drop-panel"
+import UserDropPanel from "./user-drop-panel"
 import { TopDropMenu } from "./top-drop-menu"
 import { SearchPanel } from "./search-panel"
 import { useCart } from "@/contexts/cart-context"
@@ -16,6 +17,7 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
+  const [userOpen, setUserOpen] = useState(false)
   const [isShaking, setIsShaking] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const { itemCount } = useCart()
@@ -88,6 +90,7 @@ export function Header() {
                   setMenuOpen((v) => !v)
                   setCartOpen(false)
                   setSearchOpen(false)
+                  setUserOpen(false)
                 }}
                 className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -ml-1 md:-ml-0.5 rounded-full hover:bg-neutral-100 transition-colors"
               >
@@ -107,6 +110,7 @@ export function Header() {
                   setSearchOpen((v) => !v)
                   setMenuOpen(false)
                   setCartOpen(false)
+                  setUserOpen(false)
                 }}
                 className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 rounded-full hover:bg-neutral-100 transition-colors"
               >
@@ -129,16 +133,17 @@ export function Header() {
             {/* Right side icons */}
             <div className="flex items-center gap-1 md:gap-2">
               {/* User/Account Icon */}
-              <a
-                href={isLoggedIn ? "/account" : "/auth"}
-                onClick={(e) => {
-                  if (!isLoggedIn) {
-                    // Store current page URL for redirect after login
-                    localStorage.setItem('auth_redirect', window.location.pathname + window.location.search)
-                  }
+              <button
+                type="button"
+                aria-label={userOpen ? "Close user menu" : "Open user menu"}
+                aria-expanded={userOpen}
+                onClick={() => {
+                  setUserOpen((v) => !v)
+                  setMenuOpen(false)
+                  setCartOpen(false)
+                  setSearchOpen(false)
                 }}
                 className="flex-shrink-0 inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 rounded-full hover:bg-neutral-100 transition-colors"
-                aria-label={isLoggedIn ? "Account" : "Login"}
               >
                 <svg 
                   className={cn("w-5 h-5 md:w-6 md:h-6 transition-colors", iconColor)}
@@ -154,7 +159,7 @@ export function Header() {
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" 
                   />
                 </svg>
-              </a>
+              </button>
 
               {/* Cart icon with badge */}
               <button
@@ -165,6 +170,7 @@ export function Header() {
                   setCartOpen((v) => !v)
                   setMenuOpen(false)
                   setSearchOpen(false)
+                  setUserOpen(false)
                 }}
                 className={cn(
                   "flex-shrink-0 relative inline-flex items-center justify-center h-9 w-9 md:h-10 md:w-10 -mr-1 md:-mr-0.5 rounded-full hover:bg-neutral-100 transition-colors",
@@ -194,6 +200,8 @@ export function Header() {
       <TopDropMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
       {/* Floating cart dropdown panel */}
       <CartDropPanel open={cartOpen} onClose={() => setCartOpen(false)} />
+      {/* User dropdown panel */}
+      <UserDropPanel open={userOpen} onClose={() => setUserOpen(false)} isLoggedIn={isLoggedIn} />
       {/* Search panel */}
       <SearchPanel open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>

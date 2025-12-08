@@ -101,7 +101,7 @@ export function FeaturedProducts() {
         {/* Mobile: Horizontal scroll, Desktop: Grid */}
         <div className="block md:hidden">
           <motion.div
-            className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide"
+            className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide px-4"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none'
@@ -132,7 +132,7 @@ export function FeaturedProducts() {
             {featuredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
-                className="flex-shrink-0 w-72"
+                className="flex-shrink-0 w-[75vw] sm:w-72"
                 variants={{
                   hidden: { opacity: 0, x: 30 },
                   visible: {

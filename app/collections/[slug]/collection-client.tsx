@@ -4,11 +4,144 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Filter, Grid3x3, List, Search, ShoppingBag, Check } from "lucide-react"
+import { ArrowLeft, Filter, Grid3x3, List, Search, ShoppingBag, Check, Bell, Sparkles } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useCart } from "@/contexts/cart-context"
 import { RatingDisplay } from "@/components/rating-display"
 import type { Collection, Product } from "@/lib/types/database"
+
+// Coming Soon Section Component
+function ComingSoonSection({ collectionName }: { collectionName: string }) {
+  const [email, setEmail] = useState("")
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+  const [message, setMessage] = useState("")
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus("loading")
+
+    try {
+      const response = await fetch("/api/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          email, 
+          source: `collection_${collectionName.toLowerCase().replace(/\s+/g, "_")}` 
+        }),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setStatus("success")
+        setMessage("🎉 You're on the list! We'll notify you when products drop.")
+        setEmail("")
+        setTimeout(() => {
+          setStatus("idle")
+          setMessage("")
+        }, 5000)
+      } else {
+        setStatus("error")
+        setMessage(data.error || "Something went wrong. Please try again.")
+        setTimeout(() => {
+          setStatus("idle")
+          setMessage("")
+        }, 3000)
+      }
+    } catch (error) {
+      setStatus("error")
+      setMessage("Failed to subscribe. Please try again.")
+      setTimeout(() => {
+        setStatus("idle")
+        setMessage("")
+      }, 3000)
+    }
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="max-w-2xl mx-auto text-center py-20"
+    >
+      <div className="relative inline-block mb-6">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-full blur-2xl" />
+        <Sparkles className="relative w-16 h-16 text-primary mx-auto" />
+      </div>
+
+      <h2 className="text-3xl md:text-4xl font-bold mb-4">
+        {collectionName} Coming Soon
+      </h2>
+      
+      <p className="text-lg text-muted-foreground mb-8">
+        We're working on something extraordinary. Be the first to know when we launch this collection.
+      </p>
+
+      <form onSubmit={handleSubscribe} className="max-w-md mx-auto">
+        <div className="flex gap-3">
+          <div className="relative flex-1">
+            <Bell className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              disabled={status === "loading" || status === "success"}
+              className="w-full pl-12 pr-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
+            />
+          </div>
+          <motion.button
+            type="submit"
+            disabled={status === "loading" || status === "success"}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className={cn(
+              "px-6 py-3 rounded-xl font-semibold transition-colors",
+              status === "success"
+                ? "bg-green-500 text-white"
+                : "bg-foreground text-background hover:bg-foreground/90",
+              "disabled:opacity-50"
+            )}
+          >
+            {status === "loading" ? "..." : status === "success" ? "✓" : "Notify Me"}
+          </motion.button>
+        </div>
+        
+        {message && (
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={cn(
+              "mt-4 text-sm",
+              status === "success" ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+            )}
+          >
+            {message}
+          </motion.p>
+        )}
+      </form>
+
+      <div className="mt-12 pt-8 border-t border-border">
+        <p className="text-sm text-muted-foreground mb-4">While you wait, check out our other collections:</p>
+        <div className="flex flex-wrap gap-3 justify-center">
+          <Link 
+            href="/collections" 
+            className="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors text-sm font-medium"
+          >
+            Browse All Collections
+          </Link>
+          <Link 
+            href="/catalog" 
+            className="px-4 py-2 rounded-lg border border-border hover:bg-muted transition-colors text-sm font-medium"
+          >
+            View All Products
+          </Link>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
 
 const sortOptions = ["Popular", "Price: Low to High", "Price: High to Low", "Rating"]
 
@@ -210,60 +343,62 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
 
           {/* Products Grid/List */}
           {sortedProducts.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-muted-foreground">No products found matching your search.</p>
-            </div>
+            <ComingSoonSection collectionName={collection.name} />
           ) : viewMode === "grid" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedProducts.map((product) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {sortedProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="group"
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
                 >
                   <Link href={`/product/${product.slug}`}>
-                    <div className="relative aspect-square rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 mb-4">
-                      {product.main_image && (
+                    <div className="group relative bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow">
+                      {/* Image */}
+                      <div className="relative aspect-square bg-muted overflow-hidden">
                         <Image
-                          src={product.main_image}
+                          src={product.main_image || "/placeholder.svg"}
                           alt={product.name}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
                         />
-                      )}
-                      
-                      {/* Quick Add Button */}
-                      <button
-                        onClick={(e) => handleAddToCart(product, e)}
-                        disabled={isLoading}
-                        className={cn(
-                          "absolute bottom-4 right-4 p-3 rounded-full backdrop-blur-sm transition-all",
-                          "opacity-0 group-hover:opacity-100",
-                          addedProductId === product.id
-                            ? "bg-green-500 text-white"
-                            : "bg-white/90 hover:bg-white text-neutral-900"
-                        )}
-                      >
-                        {addedProductId === product.id ? (
-                          <Check className="w-5 h-5" />
-                        ) : (
-                          <ShoppingBag className="w-5 h-5" />
-                        )}
-                      </button>
-                    </div>
-                    
-                    <h3 className="font-semibold text-lg mb-2 group-hover:text-primary transition-colors">
-                      {product.name}
-                    </h3>
-                    
-                    <div className="flex items-center justify-between">
-                      <p className="text-xl font-bold">
-                        Rs. {typeof product.price === 'string' ? parseFloat(product.price).toLocaleString() : product.price.toLocaleString()}
-                      </p>
-                      {product.average_rating && (
-                        <RatingDisplay rating={product.average_rating} size="sm" />
-                      )}
+                      </div>
+
+                      {/* Content */}
+                      <div className="p-4">
+                        <h3 className="font-medium text-foreground mb-2 line-clamp-1">
+                          {product.name}
+                        </h3>
+                        
+                        <div className="mb-3">
+                          <RatingDisplay 
+                            rating={product.average_rating || 0}
+                            reviewCount={product.review_count || 0}
+                            size="sm"
+                            showCount={true}
+                          />
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-xl font-bold text-foreground">
+                            Rs. {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
+                          </span>
+                          <motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={(e) => handleAddToCart(product, e)}
+                            disabled={isLoading}
+                            className="p-2 rounded-full bg-foreground text-background hover:shadow-md transition-shadow disabled:opacity-50"
+                          >
+                            {addedProductId === product.id ? (
+                              <Check className="w-4 h-4" />
+                            ) : (
+                              <ShoppingBag className="w-4 h-4" />
+                            )}
+                          </motion.button>
+                        </div>
+                      </div>
                     </div>
                   </Link>
                 </motion.div>
@@ -271,61 +406,70 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
             </div>
           ) : (
             <div className="space-y-4">
-              {sortedProducts.map((product) => (
+              {sortedProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="group"
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
                 >
                   <Link href={`/product/${product.slug}`}>
-                    <div className="flex gap-6 p-4 rounded-xl border border-border hover:border-foreground/20 transition-colors">
-                      {/* Image */}
-                      <div className="relative w-32 h-32 rounded-lg overflow-hidden bg-neutral-100 dark:bg-neutral-900 flex-shrink-0">
-                        {product.main_image && (
-                          <Image
-                            src={product.main_image}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
-                          />
-                        )}
+                    <div className="group flex gap-6 bg-card rounded-xl border border-border p-4 hover:shadow-lg transition-shadow">
+                      <div className="relative w-32 h-32 flex-shrink-0 bg-muted rounded-lg overflow-hidden">
+                        <Image
+                          src={product.main_image || "/placeholder.svg"}
+                          alt={product.name}
+                          fill
+                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
                       </div>
 
-                      {/* Content */}
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
-                          <h3 className="font-semibold text-xl mb-2 group-hover:text-primary transition-colors">
+                          <h3 className="font-medium text-lg mb-2 text-foreground">
                             {product.name}
                           </h3>
-                          <p className="text-muted-foreground text-sm line-clamp-2">
-                            {product.description}
+                          <p className="text-muted-foreground text-sm line-clamp-2 mb-3">
+                            {product.description || "Premium quality product from dekord"}
                           </p>
+                          <div className="mb-3">
+                            <RatingDisplay 
+                              rating={product.average_rating || 0}
+                              reviewCount={product.review_count || 0}
+                              size="sm"
+                              showCount={true}
+                            />
+                          </div>
                         </div>
 
-                        <div className="flex items-center justify-between mt-4">
-                          <p className="text-2xl font-bold">
-                            Rs. {typeof product.price === 'string' ? parseFloat(product.price).toLocaleString() : product.price.toLocaleString()}
-                          </p>
-                          {product.average_rating && (
-                            <RatingDisplay rating={product.average_rating} />
-                          )}
+                        <div className="flex items-center gap-4">
+                          <span className="text-xl font-bold text-foreground">
+                            Rs. {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
+                          </span>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={(e) => handleAddToCart(product, e)}
+                            disabled={isLoading}
+                            className={cn(
+                              "px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2",
+                              addedProductId === product.id
+                                ? "bg-green-500 text-white"
+                                : "bg-foreground text-background hover:bg-foreground/90"
+                            )}
+                          >
+                            {addedProductId === product.id ? (
+                              <>
+                                <Check className="w-4 h-4" /> Added
+                              </>
+                            ) : (
+                              <>
+                                <ShoppingBag className="w-4 h-4" /> Add to Cart
+                              </>
+                            )}
+                          </motion.button>
                         </div>
                       </div>
-
-                      {/* Add to Cart Button */}
-                      <button
-                        onClick={(e) => handleAddToCart(product, e)}
-                        disabled={isLoading}
-                        className={cn(
-                          "self-center px-6 py-3 rounded-full transition-all font-medium",
-                          addedProductId === product.id
-                            ? "bg-green-500 text-white"
-                            : "bg-foreground text-background hover:bg-foreground/90"
-                        )}
-                      >
-                        {addedProductId === product.id ? "Added!" : "Add to Cart"}
-                      </button>
                     </div>
                   </Link>
                 </motion.div>
