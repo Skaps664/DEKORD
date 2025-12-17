@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion"
 import { ShieldCheck, Award, CheckCircle2, XCircle, FileText, Package, Shield, AlertTriangle, Globe, MessageSquare, Clock, Zap } from "lucide-react"
+import { ClaimCallout } from "@/components/claim-callout"
 
 export default function WarrantyPolicyPage() {
   const { scrollYProgress } = useScroll()
@@ -32,8 +33,8 @@ export default function WarrantyPolicyPage() {
   const claimSteps = [
     {
       icon: MessageSquare,
-      title: "Contact Us",
-      description: "Email support@dekord.online with your order number, proof of purchase, and clear photos/videos of the issue"
+      title: "Submit Claim",
+      description: "Visit our Claim Page and fill out the form with your order number, proof of purchase, and upload clear photos/videos of the issue"
     },
     {
       icon: FileText,
@@ -324,6 +325,13 @@ export default function WarrantyPolicyPage() {
         </div>
       </section>
 
+      {/* Claim Callout */}
+      <section className="py-12 relative">
+        <div className="container-custom">
+          <ClaimCallout variant="primary" className="max-w-5xl mx-auto" />
+        </div>
+      </section>
+
       {/* Shipping Costs */}
       <section className="py-12 relative bg-muted/10">
         <div className="container-custom">
@@ -553,13 +561,7 @@ export default function WarrantyPolicyPage() {
               </div>
 
               <div className="text-center">
-                <a 
-                  href="mailto:support@dekord.online"
-                  className="inline-flex items-center gap-3 px-10 py-5 bg-foreground text-background rounded-2xl font-bold text-lg hover:shadow-2xl transition-all transform hover:scale-105"
-                >
-                  <MessageSquare className="w-6 h-6" />
-                  File a Warranty Claim
-                </a>
+                <ClaimCallout variant="secondary" className="max-w-2xl mx-auto" />
               </div>
             </div>
           </motion.div>

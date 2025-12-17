@@ -100,22 +100,11 @@ export function FeaturedProducts() {
 
         {/* Mobile: Horizontal scroll, Desktop: Grid */}
         <div className="block md:hidden">
-          <motion.div
-            className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide pl-4 pr-16"
+          <div
+            className="flex gap-4 overflow-x-auto pb-4 scroll-smooth scrollbar-hide pl-4"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none'
-            }}
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.2,
-                },
-              },
             }}
           >
             <style dangerouslySetInnerHTML={{
@@ -130,29 +119,16 @@ export function FeaturedProducts() {
               `
             }} />
             {featuredProducts.map((product, index) => (
-              <motion.div
+              <div
                 key={product.id}
-                className="flex-shrink-0 w-[calc(100vw-5rem)] sm:w-72"
-                variants={{
-                  hidden: { opacity: 0, x: 30 },
-                  visible: {
-                    opacity: 1,
-                    x: 0,
-                    transition: {
-                      duration: 0.6,
-                      ease: [0.21, 0.47, 0.32, 0.98],
-                    },
-                  },
-                }}
+                className="flex-shrink-0 w-[70vw] sm:w-72"
               >
-                <Reveal delay={index * 0.1}>
-                  <Link href={product.link} className="block">
-                    <ProductCard product={product} onQuickLook={handleQuickLook} priority={index < 2} />
-                  </Link>
-                </Reveal>
-              </motion.div>
+                <Link href={product.link} className="block">
+                  <ProductCard product={product} onQuickLook={handleQuickLook} priority={index < 2} />
+                </Link>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
 
         {/* Desktop: Grid layout */}

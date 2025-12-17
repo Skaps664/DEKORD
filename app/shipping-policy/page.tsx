@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion"
 import { Truck, MapPin, Clock, DollarSign, Package, Search, ShieldCheck, CreditCard, AlertCircle, MessageSquare } from "lucide-react"
+import { ClaimCallout } from "@/components/claim-callout"
 
 export default function ShippingPolicyPage() {
   const { scrollYProgress } = useScroll()
@@ -49,7 +50,8 @@ export default function ShippingPolicyPage() {
       content: [
         "All products are quality-checked and securely packed before dispatch.",
         "Customers are requested not to open or test products in front of courier riders, as delivery staff are on strict schedules.",
-        "In case of any issue, your purchase is covered under our Return & Refund Policy and Warranty Policy."
+        "IMPORTANT: If your product arrives damaged during shipping, you must report it within 3 days of receiving your order. We'll provide a replacement at no extra cost.",
+        "For any issues with your order, you're covered under our Return & Refund Policy and Warranty Policy."
       ]
     },
     {
@@ -201,6 +203,13 @@ export default function ShippingPolicyPage() {
         </div>
       </section>
 
+      {/* Claim Callout */}
+      <section className="py-12 relative">
+        <div className="container-custom">
+          <ClaimCallout variant="primary" className="max-w-5xl mx-auto" />
+        </div>
+      </section>
+
       {/* Important Notes */}
       <section className="py-20 relative bg-muted/10">
         <div className="container-custom">
@@ -286,13 +295,7 @@ export default function ShippingPolicyPage() {
                 </div>
               </div>
 
-              <a 
-                href="mailto:support@dekord.online"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-foreground text-background rounded-2xl font-semibold hover:shadow-xl transition-all"
-              >
-                <MessageSquare className="w-5 h-5" />
-                Email Us
-              </a>
+              <ClaimCallout variant="secondary" className="max-w-2xl mx-auto" />
             </div>
           </motion.div>
         </div>

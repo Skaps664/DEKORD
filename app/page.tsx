@@ -5,6 +5,8 @@ import { FeaturedProducts } from "@/components/featured-products"
 import { CinematicBanner } from "@/components/cinematic-banner"
 import InfiniteGallery from '@/components/infinite-gallery'
 import { Reveal } from '@/components/reveal'
+import { TickerStripes } from '@/components/ticker-stripes'
+import { BottomTicker } from '@/components/bottom-ticker'
 
 export const metadata: Metadata = {
   title: "Defy Ordinary with dekord – Tech That Speaks Style",
@@ -122,6 +124,7 @@ export default function HomePage() {
       <FeaturedProducts />
       <CinematicBanner />
       <ComparisonSection />
+      <TickerStripes />
       <CollectionStrip />
       <CredibilityBadges />
       <MaterialsSection />
@@ -133,8 +136,11 @@ export default function HomePage() {
       />
       <UserVideoReviews />
       {/* <InstagramFeed /> */}
+      
       <SocialFollow />
       {/* Footer removed: now provided by layout */}
+
+      <BottomTicker />
     </main>
   )
 }

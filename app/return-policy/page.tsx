@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion"
 import { RotateCcw, Calendar, CheckCircle2, Truck, FileSearch, XCircle, Shield, AlertTriangle, MessageSquare, Package } from "lucide-react"
+import { ClaimCallout } from "@/components/claim-callout"
 
 export default function ReturnPolicyPage() {
   const { scrollYProgress } = useScroll()
@@ -43,7 +44,7 @@ export default function ReturnPolicyPage() {
         {
           title: "Initiation",
           items: [
-            "Contact us at support@dekord.online within 30 days of receiving your product",
+            "Visit our Claim Page and submit your return request within 30 days of receiving your product",
             "Provide your order number, reason for return, and clear photos/videos of the product"
           ]
         },
@@ -235,6 +236,13 @@ export default function ReturnPolicyPage() {
         </div>
       </section>
 
+      {/* Claim Callout */}
+      <section className="py-12 relative">
+        <div className="container-custom">
+          <ClaimCallout variant="primary" className="max-w-5xl mx-auto" />
+        </div>
+      </section>
+
       {/* Important Notes for Pakistan */}
       <section className="py-20 relative bg-muted/10">
         <div className="container-custom">
@@ -342,13 +350,7 @@ export default function ReturnPolicyPage() {
               </div>
 
               <div className="text-center">
-                <a 
-                  href="mailto:support@dekord.online"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-foreground text-background rounded-2xl font-semibold hover:shadow-xl transition-all"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                  support@dekord.online
-                </a>
+                <ClaimCallout variant="secondary" className="max-w-2xl mx-auto" />
               </div>
             </div>
           </motion.div>

@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion"
 import { FileCheck, ShoppingCart, CreditCard, Package, Shield, AlertTriangle, Scale, Users, Globe, MessageSquare } from "lucide-react"
 import Link from "next/link"
+import { ClaimCallout } from "@/components/claim-callout"
 
 export default function TermsPage() {
   const { scrollYProgress } = useScroll()
@@ -243,6 +244,13 @@ export default function TermsPage() {
         </div>
       </section>
 
+      {/* Claim Callout */}
+      <section className="py-12 relative">
+        <div className="container-custom">
+          <ClaimCallout variant="primary" className="max-w-5xl mx-auto" />
+        </div>
+      </section>
+
       {/* Additional Important Sections */}
       <section className="py-20 relative bg-muted/10">
         <div className="container-custom">
@@ -328,13 +336,7 @@ export default function TermsPage() {
               </div>
 
               <div className="text-center">
-                <a 
-                  href="mailto:support@dekord.online"
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-foreground text-background rounded-2xl font-semibold hover:shadow-xl transition-all"
-                >
-                  <MessageSquare className="w-5 h-5" />
-                  support@dekord.online
-                </a>
+                <ClaimCallout variant="secondary" className="max-w-2xl mx-auto" />
               </div>
             </div>
           </motion.div>
