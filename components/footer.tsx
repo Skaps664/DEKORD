@@ -104,7 +104,7 @@ export function Footer() {
                 <span className="sr-only">{"dekord"}</span>
               </a>
               <p className="text-neutral-600 mb-6 leading-relaxed">
-                Not just cables, but a vibe. dekord creates essentials that charge your life with power, durability, and style. Made in Pakistan.
+                Not just cables, but a vibe. dekord creates essentials that charge your life with power, durability, and style.
               </p>
               <div className="flex space-x-4">
                 {socialLinks.map((social) => (

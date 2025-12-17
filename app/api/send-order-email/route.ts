@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { createClient } from '@/lib/supabase/server'
+import { 
+  getOrderPlacedEmail, 
+  getOrderProcessingEmail, 
+  getOrderShippedEmail, 
+  getOrderDeliveredEmail 
+} from '@/lib/email-templates'
 
 const resend = new Resend(process.env.RESEND_API_KEY!)
 
@@ -27,199 +33,16 @@ function getEmailContent(type: string, data: OrderEmailData) {
 
   switch (type) {
     case 'placed':
-      return {
-        subject: `Order Confirmation #${data.orderNumber} - dekord`,
-        html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: #000; color: #fff; padding: 30px; text-align: center; }
-    .content { background: #f9f9f9; padding: 30px; }
-    .order-details { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; }
-    .item { padding: 10px 0; border-bottom: 1px solid #eee; }
-    .total { font-size: 20px; font-weight: bold; margin-top: 20px; }
-    .button { display: inline-block; background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>Thank You and please Confirm Your Order!</h1>
-    </div>
-    <div class="content">
-      <p>Hi ${data.customerName},</p>
-      <p>We've received your order and please confirm you order by clicking on button below or we will send you a confirmation on WhatsApp shortly.</p>
-      
-      <div class="order-details">
-        <h2>Order #${data.orderNumber}</h2>
-        ${data.items.map(item => `
-          <div class="item">
-            <div>
-              <strong>${item.product_name}</strong> x ${item.quantity}
-              ${item.variant_details ? `<br><span style="color: #666; font-size: 13px;">[${item.variant_details}]</span>` : ''}
-            </div>
-            <div style="float: right;">Rs. ${Number(item.unit_price).toLocaleString()}</div>
-          </div>
-        `).join('')}
-        <div class="total">Total: Rs. ${Number(data.total).toLocaleString()}</div>
-      </div>
-
-      <p><strong>Please confirm your order by clicking on the button below.</strong></p>
-
-      <a href="${confirmUrl}" class="button">CONFIRM ORDER</a>
-      <p>This helps us to cater our precious customers more effectively.</p>
-
-      <p>If you have any questions, you can contact us.</p>
-    </div>
-    <div class="footer">
-      <p>dekord | Premium Charging Cables</p>
-      <p>team@dekord.online</p>
-    </div>
-  </div>
-</body>
-</html>
-        `
-      }
+      return getOrderPlacedEmail(data, confirmUrl)
       
     case 'processing':
-      return {
-        subject: `Order Processing #${data.orderNumber} - dekord`,
-        html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: #000; color: #fff; padding: 30px; text-align: center; }
-    .content { background: #f9f9f9; padding: 30px; }
-    .status-box { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; text-align: center; }
-    .button { display: inline-block; background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>📦 Your Order is Being Prepared</h1>
-    </div>
-    <div class="content">
-      <p>Hi ${data.customerName},</p>
-      
-      <div class="status-box">
-        <h2>Order #${data.orderNumber}</h2>
-        <p style="font-size: 18px; color: #4CAF50;">✓ Confirmed & Processing</p>
-        <p>We're carefully preparing your items for shipment.</p>
-      </div>
-      
-      <p>You'll receive tracking information once your order ships.</p>
-      
-      <a href="${baseUrl}/account/orders" class="button">View Your Order</a>
-    </div>
-    <div class="footer">
-      <p>dekord | Premium Charging Cables</p>
-      <p>team@dekord.online</p>
-    </div>
-  </div>
-</body>
-</html>
-        `
-      }
+      return getOrderProcessingEmail(data, baseUrl)
       
     case 'shipped':
-      return {
-        subject: `Order Shipped #${data.orderNumber} - dekord`,
-        html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: #000; color: #fff; padding: 30px; text-align: center; }
-    .content { background: #f9f9f9; padding: 30px; }
-    .tracking-box { background: #fff; padding: 20px; margin: 20px 0; border-radius: 8px; }
-    .button { display: inline-block; background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>🚚 Your Order is On Its Way!</h1>
-    </div>
-    <div class="content">
-      <p>Hi ${data.customerName},</p>
-      <p>Great news! Your order has been shipped and is on its way to you.</p>
-      
-      <div class="tracking-box">
-        <h2>Order #${data.orderNumber}</h2>
-        ${data.courier ? `<p><strong>Courier:</strong> ${data.courier}</p>` : ''}
-        ${data.trackingNumber ? `<p><strong>Tracking Number:</strong> ${data.trackingNumber}</p>` : ''}
-        ${data.trackingUrl ? `<a href="${data.trackingUrl}" class="button">Track Your Shipment</a>` : ''}
-      </div>
-      
-      <p>You should receive your order within 3-5 business days.</p>
-      <p>Please keep an eye on tracking and have the amount ready before the parcel arriaves.</p>
-    </div>
-    <div class="footer">
-      <p>dekord | Premium Charging Cables</p>
-      <p>team@dekord.online</p>
-    </div>
-  </div>
-</body>
-</html>
-        `
-      }
+      return getOrderShippedEmail(data)
       
     case 'delivered':
-      return {
-        subject: `Order Delivered #${data.orderNumber} - Thank You! - dekord`,
-        html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { background: #000; color: #fff; padding: 30px; text-align: center; }
-    .content { background: #f9f9f9; padding: 30px; text-align: center; }
-    .thank-you { font-size: 24px; margin: 20px 0; }
-    .button { display: inline-block; background: #000; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>🎉 Delivered Successfully!</h1>
-    </div>
-    <div class="content">
-      <p>Hi ${data.customerName},</p>
-      <p class="thank-you">Thank you for trusting dekord!</p>
-      
-      <p>Your order #${data.orderNumber} has been delivered.</p>
-      <p>We hope you love your new charging cables!</p>
-      
-      <a href="${baseUrl}/account/orders?review=${data.orderId}" class="button">Leave a Review</a>
-      
-      <p>Your feedback helps us improve and helps other customers make informed decisions.</p>
-      
-      <p>If you have any issues, please contact us immediately.</p>
-    </div>
-    <div class="footer">
-      <p>dekord | Premium Charging Cables</p>
-      <p>team@dekord.online</p>
-    </div>
-  </div>
-</body>
-</html>
-        `
-      }
+      return getOrderDeliveredEmail(data, baseUrl)
       
     default:
       throw new Error('Invalid email type')
