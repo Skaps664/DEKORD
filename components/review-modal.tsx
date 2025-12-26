@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, Star, Upload, Loader2, Check, Image as ImageIcon } from "lucide-react"
 import { createReview, uploadReviewImage } from "@/lib/services/reviews"
+import { createClient } from "@/lib/supabase/client"
 import Image from "next/image"
 
 interface ReviewModalProps {
@@ -32,6 +33,18 @@ export function ReviewModal({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const getUser = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUserId(user.id)
+      }
+    }
+    getUser()
+  }, [])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -50,8 +63,8 @@ export function ReviewModal({
       const results = await Promise.all(uploadPromises)
 
       const uploadedUrls = results
-        .filter(result => result.data)
-        .map(result => result.data!)
+        .filter(result => result.url)
+        .map(result => result.url!)
 
       setImages(prev => [...prev, ...uploadedUrls])
     } catch (err) {
@@ -71,24 +84,43 @@ export function ReviewModal({
       return
     }
 
-    if (comment.trim().length < 10) {
-      setError("Please write at least 10 characters")
+    if (comment.trim().length < 4) {
+      setError("Please write at least 4 characters")
+      return
+    }
+
+    if (!userId) {
+      setError("You must be logged in to submit a review")
       return
     }
 
     setSubmitting(true)
     setError("")
 
+    console.log('Submitting review with data:', {
+      product_id: productId,
+      order_id: orderId,
+      user_id: userId,
+      rating,
+      title: title.trim(),
+      comment: comment.trim(),
+      images
+    })
+
     const { data, error } = await createReview({
-      productId,
-      orderId,
+      product_id: productId,
+      order_id: orderId,
+      user_id: userId,
       rating,
       title: title.trim() || undefined,
       comment: comment.trim(),
       images: images.length > 0 ? images : undefined
     })
 
+    console.log('Review creation result:', { data, error })
+
     if (error) {
+      console.error('Review submission error:', error)
       setError(error)
       setSubmitting(false)
       return
@@ -227,7 +259,7 @@ export function ReviewModal({
                         className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:ring-2 focus:ring-foreground/20 focus:border-foreground transition-all outline-none resize-none"
                       />
                       <p className="text-xs text-muted-foreground mt-2">
-                        Minimum 5 characters ({comment.length}/5)
+                        Minimum 4 characters ({comment.length}/4)
                       </p>
                     </div>
 
@@ -298,7 +330,7 @@ export function ReviewModal({
                     </button>
                     <button
                       onClick={handleSubmit}
-                      disabled={submitting || rating === 0 || comment.trim().length < 5}
+                      disabled={submitting || rating === 0 || comment.trim().length < 4}
                       className="flex-1 px-6 py-3 bg-foreground text-background rounded-xl font-semibold hover:shadow-xl hover:shadow-foreground/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {submitting ? (

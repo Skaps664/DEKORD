@@ -6,34 +6,26 @@ import { ArrowLeft, Calendar, User, Clock, Eye } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import type { BlogPost } from "@/lib/types/database"
-import { marked } from "marked"
 import DOMPurify from "dompurify"
-
-// Configure marked options
-marked.setOptions({
-  breaks: false,
-  gfm: true,
-})
 
 interface BlogPostClientProps {
   post: BlogPost
 }
 
 export function BlogPostClient({ post }: BlogPostClientProps) {
-  // Convert Markdown to HTML
+  // Sanitize HTML content for security
   const htmlContent = useMemo(() => {
     if (!post?.content) return ''
     
     try {
-      const rawHtml = marked.parse(post.content) as string
-      const cleanHtml = DOMPurify.sanitize(rawHtml, {
+      const cleanHtml = DOMPurify.sanitize(post.content, {
         ADD_TAGS: ['img', 'iframe'],
-        ADD_ATTR: ['target', 'loading', 'decoding'],
+        ADD_ATTR: ['target', 'loading', 'decoding', 'class', 'style'],
       })
       
       return cleanHtml
     } catch (err) {
-      console.error('Error parsing markdown:', err)
+      console.error('Error sanitizing HTML:', err)
       return post.content
     }
   }, [post?.content])

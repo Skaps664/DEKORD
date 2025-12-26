@@ -7,16 +7,33 @@ export async function getProductReviews(productId: string) {
 
   const { data, error } = await supabase
     .from('reviews')
-    .select(`
-      *,
-      user:user_profiles(full_name)
-    `)
+    .select('*')
     .eq('product_id', productId)
     .order('created_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching product reviews:', error)
+    console.error('Full error details:', JSON.stringify(error, null, 2))
     return { data: null, error: error.message }
+  }
+  
+  console.log('Successfully fetched reviews:', data?.length, 'reviews')
+
+  // Fetch user profiles separately
+  if (data && data.length > 0) {
+    const userIds = [...new Set(data.map(r => r.user_id))]
+    const { data: users } = await supabase
+      .from('user_profiles')
+      .select('id, full_name')
+      .in('id', userIds)
+    
+    // Merge user data with reviews
+    const reviewsWithUsers = data.map(review => ({
+      ...review,
+      user: users?.find(u => u.id === review.user_id) || { full_name: 'Anonymous' }
+    }))
+    
+    return { data: reviewsWithUsers as ReviewWithUser[], error: null }
   }
 
   return { data: data as ReviewWithUser[], error: null }
@@ -127,4 +144,70 @@ export async function updateReviewHelpful(reviewId: string, increment: boolean =
   }
 
   return { error: null }
+}
+
+export async function getUserReviewForProduct(userId: string, productId: string, orderId?: string) {
+  const supabase = createClient()
+
+  let query = supabase
+    .from('reviews')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('product_id', productId)
+
+  if (orderId) {
+    query = query.eq('order_id', orderId)
+  }
+
+  const { data, error } = await query.maybeSingle()
+
+  if (error) {
+    console.error('Error fetching user review:', error)
+    return { data: null, error: error.message }
+  }
+
+  return { data, error: null }
+}
+
+export async function canUserReviewProduct(userId: string, productId: string, orderId: string) {
+  // Check if user has already reviewed this product for this order
+  const { data: existingReview } = await getUserReviewForProduct(userId, productId, orderId)
+  
+  if (existingReview) {
+    return { canReview: false, reason: 'Already reviewed' }
+  }
+
+  // Additional checks can be added here (e.g., order status, delivery date)
+  return { canReview: true, reason: null }
+}
+
+export async function uploadReviewImage(file: File): Promise<{ url: string | null; error: string | null }> {
+  const supabase = createClient()
+
+  try {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+    const filePath = `${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('reviews')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    if (uploadError) {
+      console.error('Error uploading review image:', uploadError)
+      return { url: null, error: uploadError.message }
+    }
+
+    const { data: urlData } = supabase.storage
+      .from('reviews')
+      .getPublicUrl(filePath)
+
+    return { url: urlData.publicUrl, error: null }
+  } catch (error) {
+    console.error('Unexpected error uploading review image:', error)
+    return { url: null, error: 'Failed to upload image' }
+  }
 }

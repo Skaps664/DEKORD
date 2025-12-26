@@ -38,15 +38,22 @@ export default function ClaimPage() {
     setSubmitStatus('idle')
 
     try {
-      // Backend implementation will be added later
-      // const formDataToSend = new FormData()
-      // Object.entries(formData).forEach(([key, value]) => {
-      //   formDataToSend.append(key, value)
-      // })
-      // files.forEach(file => formDataToSend.append('files', file))
+      const formDataToSend = new FormData()
+      Object.entries(formData).forEach(([key, value]) => {
+        formDataToSend.append(key, value)
+      })
+      files.forEach(file => formDataToSend.append('files', file))
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const response = await fetch('/api/claim/submit', {
+        method: 'POST',
+        body: formDataToSend
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit claim')
+      }
       
       setSubmitStatus('success')
       setFormData({ name: "", email: "", whatsappNumber: "", city: "", orderNumber: "", claimType: "", message: "" })

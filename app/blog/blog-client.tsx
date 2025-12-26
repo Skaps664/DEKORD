@@ -58,7 +58,7 @@ export function BlogPageClient({ blogPosts }: BlogPageClientProps) {
   return (
     <main className="min-h-screen grain-texture">
       {/* Hero Section */}
-      <section className="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[40vh] flex items-center justify-center overflow-hidden">
         <motion.div 
           style={{ y: backgroundY }}
           className="absolute inset-0 z-0"
@@ -99,10 +99,10 @@ export function BlogPageClient({ blogPosts }: BlogPageClientProps) {
       </section>
 
       {/* Blog Posts Grid */}
-      <section className="py-12">
+      <section className="py-2">
         <div className="container-custom">
           {blogPosts.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center">
               <p className="text-muted-foreground">No blog posts found. Check back soon!</p>
             </div>
           ) : (

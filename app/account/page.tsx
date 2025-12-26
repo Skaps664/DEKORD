@@ -165,7 +165,7 @@ function AccountPageContent() {
               for (const item of order.items) {
                 if (item.product_id) {
                   const key = `${order.id}-${item.product_id}`
-                  const { data: existingReview } = await getUserReviewForProduct(order.id, item.product_id)
+                  const { data: existingReview } = await getUserReviewForProduct(user.id, item.product_id, order.id)
                   reviewStatus[key] = !!existingReview
                 }
               }
@@ -745,9 +745,12 @@ function AccountPageContent() {
                             View Details
                           </Link>
                           {order.status === "delivered" && (
-                            <button className="flex-1 min-w-[140px] px-4 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors font-medium">
-                              Buy Again
-                            </button>
+                            <Link
+                              href={`/claim/${order.id}`}
+                              className="px-3 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors font-medium text-sm text-center"
+                            >
+                              Claim
+                            </Link>
                           )}
                           {order.status === "shipped" && order.tracking_url && (
                             <a
