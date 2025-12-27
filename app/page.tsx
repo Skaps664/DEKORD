@@ -3,8 +3,6 @@ import dynamic from 'next/dynamic'
 import { HeroSection } from "@/components/hero-section"
 import { FeaturedProducts } from "@/components/featured-products"
 import { CinematicBanner } from "@/components/cinematic-banner"
-import InfiniteGallery from '@/components/infinite-gallery'
-import { Reveal } from '@/components/reveal'
 import { TickerStripes } from '@/components/ticker-stripes'
 import { BottomTicker } from '@/components/bottom-ticker'
 

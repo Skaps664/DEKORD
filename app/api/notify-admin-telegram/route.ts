@@ -94,6 +94,7 @@ ${itemsList}
         const timeoutMs = 15000 // 15s per attempt
         const timeout = setTimeout(() => controller.abort(), timeoutMs)
         try {
+          const resp = await fetch(telegramUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
