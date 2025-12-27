@@ -17,8 +17,6 @@ export async function getProductReviews(productId: string) {
     return { data: null, error: error.message }
   }
   
-  console.log('Successfully fetched reviews:', data?.length, 'reviews')
-
   // Fetch user profiles separately
   if (data && data.length > 0) {
     const userIds = [...new Set(data.map(r => r.user_id))]

@@ -13,7 +13,6 @@ export async function POST(request: Request) {
 
     if (action === 'confirm') {
       // Confirm order
-      console.log('Confirming order in DB:', orderId)
       const { data, error } = await supabase
         .from('orders')
         .update({
@@ -27,8 +26,6 @@ export async function POST(request: Request) {
         console.error('DB update error:', error)
         return NextResponse.json({ error: error.message }, { status: 500 })
       }
-
-      console.log('DB update result:', data)
 
       return NextResponse.json({ success: true, message: 'Order confirmed', data })
     } else if (query) {

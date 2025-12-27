@@ -4,13 +4,8 @@ import type { UserProfile } from '../types/database'
 
 export async function signUp(email: string, password: string, fullName?: string) {
   try {
-    console.log('🔵 signUp START - called with:', { email, fullName })
-    
-    console.log('🔵 Creating Supabase client...')
     const supabase = createClient()
-    console.log('✅ Supabase client created successfully')
     
-    console.log('🔵 Calling supabase.auth.signUp...')
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -21,13 +16,6 @@ export async function signUp(email: string, password: string, fullName?: string)
       },
     })
     
-    console.log('🔵 signUp response received:', { 
-      hasData: !!data, 
-      hasUser: !!data?.user,
-      hasError: !!error,
-      errorMessage: error?.message 
-    })
-    
     if (error) {
       console.error('❌ Error signing up:', error)
       return { data: null, error: error.message }
@@ -35,7 +23,6 @@ export async function signUp(email: string, password: string, fullName?: string)
     
     // Create user profile
     if (data.user) {
-      console.log('🔵 Creating user profile for:', data.user.id)
       const { error: profileError } = await supabase
         .from('user_profiles')
         .insert({
@@ -45,12 +32,9 @@ export async function signUp(email: string, password: string, fullName?: string)
       
       if (profileError) {
         console.error('⚠️ Error creating user profile:', profileError)
-      } else {
-        console.log('✅ User profile created successfully')
       }
     }
     
-    console.log('✅ signUp completed successfully')
     return { data, error: null }
   } catch (err) {
     console.error('💥 EXCEPTION in signUp:', err)
@@ -62,23 +46,11 @@ export async function signUp(email: string, password: string, fullName?: string)
 
 export async function signIn(email: string, password: string) {
   try {
-    console.log('🔵 signIn START - called with:', { email })
-    
-    console.log('🔵 Creating Supabase client...')
     const supabase = createClient()
-    console.log('✅ Supabase client created')
     
-    console.log('🔵 Calling supabase.auth.signInWithPassword...')
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
-    
-    console.log('🔵 signIn response:', { 
-      hasData: !!data, 
-      hasUser: !!data?.user,
-      hasError: !!error,
-      errorMessage: error?.message 
     })
     
     if (error) {
@@ -86,7 +58,6 @@ export async function signIn(email: string, password: string) {
       return { data: null, error: error.message }
     }
     
-    console.log('✅ signIn completed successfully')
     return { data, error: null }
   } catch (err) {
     console.error('💥 EXCEPTION in signIn:', err)
@@ -98,16 +69,10 @@ export async function signIn(email: string, password: string) {
 
 export async function signInWithGoogle() {
   try {
-    console.log('🔵 signInWithGoogle START')
-    
-    console.log('🔵 Creating Supabase client...')
     const supabase = createClient()
-    console.log('✅ Supabase client created')
     
     const redirectUrl = `${window.location.origin}/auth/callback`
-    console.log('🔵 Redirect URL:', redirectUrl)
     
-    console.log('🔵 Calling supabase.auth.signInWithOAuth...')
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -119,19 +84,11 @@ export async function signInWithGoogle() {
       },
     })
     
-    console.log('🔵 signInWithGoogle response:', { 
-      hasData: !!data, 
-      hasUrl: !!data?.url,
-      hasError: !!error,
-      errorMessage: error?.message 
-    })
-    
     if (error) {
       console.error('❌ Error signing in with Google:', error)
       return { data: null, error: error.message }
     }
     
-    console.log('✅ signInWithGoogle completed, OAuth flow initiated')
     return { data, error: null }
   } catch (err) {
     console.error('💥 EXCEPTION in signInWithGoogle:', err)
@@ -226,7 +183,6 @@ export async function updateUserProfile(userId: string, updates: Partial<UserPro
   
   if (!existingProfile) {
     // Profile doesn't exist, create it with upsert
-    console.log('📝 Creating new user profile for:', userId)
     const { data, error } = await supabase
       .from('user_profiles')
       .insert({

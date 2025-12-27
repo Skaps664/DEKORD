@@ -25,7 +25,6 @@ export default function OrderConfirmationPage() {
   const fetchOrder = async () => {
     try {
       const timestamp = Date.now()
-      console.log('Fetching order details for:', orderId, 'at', timestamp)
       const response = await fetch(`/api/order-details?id=${orderId}&_t=${timestamp}`, {
         cache: 'no-store',
         headers: {
@@ -34,14 +33,10 @@ export default function OrderConfirmationPage() {
         }
       })
       const data = await response.json()
-      console.log('Full order data received:', data)
       
       if (data.order) {
         setOrder(data.order)
-        console.log('Order fetched, confirmed status:', data.order.customer_confirmed)
-        console.log('About to set confirmed state to:', data.order.customer_confirmed)
         setConfirmed(data.order.customer_confirmed || false)
-        console.log('Confirmed state should now be:', data.order.customer_confirmed)
       }
     } catch (error) {
       console.error("Error fetching order:", error)
@@ -53,19 +48,15 @@ export default function OrderConfirmationPage() {
   const handleConfirm = async () => {
     setSubmitting(true)
     try {
-      console.log('Confirming order:', orderId)
       const response = await fetch("/api/confirm-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ orderId, action: "confirm" })
       })
       
-      console.log('Confirm response status:', response.status)
       const result = await response.json()
-      console.log('Confirm response:', result)
       
       if (response.ok) {
-        console.log('Order confirmed successfully, refreshing...')
         // Refresh order data from database to ensure confirmed status persists
         await fetchOrder()
       } else {

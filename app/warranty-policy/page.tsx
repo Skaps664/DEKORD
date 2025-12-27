@@ -33,23 +33,23 @@ export default function WarrantyPolicyPage() {
   const claimSteps = [
     {
       icon: MessageSquare,
-      title: "Submit Claim",
-      description: "Visit our Claim Page and fill out the form with your order number, proof of purchase, and upload clear photos/videos of the issue"
+      title: "Go to Your Account",
+      description: "Navigate to your Account page and click on the Orders tab to view your order history"
     },
     {
       icon: FileText,
-      title: "Verification",
-      description: "Our support team will review your claim within 3–5 business days. In some cases, additional proof such as unboxing or usage videos may be required"
+      title: "Select Your Order",
+      description: "Find the delivered order you want to file a claim for and click the 'Claim' button"
     },
     {
       icon: Package,
-      title: "Return (if needed)",
-      description: "You may be asked to send the product back for testing at our lab"
+      title: "Fill the Form",
+      description: "Complete the claim form with issue details, attach clear photos/videos, and submit"
     },
     {
       icon: CheckCircle2,
-      title: "Approval",
-      description: "If the defect is confirmed, we will ship a replacement free of charge within 3–5 business days"
+      title: "We'll Respond in 3-5 Days",
+      description: "Our team will review your claim and respond with a resolution within 3-5 business days"
     }
   ]
 

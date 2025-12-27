@@ -297,10 +297,15 @@ export default function ContactPage() {
                           <option value="product">Product Inquiry</option>
                           <option value="support">Technical Support</option>
                           <option value="bulk">Bulk Orders</option>
-                          <option value="warranty">Warranty Claim</option>
                           <option value="partnership">Partnership</option>
                           <option value="other">Other</option>
                         </select>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          For warranty/return/refund claims, please use the Claim button on your order in{" "}
+                          <a href="/account?tab=orders" className="underline hover:no-underline font-semibold">
+                            My Orders
+                          </a>
+                        </p>
                       </div>
                     </div>
 

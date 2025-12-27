@@ -12,8 +12,6 @@ export async function GET(request: Request) {
 
     const supabase = await createClient()
 
-    console.log('Fetching order details for:', orderId)
-
     const { data: order, error } = await supabase
       .from('orders')
       .select(`
@@ -34,8 +32,6 @@ export async function GET(request: Request) {
       console.error('Order fetch error:', error)
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
-
-    console.log('Order fetched, customer_confirmed:', order.customer_confirmed)
 
     return NextResponse.json({ order })
   } catch (error: any) {

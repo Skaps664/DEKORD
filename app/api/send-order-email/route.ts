@@ -54,8 +54,6 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { type, orderId } = body
 
-    console.log('📧 Email API called with:', { type, orderId, fullBody: body })
-
     if (!type || !orderId) {
       console.error('❌ Missing required parameters:', { type, orderId })
       return NextResponse.json({ error: 'Missing type or orderId' }, { status: 400 })
@@ -130,33 +128,17 @@ export async function POST(request: Request) {
       message_id: emailResult?.id
     })
 
-    return NextResponse.json({ success: true, data: emailResult }, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      }
-    })
+    return NextResponse.json({ success: true, data: emailResult })
   } catch (error: any) {
     console.error('Send email error:', error)
     return NextResponse.json({ error: error.message }, { 
-      status: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      }
+      status: 500
     })
   }
 }
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    }
+    status: 204
   })
 }

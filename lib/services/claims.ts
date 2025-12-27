@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 
 export interface Claim {
   id: string
@@ -13,29 +13,33 @@ export interface Claim {
   message: string
   images: string[]
   status: string
-  admin_response: string | null
+  resolution_notes: string | null
+  admin_notes: string | null
   created_at: string
   updated_at: string
 }
 
 export async function getClaimByOrderId(orderId: string) {
   try {
+    const supabase = createClient()
     const { data, error } = await supabase
       .from('claims')
       .select('*')
       .eq('order_id', orderId)
       .order('created_at', { ascending: false })
       .limit(1)
-      .single()
 
-    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
-      console.error('Error fetching claim:', error)
+    if (error) {
       return { data: null, error: error.message }
     }
 
-    return { data: data as Claim | null, error: null }
+    if (!data || data.length === 0) {
+      return { data: null, error: null }
+    }
+
+    const claim = Array.isArray(data) ? data[0] : data
+    return { data: claim as Claim, error: null }
   } catch (error) {
-    console.error('Error fetching claim:', error)
     return { data: null, error: 'Failed to fetch claim' }
   }
 }

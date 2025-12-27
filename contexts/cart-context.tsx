@@ -93,10 +93,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const stored = localStorage.getItem(CART_STORAGE_KEY)
         if (stored) {
           const parsedItems = JSON.parse(stored)
-          console.log('💾 Loaded from localStorage:', parsedItems)
           setItems(parsedItems)
-        } else {
-          console.log('💾 No items in localStorage')
         }
       }
     } catch (error) {
@@ -107,7 +104,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   async function syncLocalCartToDB(uid: string) {
-    console.log('🔵 Syncing local cart to database...')
     try {
       for (const item of items) {
         await addToCartDB(
@@ -122,7 +118,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem(CART_STORAGE_KEY)
       // Reload from database
       await loadCart()
-      console.log('✅ Cart synced to database')
     } catch (error) {
       console.error('💥 Error syncing cart:', error)
     }
@@ -166,21 +161,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
             // Update quantity
             newItems = [...prev]
             newItems[existingIndex].quantity += quantity
-            console.log('📦 Updated quantity in cart:', newItems[existingIndex])
           } else {
             // Add new item
             const newItem = { ...item, quantity }
-            console.log('📦 Adding new item to cart:', newItem)
             newItems = [...prev, newItem]
           }
           
           localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems))
-          console.log('💾 Saved to localStorage:', newItems)
           return newItems
         })
       }
-      
-      console.log('✅ Added to cart')
     } catch (error) {
       console.error('💥 Error adding to cart:', error)
     }

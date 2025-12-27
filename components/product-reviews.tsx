@@ -31,29 +31,18 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   async function loadReviews() {
     setLoading(true)
     
-    console.log('🔍 Loading reviews for product:', productId)
-    
     const [reviewsResult, statsResult] = await Promise.all([
       getProductReviews(productId),
       getProductRatingStats(productId)
     ])
 
     if (reviewsResult.data) {
-      console.log('✅ Reviews loaded:', reviewsResult.data.length, reviewsResult.data)
       setReviews(reviewsResult.data)
-    } else {
-      console.log('❌ No reviews found or error:', reviewsResult.error)
     }
 
     if (statsResult.data) {
-      console.log('✅ Stats loaded:', statsResult.data)
       setStats(statsResult.data)
-    } else {
-      console.log('❌ No stats found or error:', statsResult.error)
     }
-
-    console.log('🔍 Selected filter:', selectedFilter)
-    console.log('🔍 Total reviews in state:', reviews.length)
 
     setLoading(false)
   }
@@ -61,8 +50,6 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   const filteredReviews = selectedFilter
     ? reviews.filter(r => r.rating === selectedFilter)
     : reviews
-
-  console.log('🔍 Filtered reviews count:', filteredReviews.length, 'Selected filter:', selectedFilter)
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {

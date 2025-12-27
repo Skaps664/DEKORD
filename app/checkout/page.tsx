@@ -63,7 +63,6 @@ export default function CheckoutPage() {
           try {
             const coupon = JSON.parse(storedCoupon) as AppliedCoupon
             setAppliedCoupon(coupon)
-            console.log('✅ Loaded coupon from session:', coupon)
           } catch (e) {
             console.error('Error parsing stored coupon:', e)
           }
@@ -72,7 +71,6 @@ export default function CheckoutPage() {
         // Load user profile with saved shipping info
         const { data: profile } = await getUserProfile(currentUser.id)
         if (profile && profile.save_shipping_info) {
-          console.log("✅ Auto-filling shipping info from profile")
           setFormData({
             fullName: profile.shipping_name || "",
             whatsappNumber: profile.shipping_phone || "",
@@ -106,16 +104,6 @@ export default function CheckoutPage() {
   const discount = appliedCoupon ? appliedCoupon.discount_amount : 0
   const total = subtotal + shipping - discount
 
-  // Debug logging
-  console.log('🛒 Checkout Totals:', {
-    subtotal,
-    shipping,
-    discount,
-    total,
-    appliedCoupon,
-    hasCoupon: !!appliedCoupon
-  })
-
   // Track checkout initiation with Facebook Pixel
   useEffect(() => {
     if (!checkingAuth && !cartLoading && cartItems.length > 0 && !orderSuccess) {
@@ -127,7 +115,6 @@ export default function CheckoutPage() {
       }))
       
       trackInitiateCheckout(subtotal, items)
-      console.log('📊 Facebook Pixel: InitiateCheckout tracked, value:', subtotal)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkingAuth, cartLoading, cartItems, orderSuccess])
@@ -229,8 +216,6 @@ export default function CheckoutPage() {
         
         // Send order placed notifications (email + WhatsApp)
         try {
-          console.log('🔔 Sending notifications for order:', data.id, 'at', new Date().toISOString())
-          
           // Send email notification
           const emailResponse = await fetch('/api/send-order-email', {
             method: 'POST',
@@ -244,8 +229,6 @@ export default function CheckoutPage() {
           if (!emailResponse.ok) {
             const errorData = await emailResponse.json()
             console.error('❌ Email notification failed:', errorData)
-          } else {
-            console.log('✅ Email notification sent')
           }
           
           // Send WhatsApp notification
@@ -261,8 +244,6 @@ export default function CheckoutPage() {
           if (!whatsappResponse.ok) {
             const errorData = await whatsappResponse.json()
             console.error('❌ WhatsApp notification failed:', errorData)
-          } else {
-            console.log('✅ WhatsApp notification sent')
           }
           
           // Send Telegram notification to admin
@@ -277,11 +258,8 @@ export default function CheckoutPage() {
           if (!telegramResponse.ok) {
             const errorData = await telegramResponse.json()
             console.error('❌ Telegram admin notification failed:', errorData)
-          } else {
-            console.log('✅ Telegram admin notification sent')
           }
           
-          console.log('✅ Order notifications sent:', data.order_number)
         } catch (error) {
           console.error('Error sending order notifications:', error)
           // Don't fail the order if notifications fail
@@ -296,7 +274,6 @@ export default function CheckoutPage() {
               data.id,
               discount
             )
-            console.log('✅ Coupon usage recorded:', appliedCoupon.code)
             // Clear coupon from session storage after successful order
             sessionStorage.removeItem('appliedCoupon')
           } catch (error) {
@@ -307,7 +284,6 @@ export default function CheckoutPage() {
         
         // Track purchase with Facebook Pixel
         trackPurchase(total, data.order_number)
-        console.log('📊 Facebook Pixel: Purchase tracked, order:', data.order_number, 'value:', total)
         
         // Save shipping info if checkbox is checked
         if (saveInfo && user) {
@@ -321,7 +297,6 @@ export default function CheckoutPage() {
               shipping_postal_code: null,
               save_shipping_info: true,
             })
-            console.log("✅ Shipping info saved to profile")
           } catch (error) {
             console.error("Error saving shipping info:", error)
           }

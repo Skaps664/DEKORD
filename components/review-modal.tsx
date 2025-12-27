@@ -97,16 +97,6 @@ export function ReviewModal({
     setSubmitting(true)
     setError("")
 
-    console.log('Submitting review with data:', {
-      product_id: productId,
-      order_id: orderId,
-      user_id: userId,
-      rating,
-      title: title.trim(),
-      comment: comment.trim(),
-      images
-    })
-
     const { data, error } = await createReview({
       product_id: productId,
       order_id: orderId,
@@ -116,8 +106,6 @@ export function ReviewModal({
       comment: comment.trim(),
       images: images.length > 0 ? images : undefined
     })
-
-    console.log('Review creation result:', { data, error })
 
     if (error) {
       console.error('Review submission error:', error)

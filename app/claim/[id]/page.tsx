@@ -57,6 +57,7 @@ export default function ClaimOrderPage({ params }: { params: Promise<{ id: strin
   const [order, setOrder] = useState<OrderWithItems | null>(null)
   const [claim, setClaim] = useState<Claim | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
+  const [showConfirmation, setShowConfirmation] = useState(true) // Show confirmation first
   
   // Form state
   const [formData, setFormData] = useState({
@@ -75,30 +76,24 @@ export default function ClaimOrderPage({ params }: { params: Promise<{ id: strin
   useEffect(() => {
     async function loadData() {
       try {
-        // Check if user is logged in
         const { data: user, error: userError } = await getCurrentUser()
         
         if (userError || !user) {
-          console.error('❌ Not logged in, redirecting to auth...')
           router.push('/auth?redirect=/account?tab=orders')
           return
         }
 
         setUserId(user.id)
 
-        // Get order
         const { data: orderData, error: orderError } = await getOrderById(orderId)
         
         if (orderError || !orderData) {
-          console.error('❌ Order not found')
           alert('Order not found')
           router.push('/account?tab=orders')
           return
         }
 
-        // Verify this order belongs to the user
         if (orderData.user_id !== user.id) {
-          console.error('❌ Unauthorized access to order')
           alert('You do not have permission to view this order')
           router.push('/account?tab=orders')
           return
@@ -106,12 +101,16 @@ export default function ClaimOrderPage({ params }: { params: Promise<{ id: strin
 
         setOrder(orderData)
 
-        // Get existing claim if any
-        const { data: claimData } = await getClaimByOrderId(orderId)
-        setClaim(claimData)
-
-        // Pre-fill form if no claim exists
-        if (!claimData) {
+        const { data: claimData, error: claimError } = await getClaimByOrderId(orderId)
+        
+        if (claimData) {
+          setClaim(claimData)
+          setShowConfirmation(false)
+        } else {
+          setClaim(null)
+          setShowConfirmation(true)
+          
+          // Pre-fill form for when user proceeds
           setFormData(prev => ({
             ...prev,
             name: orderData.shipping_name || "",
@@ -124,7 +123,6 @@ export default function ClaimOrderPage({ params }: { params: Promise<{ id: strin
 
         setLoading(false)
       } catch (err) {
-        console.error('💥 Error loading data:', err)
         setLoading(false)
       }
     }
@@ -169,12 +167,10 @@ export default function ClaimOrderPage({ params }: { params: Promise<{ id: strin
       
       setSubmitStatus('success')
       
-      // Reload the page to show the submitted claim
       setTimeout(() => {
         window.location.reload()
       }, 1500)
     } catch (error) {
-      console.error('Error submitting claim:', error)
       setSubmitStatus('error')
     } finally {
       setIsSubmitting(false)
@@ -215,7 +211,7 @@ export default function ClaimOrderPage({ params }: { params: Promise<{ id: strin
             Back to Orders
           </Link>
           <h1 className="text-3xl md:text-4xl font-bold text-neutral-900">
-            {claim ? 'Claim Status' : 'File a Claim'}
+            {claim ? 'Claim Status' : showConfirmation ? 'Confirm Claim Submission' : 'File a Claim'}
           </h1>
           <p className="text-neutral-600 mt-2">
             Order #{order.order_number || orderId}
@@ -248,11 +244,46 @@ export default function ClaimOrderPage({ params }: { params: Promise<{ id: strin
                 </div>
               </motion.div>
 
-              {/* Claim Details */}
+              {/* Admin Response - Show prominently */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
+                className={`p-8 rounded-2xl border-2 ${
+                  claim.resolution_notes 
+                    ? 'bg-blue-50 border-blue-300' 
+                    : 'bg-amber-50 border-amber-300'
+                }`}
+              >
+                <div className="flex items-start gap-3 mb-3">
+                  <MessageSquare className={`w-6 h-6 flex-shrink-0 mt-1 ${
+                    claim.resolution_notes ? 'text-blue-600' : 'text-amber-600'
+                  }`} />
+                  <h3 className={`text-xl font-bold ${
+                    claim.resolution_notes ? 'text-blue-900' : 'text-amber-900'
+                  }`}>
+                    {claim.resolution_notes ? 'Response from dekord' : 'Awaiting Response'}
+                  </h3>
+                </div>
+                <div className="ml-9">
+                  {claim.resolution_notes ? (
+                    <p className="text-blue-900 whitespace-pre-wrap leading-relaxed text-base">
+                      {claim.resolution_notes}
+                    </p>
+                  ) : (
+                    <p className="text-amber-800 text-sm">
+                      Our team is reviewing your claim. You'll receive a response here once we've processed your request. 
+                      We typically respond within 2-3 business days.
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* Claim Details */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
                 className="bg-white p-8 rounded-2xl border border-neutral-200 shadow-sm"
               >
                 <h3 className="text-xl font-bold text-neutral-900 mb-6">Claim Information</h3>
@@ -313,25 +344,82 @@ export default function ClaimOrderPage({ params }: { params: Promise<{ id: strin
                   </div>
                 )}
               </motion.div>
-
-              {/* Admin Response */}
-              {claim.admin_response && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="bg-blue-50 p-8 rounded-2xl border border-blue-200"
-                >
-                  <div className="flex items-start gap-3 mb-3">
-                    <MessageSquare className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
-                    <h3 className="text-xl font-bold text-blue-900">Response from dekord</h3>
-                  </div>
-                  <div className="ml-9">
-                    <p className="text-blue-900 whitespace-pre-wrap">{claim.admin_response}</p>
-                  </div>
-                </motion.div>
-              )}
             </div>
+          ) : showConfirmation ? (
+            // Show confirmation screen before form
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white p-8 md:p-12 rounded-2xl border border-neutral-200 shadow-sm text-center"
+            >
+              <div className="max-w-2xl mx-auto">
+                <div className="mb-6">
+                  <div className="w-20 h-20 mx-auto mb-6 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <FileWarning className="w-10 h-10 text-yellow-600" />
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-4">
+                    Submit a Claim for This Order?
+                  </h2>
+                  <p className="text-neutral-600 text-lg mb-6">
+                    You're about to file a claim for Order #{order.order_number || orderId}
+                  </p>
+                </div>
+
+                {/* Order Summary */}
+                <div className="bg-neutral-50 p-6 rounded-xl mb-8 text-left">
+                  <h3 className="font-semibold text-neutral-900 mb-4 flex items-center gap-2">
+                    <Package className="w-5 h-5" />
+                    Order Summary
+                  </h3>
+                  <div className="space-y-2">
+                    {order.items?.map((item, index) => (
+                      <div key={item.id || index} className="flex justify-between text-sm">
+                        <span className="text-neutral-700">
+                          {item.product_name} {item.variant_details && `(${item.variant_details})`} × {item.quantity}
+                        </span>
+                        <span className="font-medium text-neutral-900">Rs. {item.total_price.toLocaleString()}</span>
+                      </div>
+                    ))}
+                    <div className="border-t border-neutral-200 pt-2 mt-2 flex justify-between font-semibold">
+                      <span>Total</span>
+                      <span>Rs. {order.total.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Important Information */}
+                <div className="bg-blue-50 border border-blue-200 p-6 rounded-xl mb-8 text-left">
+                  <div className="flex items-start gap-3">
+                    <Shield className="w-6 h-6 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <h4 className="font-semibold text-blue-900 mb-2">Before You Proceed</h4>
+                      <ul className="text-sm text-blue-800 space-y-1.5">
+                        <li>• Review our Return & Refund policies carefully</li>
+                        <li>• Prepare clear photos of any product issues</li>
+                        <li>• Have your order details and contact information ready</li>
+                        <li>• Claims are typically processed within 2-3 business days</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button
+                    onClick={() => setShowConfirmation(false)}
+                    className="px-8 py-4 bg-neutral-900 text-white rounded-xl hover:bg-neutral-800 transition-colors font-semibold text-lg"
+                  >
+                    Yes, Continue with Claim
+                  </button>
+                  <Link
+                    href="/account?tab=orders"
+                    className="px-8 py-4 bg-neutral-200 text-neutral-700 rounded-xl hover:bg-neutral-300 transition-colors font-semibold text-lg text-center"
+                  >
+                    Cancel
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
           ) : (
             // Show claim form
             <motion.div

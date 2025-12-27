@@ -30,7 +30,6 @@ export function Header() {
     // Listen for auth state changes
     const supabase = createClient()
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('🔄 Auth state changed:', event, !!session?.user)
       setIsLoggedIn(!!session?.user)
     })
     

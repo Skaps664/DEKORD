@@ -65,8 +65,10 @@ export default function RefundPolicyPage() {
       content: [
         {
           list: [
-            "Visit our Claim Page and submit your refund request with your order details",
-            "Our team will guide you on the next steps, including how to return the product (if required)",
+            "Go to your Account page and navigate to the Orders tab",
+            "Find your delivered order and click the 'Claim' button",
+            "Submit your refund request with issue details and photos",
+            "Our team will respond within 3-5 business days and guide you on the next steps",
             "No refunds will be processed without prior verification and approval from our support team"
           ]
         }

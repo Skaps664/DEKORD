@@ -34,7 +34,6 @@ export function ProductPageClient({ product }: ProductPageClientProps) {
         name: product.name,
         price: product.price,
       })
-      console.log('📊 Facebook Pixel: ViewContent tracked for', product.name)
     }
   }, [product])
 

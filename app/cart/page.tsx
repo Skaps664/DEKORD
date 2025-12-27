@@ -23,11 +23,6 @@ export default function CartPage() {
   const [isAnimating, setIsAnimating] = useState(false)
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null)
 
-  // Debug: Log cart items
-  useEffect(() => {
-    console.log('🛒 Cart items on cart page:', cartItems)
-  }, [cartItems])
-
   useEffect(() => {
     const checkUser = async () => {
       try {
@@ -59,8 +54,6 @@ export default function CartPage() {
     setAppliedCoupon(coupon)
     // Store in session storage for checkout
     sessionStorage.setItem('appliedCoupon', JSON.stringify(coupon))
-    console.log('✅ Coupon stored in sessionStorage:', coupon)
-    console.log('📦 SessionStorage content:', sessionStorage.getItem('appliedCoupon'))
   }
 
   const handleCouponRemoved = () => {

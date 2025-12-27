@@ -28,6 +28,7 @@ import { getCurrentUser, getUserProfile, updateUserProfile, updatePassword, sign
 import { getUserOrders } from "@/lib/services/orders"
 import { ReviewModal } from "@/components/review-modal"
 import { canUserReviewProduct, getUserReviewForProduct } from "@/lib/services/reviews"
+import { getClaimByOrderId, type Claim } from "@/lib/services/claims"
 import type { OrderWithItems } from "@/lib/types/database"
 
 type Tab = "profile" | "orders" | "password"
@@ -56,6 +57,9 @@ function AccountPageContent() {
   
   // Track which products have been reviewed (orderId-productId: boolean)
   const [reviewedProducts, setReviewedProducts] = useState<Record<string, boolean>>({})
+  
+  // Track claim status for each order (orderId: Claim)
+  const [orderClaims, setOrderClaims] = useState<Record<string, Claim>>({})
 
   // Real user data from Supabase
   const [userData, setUserData] = useState({
@@ -97,30 +101,21 @@ function AccountPageContent() {
   useEffect(() => {
     async function loadUserData() {
       try {
-        console.log('🔵 Loading user data...')
-        
-        // Get current user
         const { data: user, error: userError } = await getCurrentUser()
         
         if (userError || !user) {
-          console.error('❌ Not logged in, redirecting to auth...')
           router.push('/auth')
           return
         }
 
-        console.log('✅ User logged in:', user.id)
         setUserId(user.id)
 
-        // Check auth provider
         const provider = user.app_metadata?.provider || 'email'
-        console.log('✅ Auth provider:', provider)
         setAuthProvider(provider)
 
-        // Get user profile
         const { data: profile, error: profileError } = await getUserProfile(user.id)
         
         if (profile) {
-          console.log('✅ Profile loaded:', profile)
           setUserData({
             name: profile.full_name || '',
             email: user.email || '',
@@ -130,7 +125,6 @@ function AccountPageContent() {
             postalCode: profile.postal_code || '',
           })
           
-          // Load saved shipping info
           setSavedShippingInfo({
             shipping_name: profile.shipping_name || '',
             shipping_phone: profile.shipping_phone || '',
@@ -140,7 +134,6 @@ function AccountPageContent() {
             save_shipping_info: profile.save_shipping_info || false,
           })
         } else {
-          console.log('⚠️ No profile found, using user email')
           setUserData({
             name: '',
             email: user.email || '',
@@ -151,16 +144,23 @@ function AccountPageContent() {
           })
         }
 
-        // Get user orders
         const { data: ordersData, error: ordersError } = await getUserOrders(user.id)
         
         if (ordersData) {
-          console.log('✅ Orders loaded:', ordersData.length)
           setOrders(ordersData)
           
-          // Check which products have been reviewed
+          // Check which products have been reviewed and fetch claims
           const reviewStatus: Record<string, boolean> = {}
+          const claimsData: Record<string, Claim> = {}
+          
           for (const order of ordersData) {
+            // Fetch claim for this order
+            const { data: claim } = await getClaimByOrderId(order.id)
+            if (claim) {
+              claimsData[order.id] = claim
+            }
+            
+            // Check reviews for delivered orders
             if (order.status === 'delivered' && order.items) {
               for (const item of order.items) {
                 if (item.product_id) {
@@ -171,14 +171,13 @@ function AccountPageContent() {
               }
             }
           }
+          
           setReviewedProducts(reviewStatus)
-        } else {
-          console.log('⚠️ No orders found')
+          setOrderClaims(claimsData)
         }
 
         setLoading(false)
       } catch (err) {
-        console.error('💥 Error loading user data:', err)
         setLoading(false)
       }
     }
@@ -200,14 +199,11 @@ function AccountPageContent() {
       })
 
       if (error) {
-        console.error('❌ Error saving profile:', error)
         alert('Failed to save profile: ' + error)
       } else {
-        console.log('✅ Profile saved successfully')
         setIsEditing(false)
       }
     } catch (err) {
-      console.error('💥 Exception saving profile:', err)
       alert('Failed to save profile')
     } finally {
       setSaving(false)
@@ -747,9 +743,26 @@ function AccountPageContent() {
                           {order.status === "delivered" && (
                             <Link
                               href={`/claim/${order.id}`}
-                              className="px-3 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors font-medium text-sm text-center"
+                              className="flex items-center gap-2 px-3 py-2 bg-neutral-900 text-white rounded-lg hover:bg-neutral-800 transition-colors font-medium text-sm text-center"
                             >
                               Claim
+                              {orderClaims[order.id] && (
+                                <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                  orderClaims[order.id].status === 'pending' 
+                                    ? 'bg-yellow-500 text-yellow-900'
+                                    : orderClaims[order.id].status === 'in-progress'
+                                    ? 'bg-blue-500 text-blue-900'
+                                    : orderClaims[order.id].status === 'resolved'
+                                    ? 'bg-green-500 text-green-900'
+                                    : orderClaims[order.id].status === 'rejected'
+                                    ? 'bg-red-500 text-red-900'
+                                    : 'bg-gray-500 text-gray-900'
+                                }`}>
+                                  {orderClaims[order.id].status === 'in-progress' 
+                                    ? 'In Progress' 
+                                    : orderClaims[order.id].status.charAt(0).toUpperCase() + orderClaims[order.id].status.slice(1)}
+                                </span>
+                              )}
                             </Link>
                           )}
                           {order.status === "shipped" && order.tracking_url && (

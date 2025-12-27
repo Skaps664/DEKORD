@@ -55,8 +55,6 @@ function CatalogContent() {
     e.stopPropagation()
     
     try {
-      console.log('🔵 Adding product to cart:', product.id, product.name)
-      
       await addItem({
         productId: product.id, // This is already a UUID from the database
         productName: product.name,
@@ -68,8 +66,6 @@ function CatalogContent() {
         price: parseFloat(product.price.toString()),
         quantity: 1,
       })
-      
-      console.log('✅ Successfully added to cart')
       
       // Show success feedback
       setAddedProductId(product.id)

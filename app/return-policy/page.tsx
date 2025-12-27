@@ -44,8 +44,9 @@ export default function ReturnPolicyPage() {
         {
           title: "Initiation",
           items: [
-            "Visit our Claim Page and submit your return request within 30 days of receiving your product",
-            "Provide your order number, reason for return, and clear photos/videos of the product"
+            "Go to your Account page, navigate to the Orders tab, and find your delivered order",
+            "Click the 'Claim' button and submit your return request within 30 days of receiving your product",
+            "Provide the reason for return and attach clear photos/videos of the product"
           ]
         },
         {

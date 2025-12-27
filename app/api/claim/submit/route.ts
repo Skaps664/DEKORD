@@ -189,7 +189,6 @@ export async function POST(request: NextRequest) {
         `,
       })
 
-      console.log('✅ Claim notification email sent to admin')
     } catch (emailError) {
       console.error('❌ Error sending claim notification email:', emailError)
       // Don't fail the request if email fails - claim is already saved

@@ -26,7 +26,6 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('📝 Form submitted:', { isSignIn, formData: { ...formData, password: '***' } })
     
     setError(null)
     setSuccess(null)
@@ -35,22 +34,16 @@ export default function AuthPage() {
     try {
       if (isSignIn) {
         // Sign In
-        console.log('🔵 Starting sign in flow...')
-        console.log('🔵 About to call signIn function...')
         const result = await signIn(formData.email, formData.password)
-        console.log('🔵 signIn function returned:', result)
         
         const { data, error } = result
-        console.log('🔵 Sign in result:', { hasData: !!data, error })
         
         if (error) {
           console.error('❌ Sign in error:', error)
           setError(error)
         } else if (data) {
-          console.log('✅ Sign in successful!')
           setSuccess("Successfully signed in! Redirecting...")
           setTimeout(() => {
-            console.log('🔵 Redirecting to /account...')
             router.push("/account")
           }, 1500)
         } else {
@@ -59,7 +52,6 @@ export default function AuthPage() {
         }
       } else {
         // Sign Up
-        console.log('🔵 Starting sign up flow...')
         
         if (formData.password !== formData.confirmPassword) {
           console.error('❌ Passwords do not match')
@@ -75,18 +67,14 @@ export default function AuthPage() {
           return
         }
 
-        console.log('🔵 About to call signUp function...')
         const result = await signUp(formData.email, formData.password, formData.name)
-        console.log('🔵 signUp function returned:', result)
         
         const { data, error } = result
-        console.log('🔵 Sign up result:', { hasData: !!data, error })
         
         if (error) {
           console.error('❌ Sign up error:', error)
           setError(error)
         } else if (data) {
-          console.log('✅ Sign up successful!')
           setSuccess("Account created! Please check your email to verify your account.")
         } else {
           console.warn('⚠️ No data and no error returned from signUp')
@@ -100,33 +88,25 @@ export default function AuthPage() {
       console.error('💥 Stack:', err instanceof Error ? err.stack : 'No stack')
       setError(`An unexpected error occurred: ${err instanceof Error ? err.message : 'Unknown error'}`)
     } finally {
-      console.log('🔵 Setting loading to false')
       setLoading(false)
     }
   }
 
   const handleGoogleSignIn = async () => {
-    console.log('🔵 Google sign in button clicked')
-    
     setError(null)
     setLoading(true)
 
     try {
-      console.log('🔵 About to call signInWithGoogle...')
       const result = await signInWithGoogle()
-      console.log('🔵 signInWithGoogle function returned:', result)
       
       const { error } = result
-      console.log('🔵 Google sign in result:', { error })
       
       if (error) {
         console.error('❌ Google sign in error:', error)
         setError(error)
         setLoading(false)
-      } else {
-        console.log('✅ Google OAuth initiated, user will be redirected...')
-        // Don't set loading to false - user is being redirected
       }
+      // Don't set loading to false - user is being redirected
     } catch (err) {
       console.error('💥 EXCEPTION in handleGoogleSignIn:', err)
       console.error('💥 Error details:', err instanceof Error ? err.message : String(err))

@@ -128,8 +128,6 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { type, orderId } = body
 
-    console.log('📱 WhatsApp API called with:', { type, orderId, fullBody: body })
-
     if (!type || !orderId) {
       console.error('❌ Missing required parameters:', { type, orderId })
       return NextResponse.json({ error: 'Missing type or orderId' }, { status: 400 })
@@ -206,13 +204,7 @@ export async function POST(request: Request) {
       message_id: result.sid
     })
 
-    return NextResponse.json({ success: true, data: result }, {
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      }
-    })
+    return NextResponse.json({ success: true, data: result })
   } catch (error: any) {
     console.error('WhatsApp error:', error)
     
@@ -231,23 +223,13 @@ export async function POST(request: Request) {
     } catch {}
     
     return NextResponse.json({ error: error.message }, { 
-      status: 500,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
-      }
+      status: 500
     })
   }
 }
 
 export async function OPTIONS(request: Request) {
   return new NextResponse(null, {
-    status: 204,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    }
+    status: 204
   })
 }

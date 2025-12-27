@@ -194,11 +194,6 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
         quantity: quantity,
       }
       
-      console.log('🎨 Active Color:', activeColor)
-      console.log('📏 Active Length:', activeLength)
-      console.log('🎨 Current Color Object:', currentColorObj)
-      console.log('🛒 Adding to cart:', cartItem)
-      
       await addItem(cartItem)
       
       // Track with Facebook Pixel
@@ -208,7 +203,6 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
         price: finalPrice,
         quantity: quantity,
       })
-      console.log('📊 Facebook Pixel: AddToCart tracked for', product?.name || 'Dekord Cable')
       
       // Show success feedback
       setAddedToCart(true)

@@ -48,7 +48,6 @@ function FacebookPixelContent() {
           clearInterval(checkFbq)
           window.fbq('init', pixelId)
           window.fbq('track', 'PageView')
-          console.log('✅ Facebook Pixel initialized:', pixelId)
         }
       }, 100)
 
@@ -69,7 +68,6 @@ function FacebookPixelContent() {
     // Track page views on route change
     if (pixelId && typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'PageView')
-      console.log('📊 PageView tracked:', pathname)
     }
   }, [pathname, searchParams, pixelId])
 

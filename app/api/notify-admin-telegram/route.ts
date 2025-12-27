@@ -6,10 +6,7 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID!
 
 export async function POST(request: Request) {
   try {
-    console.log('🔔 Telegram API called')
-    
     const { orderId } = await request.json()
-    console.log('📦 Order ID:', orderId)
 
     if (!orderId) {
       console.error('❌ No order ID provided')
@@ -23,13 +20,9 @@ export async function POST(request: Request) {
       })
       return NextResponse.json({ error: 'Telegram not configured' }, { status: 500 })
     }
-    
-    console.log('✅ Telegram credentials present')
 
     const supabase = await createClient()
 
-    console.log('🔍 Fetching order details...')
-    
     // Get order details
     const { data: order, error: orderError } = await supabase
       .from('orders')
@@ -50,8 +43,6 @@ export async function POST(request: Request) {
       console.error('❌ Order not found:', orderError)
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
-    
-    console.log('✅ Order fetched:', order.order_number)
 
     // Build items list
     const itemsList = order.order_items?.map((item: any) => {
@@ -96,8 +87,6 @@ ${itemsList}
     // Send message to Telegram with retries and timeout (fixes transient ETIMEDOUT in dev)
     const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`
 
-    console.log('📤 Sending to Telegram...')
-
     async function sendTelegramWithRetry(payload: any) {
       const maxRetries = 3
       for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -105,8 +94,6 @@ ${itemsList}
         const timeoutMs = 15000 // 15s per attempt
         const timeout = setTimeout(() => controller.abort(), timeoutMs)
         try {
-          console.log(`➡️ Telegram attempt ${attempt + 1}/${maxRetries + 1} (timeout ${timeoutMs}ms)`)
-          const resp = await fetch(telegramUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
@@ -134,7 +121,6 @@ ${itemsList}
           if (attempt === maxRetries) throw err
           // Exponential backoff before retrying
           const backoffMs = 1000 * Math.pow(2, attempt)
-          console.log(`⏳ Backing off ${backoffMs}ms before retrying...`)
           await new Promise((r) => setTimeout(r, backoffMs))
         }
       }
@@ -149,7 +135,6 @@ ${itemsList}
         parse_mode: 'Markdown',
         disable_web_page_preview: false
       })
-      console.log('✅ Admin Telegram notification sent! Message ID:', result?.result?.message_id)
     } catch (err: any) {
       console.error('❌ Telegram notification error:', err?.message || err)
       return NextResponse.json({ error: 'Failed to send Telegram notification', details: String(err) }, { status: 500 })
