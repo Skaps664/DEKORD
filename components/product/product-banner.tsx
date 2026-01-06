@@ -8,20 +8,20 @@ export function ProductBanner() {
       <div className="relative overflow-hidden rounded-2xl ring-1 ring-border">
         <div className="relative h-[28vh] sm:h-[36vh] md:h-[48vh]">
           <Image
-            src="/prod-ban-1.webp"
+            src="/test-6.png"
             alt="Editorial banner with USB‑C cable and phone"
             fill
             className="object-cover"
             priority
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-background/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-background/20 to-transparent" />
           <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 left-3 sm:left-4 md:left-6 right-3 sm:right-4 md:right-6">
             <div className="max-w-xl">
-              <h3 className={cn("text-pretty font-semibold leading-tight", "text-lg sm:text-2xl md:text-4xl")}>
-                Elevate the everyday
+              <h3 className={cn("text-white font-semibold leading-tight", "text-lg sm:text-2xl md:text-4xl")}>
+                ELEVATE THE EVERYDAY
               </h3>
-              <p className="text-xs sm:text-sm md:text-base text-black mt-1 sm:mt-2">
+              <p className="text-xs sm:text-sm md:text-base text-white mt-1 sm:mt-2">
                 Designed to pair with modern wardrobes and minimal workspaces—form, function, and longevity as one.
               </p>
               <div className="mt-2 sm:mt-3 md:mt-4">

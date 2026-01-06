@@ -46,7 +46,7 @@ const FEATURES = [
 
 export function ComparisonSection() {
   return (
-    <section className="py-12 sm:py-16 lg:py-28" id="comparison">
+    <section className="py-8 sm:py-14 lg:py-18" id="comparison">
   <div className="container-custom px-2 sm:px-2 md:px-3 overflow-x-hidden">
         <Reveal>
           <header className="text-center mb-8 sm:mb-10 lg:mb-14">

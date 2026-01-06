@@ -6,11 +6,11 @@ import { ParallaxImage } from "@/components/parallax-image"
 
 export function CinematicBanner() {
   return (
-    <section className="relative isolate py-12 sm:py-16 lg:py-28" aria-labelledby="cinematic-banner-heading">
+    <section className="relative isolate py-8 sm:py-14 lg:py-18" aria-labelledby="cinematic-banner-heading">
       {/* Background layer with subtle vignette and grain */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-background grain-texture"
+        className="absolute inset-0 "
         style={{
           maskImage:
             "radial-gradient(120% 80% at 50% 40%, rgba(0,0,0,1) 55%, rgba(0,0,0,0.75) 75%, rgba(0,0,0,0.35) 90%, transparent 100%)",

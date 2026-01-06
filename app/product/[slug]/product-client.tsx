@@ -11,6 +11,7 @@ import { FeatureGrid } from "@/components/product/feature-grid"
 import { SpecsTable } from "@/components/product/specs-table"
 import { LookbookStrip } from "@/components/product/lookbook-strip"
 import { CareWarranty } from "@/components/product/care-warranty"
+import { ProductSpecifications } from "@/components/product/product-specifications"
 import ComparisonSection from "@/components/comparison-section"
 import { SpecialtyShowcase } from "@/components/product/specialty-showcase"
 import { ProductBanner } from "@/components/product/product-banner"
@@ -81,11 +82,17 @@ export function ProductPageClient({ product }: ProductPageClientProps) {
       </section>
 
       <div className="py-6 md:py-8">
-        <ComparisonSection />
+        <ProductSpecifications />
       </div>
+
+      
 
       <div className="py-6 md:py-8">
         <SpecialtyShowcase />
+      </div>
+      
+      <div className="">
+        <ComparisonSection />
       </div>
 
       <div className="py-6 md:py-8">
@@ -96,9 +103,9 @@ export function ProductPageClient({ product }: ProductPageClientProps) {
         <FeatureGrid />
       </div>
 
-      <div className="py-6 md:py-8">
+      {/* <div className="py-6 md:py-8">
         <SpecsTable />
-      </div>
+      </div> */}
 
       <div className="py-6 md:py-8">
         <LookbookStrip />

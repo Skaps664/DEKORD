@@ -1,12 +1,12 @@
 import Image from "next/image"
 
 const shots = [
-  { src: "/streetwear-portrait-with-cable-styled-as-fashion-a.jpg", alt: "Streetwear portrait with cable" },
-  { src: "/minimal-still-life-phone-charging-quiet-luxury.jpg", alt: "Minimal still life charging" },
-  { src: "/desk-flatlay-with-braided-cables-and-laptop.jpg", alt: "Desk flatlay" },
-  { src: "/macro-detail-of-braided-texture-cinematic.jpg", alt: "Macro braid detail" },
-  { src: "/lifestyle-shot-phone-and-bag-with-cable.jpg", alt: "Lifestyle shot" },
-  { src: "/product-on-plinth-with-soft-shadows.jpg", alt: "Product on plinth" },
+  { src: "/duo-1.webp", alt: "Streetwear portrait with cable" },
+  { src: "/duo-2.webp", alt: "Minimal still life charging" },
+  { src: "/duo-3.webp", alt: "Desk flatlay" },
+  { src: "/duo-4.webp", alt: "Macro braid detail" },
+  { src: "/duo-5.webp", alt: "Lifestyle shot" },
+  { src: "/cine-1.webp", alt: "Product on plinth" },
 ]
 
 export function LookbookStrip() {

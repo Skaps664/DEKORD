@@ -5,6 +5,7 @@ import { FeaturedProducts } from "@/components/featured-products"
 import { CinematicBanner } from "@/components/cinematic-banner"
 import { TickerStripes } from '@/components/ticker-stripes'
 import { BottomTicker } from '@/components/bottom-ticker'
+import CableSpecsMonitor from "@/components/cable-specs-monitor"
 
 export const metadata: Metadata = {
   title: "Defy Ordinary with dekord – Tech That Speaks Style",
@@ -32,6 +33,10 @@ export const metadata: Metadata = {
 // Lazy load components below the fold for better performance
 const ComparisonSection = dynamic(() => import("@/components/comparison-section").then(mod => ({ default: mod.ComparisonSection })), {
   loading: () => <div className="min-h-[400px]" />
+})
+
+const TechSpecsShowcase = dynamic(() => import("@/components/tech-specs-showcase").then(mod => ({ default: mod.TechSpecsShowcase })), {
+  loading: () => <div className="min-h-[600px]" />
 })
 
 const CollectionStrip = dynamic(() => import("@/components/collection-strip").then(mod => ({ default: mod.CollectionStrip })), {
@@ -121,10 +126,14 @@ export default function HomePage() {
       <HeroSection />
       <FeaturedProducts />
       <CinematicBanner />
-      <ComparisonSection />
+      <CredibilityBadges />
+      
+      {/* <TechSpecsShowcase /> */}
       <TickerStripes />
       <CollectionStrip />
-      <CredibilityBadges />
+
+      <ComparisonSection />
+      
       <MaterialsSection />
       <FAQsSection />
 {/* <NewsletterSection /> */}
@@ -139,6 +148,10 @@ export default function HomePage() {
       {/* Footer removed: now provided by layout */}
 
       <BottomTicker />
+      {/* <CableSpecsMonitor/> */}
+
+
+
     </main>
   )
 }
