@@ -123,9 +123,7 @@ export function FeaturedProducts() {
                 key={product.id}
                 className="flex-shrink-0 w-[70vw] sm:w-72"
               >
-                <Link href={product.link} className="block">
-                  <ProductCard product={product} onQuickLook={handleQuickLook} priority={index < 2} />
-                </Link>
+                <ProductCard product={product} onQuickLook={handleQuickLook} priority={index < 2} />
               </div>
             ))}
           </div>
@@ -162,9 +160,7 @@ export function FeaturedProducts() {
               }}
             >
               <Reveal delay={index * 0.1}>
-                <Link href={product.link} className="block">
-                  <ProductCard product={product} onQuickLook={handleQuickLook} priority={true} />
-                </Link>
+                <ProductCard product={product} onQuickLook={handleQuickLook} priority={true} />
               </Reveal>
             </motion.div>
           ))}
