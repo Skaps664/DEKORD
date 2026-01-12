@@ -406,7 +406,7 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
               >
                 <Minus className="w-4 h-4" />
               </button>
-              <div className="h-12 w-10 flex items-center justify-center font-semibold text-neutral-900">
+              <div className="h-12 w-10 flex items-center justify-center font-semibold text-neutral-900" suppressHydrationWarning>
                 {quantity}
               </div>
               <button
@@ -433,7 +433,7 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
               ) : isPreOrder ? (
                 <>
                   <ShoppingCart className="w-4 h-4 mr-2" />
-                  Pre-Order Only
+                  Pre-Order
                 </>
               ) : (
                 <>

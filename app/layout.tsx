@@ -195,7 +195,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
-      <body className="font-sans bg-neutral-50 text-neutral-900 overflow-x-hidden grain-texture">
+      <body className="font-sans bg-neutral-50 text-neutral-900 overflow-x-hidden grain-texture" suppressHydrationWarning>
         <PerformanceMonitor />
         <GoogleAnalytics />
         <FacebookPixel />
