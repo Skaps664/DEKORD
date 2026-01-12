@@ -384,19 +384,29 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                           <span className="text-xl font-bold text-foreground">
                             Rs. {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
                           </span>
-                          <motion.button
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={(e) => handleAddToCart(product, e)}
-                            disabled={isLoading}
-                            className="p-2 rounded-full bg-foreground text-background hover:shadow-md transition-shadow disabled:opacity-50"
-                          >
-                            {addedProductId === product.id ? (
-                              <Check className="w-4 h-4" />
-                            ) : (
-                              <ShoppingBag className="w-4 h-4" />
-                            )}
-                          </motion.button>
+                          {product.stock === 0 ? (
+                            <div className="px-3 py-1 text-xs font-semibold text-red-600 bg-red-50 rounded-full">
+                              Sold Out
+                            </div>
+                          ) : product.stock === 99999 ? (
+                            <div className="px-3 py-1 text-xs font-semibold text-purple-600 bg-purple-50 rounded-full">
+                              Pre-Order
+                            </div>
+                          ) : (
+                            <motion.button
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
+                              onClick={(e) => handleAddToCart(product, e)}
+                              disabled={isLoading}
+                              className="p-2 rounded-full bg-foreground text-background hover:shadow-md transition-shadow disabled:opacity-50"
+                            >
+                              {addedProductId === product.id ? (
+                                <Check className="w-4 h-4" />
+                              ) : (
+                                <ShoppingBag className="w-4 h-4" />
+                              )}
+                            </motion.button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -446,28 +456,38 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                           <span className="text-xl font-bold text-foreground">
                             Rs. {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
                           </span>
-                          <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={(e) => handleAddToCart(product, e)}
-                            disabled={isLoading}
-                            className={cn(
-                              "px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2",
-                              addedProductId === product.id
-                                ? "bg-green-500 text-white"
-                                : "bg-foreground text-background hover:bg-foreground/90"
-                            )}
-                          >
-                            {addedProductId === product.id ? (
-                              <>
-                                <Check className="w-4 h-4" /> Added
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingBag className="w-4 h-4" /> Add to Cart
-                              </>
-                            )}
-                          </motion.button>
+                          {product.stock === 0 ? (
+                            <div className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-full">
+                              Sold Out
+                            </div>
+                          ) : product.stock === 99999 ? (
+                            <div className="px-4 py-2 text-sm font-semibold text-purple-600 bg-purple-50 rounded-full">
+                              Pre-Order
+                            </div>
+                          ) : (
+                            <motion.button
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={(e) => handleAddToCart(product, e)}
+                              disabled={isLoading}
+                              className={cn(
+                                "px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2",
+                                addedProductId === product.id
+                                  ? "bg-green-500 text-white"
+                                  : "bg-foreground text-background hover:bg-foreground/90"
+                              )}
+                            >
+                              {addedProductId === product.id ? (
+                                <>
+                                  <Check className="w-4 h-4" /> Added
+                                </>
+                              ) : (
+                                <>
+                                  <ShoppingBag className="w-4 h-4" /> Add to Cart
+                                </>
+                              )}
+                            </motion.button>
+                          )}
                         </div>
                       </div>
                     </div>

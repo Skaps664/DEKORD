@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { ShoppingCart, Zap, Shield, Truck, Plus, Minus, Check } from "lucide-react"
@@ -179,7 +180,13 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
     ? (typeof selectedVariant.price_override === 'string' ? parseFloat(selectedVariant.price_override) : selectedVariant.price_override)
     : basePrice
 
+  // Check stock availability
+  const stock = selectedVariant?.stock ?? product?.stock ?? 0
+  const isOutOfStock = stock === 0
+  const isPreOrder = stock === 99999
+
   const handleAddToCart = async () => {
+    if (isOutOfStock || isPreOrder) return
     try {
       const colorName = currentColorObj?.name || activeColor
       const cartItem = {
@@ -213,6 +220,37 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
   }
 
   const handleBuyNow = async () => {
+    if (isOutOfStock) return
+    
+    if (isPreOrder) {
+      // For pre-orders, add to cart and redirect with coupon
+      try {
+        const colorName = currentColorObj?.name || activeColor
+        const cartItem = {
+          productId: product?.id || "dekord-usb-c-cable",
+          productName: product?.name || "Dekord Braided USB-C Cable",
+          productImage: product?.main_image || "/images/products/usb-cable.jpg",
+          variantId: selectedVariant?.id,
+          variantDetails: `${colorName} • ${activeLength}`,
+          length: activeLength,
+          color: colorName,
+          price: finalPrice,
+          quantity: quantity,
+        }
+        
+        await addItem(cartItem)
+        
+        // Store pre-order coupon code in sessionStorage
+        sessionStorage.setItem('autoApplyCoupon', 'PRELAUNCH30')
+        
+        // Redirect to cart
+        router.push('/cart')
+      } catch (error) {
+        console.error("❌ Failed to pre-order:", error)
+      }
+      return
+    }
+    
     try {
       const colorName = currentColorObj?.name || activeColor
       const cartItem = {
@@ -245,11 +283,54 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
   }
 
   return (
-    <aside className={cn(
-      "rounded-2xl ring-1 ring-border bg-white overflow-hidden sticky top-20 transition-shadow duration-500",
-      "shadow-lg",
-      activeColorShadow && activeColorShadow
-    )}>
+    <>
+      {/* Pre-Order Banner */}
+      {isPreOrder && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 bg-white rounded-2xl overflow-hidden"
+          style={{
+            boxShadow: "rgba(0, 0, 0, 0.1) 0px 10px 50px"
+          }}
+        >
+          <div className="bg-neutral-50 px-6 py-3 border-b border-neutral-200">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              <span className="text-xs font-semibold text-neutral-600 uppercase tracking-wider">
+                Pre-Order Status
+              </span>
+            </div>
+          </div>
+          <div className="p-6">
+            <h3 className="text-lg font-semibold text-neutral-900 mb-2">
+              Pre-Order & Save 30%
+            </h3>
+            <p className="text-sm text-neutral-600 mb-4 leading-relaxed">
+              This product is available for pre-order. Place your order now and receive an automatic 30% discount at checkout. Ships when stock arrives.{" "}
+              <Link href="/pre-launch" className="text-neutral-900 underline hover:no-underline font-medium">
+                Learn more about our pre-launch
+              </Link>
+            </p>
+            <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg border border-neutral-200">
+              <div>
+                <p className="text-xs text-neutral-500 mb-0.5">Discount Code</p>
+                <p className="font-mono font-semibold text-neutral-900">PRELAUNCH30</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-neutral-500 mb-0.5">You Save</p>
+                <p className="font-bold text-green-600">30% OFF</p>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      
+      <aside className={cn(
+        "rounded-2xl ring-1 ring-border bg-white overflow-hidden sticky top-20 transition-shadow duration-500",
+        "shadow-lg",
+        activeColorShadow && activeColorShadow
+      )}>
       {/* Header with Price */}
       <div className="p-6 border-b border-border bg-gradient-to-br from-neutral-50 to-white">
         <div className="flex items-start justify-between gap-4 mb-3">
@@ -340,19 +421,24 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
             <Button 
               size="lg"
               variant="outline" 
-              className="flex-1 h-12 text-base font-semibold border-2 border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white transition-all"
+              className="flex-1 h-12 text-base font-semibold border-2 border-neutral-900 text-neutral-900 hover:bg-neutral-900 hover:text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleAddToCart}
-              disabled={isLoading}
+              disabled={isLoading || isOutOfStock || isPreOrder}
             >
               {addedToCart ? (
                 <>
                   <Check className="w-4 h-4 mr-2" />
                   Added!
                 </>
+              ) : isPreOrder ? (
+                <>
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Pre-Order Only
+                </>
               ) : (
                 <>
                   <ShoppingCart className="w-4 h-4 mr-2" />
-                  Add to Cart
+                  {isOutOfStock ? "Out of Stock" : "Add to Cart"}
                 </>
               )}
             </Button>
@@ -362,17 +448,24 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
           <div className="relative pt-6">
             <Button 
               size="lg"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+              onMouseEnter={isOutOfStock ? undefined : handleMouseEnter}
+              onMouseLeave={isOutOfStock ? undefined : handleMouseLeave}
               onClick={handleBuyNow}
-              disabled={isLoading}
+              disabled={isLoading || isOutOfStock}
               className={cn(
-                "w-full text-base font-semibold bg-neutral-900 hover:bg-neutral-800 transition-all duration-500 ease-out relative overflow-visible",
+                "w-full text-base font-semibold bg-neutral-900 hover:bg-neutral-800 transition-all duration-500 ease-out relative overflow-visible disabled:opacity-50 disabled:cursor-not-allowed",
                 isHovering || showSadEmoji ? "h-20" : "h-14"
               )}
             >
               <div className="flex items-center justify-center">
-                {addedToCart ? (
+                {isOutOfStock ? (
+                  "Out of Stock"
+                ) : isPreOrder ? (
+                  <>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Pre-Order Now
+                  </>
+                ) : addedToCart ? (
                   <>
                     <Check className="w-4 h-4 mr-2" />
                     Added to Cart!
@@ -444,5 +537,6 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
         </div>
       </div>
     </aside>
+    </>
   )
 }

@@ -23,6 +23,38 @@ export default function CartPage() {
   const [isAnimating, setIsAnimating] = useState(false)
   const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null)
 
+  // Auto-apply coupon for pre-orders
+  useEffect(() => {
+    const autoApplyCouponCode = sessionStorage.getItem('autoApplyCoupon')
+    if (autoApplyCouponCode && !appliedCoupon && cartItems.length > 0) {
+      // Trigger coupon application
+      const applyCoupon = async () => {
+        try {
+          const { validateCoupon } = await import('@/lib/services/coupons')
+          const result = await validateCoupon(autoApplyCouponCode, user?.id || null, cartTotal)
+          
+          if (result.valid && result.discount_amount && result.coupon_id) {
+            const coupon = {
+              code: result.code!,
+              discount_amount: result.discount_amount,
+              discount_type: result.discount_type!,
+              discount_value: result.discount_value!,
+              coupon_id: result.coupon_id
+            }
+            setAppliedCoupon(coupon)
+            sessionStorage.setItem('appliedCoupon', JSON.stringify(coupon))
+          }
+        } catch (error) {
+          console.error('Failed to auto-apply coupon:', error)
+        } finally {
+          // Clear the auto-apply flag
+          sessionStorage.removeItem('autoApplyCoupon')
+        }
+      }
+      applyCoupon()
+    }
+  }, [cartItems.length, cartTotal, user, appliedCoupon])
+
   useEffect(() => {
     const checkUser = async () => {
       try {

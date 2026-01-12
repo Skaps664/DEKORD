@@ -249,19 +249,29 @@ function CatalogContent() {
                             <span className="text-xl font-bold text-foreground">
                               Rs. {parseFloat(product.price.toString()).toFixed(2)}
                             </span>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              onClick={(e) => handleAddToCart(product, e)}
-                              disabled={isLoading}
-                              className="p-2 rounded-full bg-foreground text-background hover:shadow-md transition-shadow disabled:opacity-50"
-                            >
-                              {addedProductId === product.id ? (
-                                <Check className="w-4 h-4" />
-                              ) : (
-                                <ShoppingBag className="w-4 h-4" />
-                              )}
-                            </motion.button>
+                            {product.stock === 0 ? (
+                              <div className="px-3 py-1 text-xs font-semibold text-red-600 bg-red-50 rounded-full">
+                                Sold Out
+                              </div>
+                            ) : product.stock === 99999 ? (
+                              <div className="px-3 py-1 text-xs font-semibold text-purple-600 bg-purple-50 rounded-full">
+                                Pre-Order
+                              </div>
+                            ) : (
+                              <motion.button
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={(e) => handleAddToCart(product, e)}
+                                disabled={isLoading}
+                                className="p-2 rounded-full bg-foreground text-background hover:shadow-md transition-shadow disabled:opacity-50"
+                              >
+                                {addedProductId === product.id ? (
+                                  <Check className="w-4 h-4" />
+                                ) : (
+                                  <ShoppingBag className="w-4 h-4" />
+                                )}
+                              </motion.button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -304,22 +314,32 @@ function CatalogContent() {
                             <span className="text-2xl font-bold text-foreground">
                               Rs. {parseFloat(product.price.toString()).toFixed(2)}
                             </span>
-                            <motion.button
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                              onClick={(e) => handleAddToCart(product, e)}
-                              disabled={isLoading}
-                              className="px-6 py-2 rounded-full bg-foreground text-background font-medium hover:shadow-md transition-shadow disabled:opacity-50"
-                            >
-                              {addedProductId === product.id ? (
-                                <>
-                                  <Check className="w-4 h-4 inline mr-2" />
-                                  Added!
-                                </>
-                              ) : (
-                                "Add to Cart"
-                              )}
-                            </motion.button>
+                            {product.stock === 0 ? (
+                              <div className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-full">
+                                Sold Out
+                              </div>
+                            ) : product.stock === 99999 ? (
+                              <div className="px-4 py-2 text-sm font-semibold text-purple-600 bg-purple-50 rounded-full">
+                                Pre-Order
+                              </div>
+                            ) : (
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={(e) => handleAddToCart(product, e)}
+                                disabled={isLoading}
+                                className="px-6 py-2 rounded-full bg-foreground text-background font-medium hover:shadow-md transition-shadow disabled:opacity-50"
+                              >
+                                {addedProductId === product.id ? (
+                                  <>
+                                    <Check className="w-4 h-4 inline mr-2" />
+                                    Added!
+                                  </>
+                                ) : (
+                                  "Add to Cart"
+                                )}
+                              </motion.button>
+                            )}
                           </div>
                         </div>
                       </div>
