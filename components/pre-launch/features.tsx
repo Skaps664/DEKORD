@@ -5,27 +5,39 @@ import { Reveal } from "../reveal"
 const features = [
   {
     title: "Lightning Fast Charging",
-    description: "60W-100W power delivery for all your devices. Charge your MacBook, iPad, or iPhone 15 at maximum speed."
+    description: "60W-100W power delivery for all your devices. Charge your MacBook, iPad, or iPhone 15 at maximum speed.",
+    shortDesc: "60W-100W fast charging for all devices",
+    showOnMobile: true
   },
   {
     title: "Military-Grade Durability",
-    description: "Premium braided nylon with reinforced stress points. Built to withstand 25,000+ bends and everyday wear."
+    description: "Premium braided nylon with reinforced stress points. Built to withstand 25,000+ bends and everyday wear.",
+    shortDesc: "Built to last 25,000+ bends",
+    showOnMobile: true
   },
   {
     title: "Premium Materials",
-    description: "Aerospace-grade aluminum connectors with gold-plated contacts for superior conductivity and longevity."
+    description: "Aerospace-grade aluminum connectors with gold-plated contacts for superior conductivity and longevity.",
+    shortDesc: "Aerospace-grade aluminum connectors",
+    showOnMobile: false
   },
   {
     title: "Stunning Design",
-    description: "Available in vibrant colors that match your style. Not just functional - it's a statement piece."
+    description: "Available in vibrant colors that match your style. Not just functional - it's a statement piece.",
+    shortDesc: "Vibrant colors to match your style",
+    showOnMobile: false
   },
   {
     title: "Universal Compatibility",
-    description: "Works seamlessly with iPhone 15/16, Samsung Galaxy, MacBook, iPad, and all USB-C devices."
+    description: "Works seamlessly with iPhone 15/16, Samsung Galaxy, MacBook, iPad, and all USB-C devices.",
+    shortDesc: "Works with all USB-C devices",
+    showOnMobile: false
   },
   {
-    title: "Exclusive Launch Perks",
-    description: "Early subscribers get 30% off, free shipping, lifetime warranty, and exclusive access to new colors."
+    title: "Pre-Order Benefits",
+    description: "Get 30% off automatically, free shipping, free stickers, and lifetime warranty when you pre-order now.",
+    shortDesc: "30% off + free shipping & stickers",
+    showOnMobile: true
   }
 ]
 
@@ -45,7 +57,28 @@ export function PreLaunchFeatures() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {/* Mobile: Show only 3 key features with short descriptions */}
+          <div className="grid grid-cols-1 gap-4 md:hidden px-4">
+            {features.filter(f => f.showOnMobile).map((feature, index) => (
+              <div
+                key={feature.title}
+                className="bg-white p-5 rounded-2xl"
+                style={{
+                  boxShadow: "rgba(0, 0, 0, 0.08) 0px 4px 24px"
+                }}
+              >
+                <h3 className="text-base font-semibold text-neutral-900 mb-1.5">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-neutral-600">
+                  {feature.shortDesc}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop: Show all features with full descriptions */}
+          <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {features.map((feature, index) => (
               <div
                 key={feature.title}

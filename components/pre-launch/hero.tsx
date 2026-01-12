@@ -53,35 +53,34 @@ export function PreLaunchHero() {
 
 
   return (
-    <section ref={containerRef} className="relative w-full overflow-hidden">
+    <section ref={containerRef} className="relative w-full overflow-hidden min-h-[100svh] lg:min-h-screen flex items-center">
       {/* Background Image */}
       <motion.div
-        className="relative w-full"
+        className="absolute inset-0 w-full h-full"
         style={{ scale: imageScale, y: imageY }}
         initial={{ scale: 1.05 }}
         animate={{ scale: 1 }}
         transition={{ duration: 1.2, ease: [0.21, 0.47, 0.32, 0.98] }}
       >
-        <div className="relative w-full">
+        <div className="relative w-full h-full">
           <picture>
             <source srcSet="/hero.webp" media="(min-width: 1024px)" />
             <Image
-              src="/test-12.webp"
+              src="/hero.webp"
               alt="dekord pre-launch - Premium braided charging cables coming soon"
-              width={1920}
-              height={1080}
-              className="w-full h-auto object-contain"
+              fill
+              className="object-cover"
               priority
               sizes="100vw"
             />
           </picture>
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/50 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/60 pointer-events-none" />
         </div>
       </motion.div>
 
       {/* Hero Content */}
       <motion.div 
-        className="absolute inset-0 flex flex-col items-center justify-center pt-18 px-4 sm:px-6 text-center"
+        className="relative z-10 w-full flex flex-col items-center justify-center px-4 sm:px-6 text-center py-20 sm:py-24"
         style={{ y: contentY }}
       >
         <Reveal>
@@ -98,7 +97,7 @@ export function PreLaunchHero() {
 
         <Reveal delay={0.1}>
           <motion.h1 
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6 leading-tight px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
@@ -112,15 +111,15 @@ export function PreLaunchHero() {
         </Reveal>
 
         <Reveal delay={0.2}>
-          <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto">
-            Be among the first to experience dekord&apos;s  premium charging cables.
-            Power, style, and durability reimagined.
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 mb-6 sm:mb-8 max-w-3xl mx-auto px-4">
+            Explore our pre-launch collection. Pre-order now and get 30% off with automatic discount.
+            Limited time offer on premium charging cables.
           </p>
         </Reveal>
 
         {/* Countdown Timer */}
         <Reveal delay={0.3}>
-          <div className="grid grid-cols-4 gap-3 sm:gap-6 mb-8 max-w-2xl">
+          <div className="grid grid-cols-4 gap-2 sm:gap-4 md:gap-6 mb-6 sm:mb-8 max-w-2xl px-4">
             {[
               { value: timeLeft.days, label: "Days" },
               { value: timeLeft.hours, label: "Hours" },
@@ -132,12 +131,12 @@ export function PreLaunchHero() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
-                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 sm:p-6"
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl sm:rounded-2xl p-2 sm:p-4 md:p-6"
               >
-                <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-1">
+                <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-1">
                   {item.value.toString().padStart(2, '0')}
                 </div>
-                <div className="text-xs sm:text-sm text-white/70 uppercase tracking-wider">
+                <div className="text-[10px] sm:text-xs md:text-sm text-white/70 uppercase tracking-wider">
                   {item.label}
                 </div>
               </motion.div>
@@ -147,25 +146,25 @@ export function PreLaunchHero() {
 
         {/* CTA Buttons */}
         <Reveal delay={0.4}>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <motion.a
-              href="#subscribe"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-neutral-900 font-semibold rounded-full hover:bg-neutral-100 transition-all duration-300 shadow-xl"
-            >
-              <Bell className="w-5 h-5" />
-              Get Early Access
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </motion.a>
-            
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 px-4 w-full max-w-md sm:max-w-none">
             <motion.a
               href="#products"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold rounded-full hover:bg-white/20 transition-all duration-300"
+              className="group inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white text-neutral-900 font-semibold rounded-full hover:bg-neutral-100 transition-all duration-300 shadow-xl text-sm sm:text-base"
             >
-              Explore Collection
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+              Shop Pre-Launch
+              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+            </motion.a>
+            
+            <motion.a
+              href="/catalog"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold rounded-full hover:bg-white/20 transition-all duration-300 text-sm sm:text-base"
+            >
+              View All Products
             </motion.a>
           </div>
         </Reveal>
@@ -176,18 +175,18 @@ export function PreLaunchHero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 1 }}
-            className="mt-12 flex flex-wrap justify-center gap-8 sm:gap-12"
+            className="mt-8 sm:mt-12 flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 px-4"
           >
             {[
-              { value: "500+", label: "Early Subscribers" },
-              { value: "30%", label: "Launch Discount" },
-              { value: "100%", label: "Satisfaction" }
+              { value: "30%", label: "Pre-Order Discount" },
+              { value: "Free", label: "Shipping" },
+              { value: "100%", label: "Made in Pakistan" }
             ].map((stat) => (
               <div key={stat.label} className="text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-white mb-1">
+                <div className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1">
                   {stat.value}
                 </div>
-                <div className="text-sm text-white/70">
+                <div className="text-xs sm:text-sm text-white/70">
                   {stat.label}
                 </div>
               </div>
