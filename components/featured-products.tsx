@@ -12,7 +12,7 @@ const featuredProducts = [
     id: "4",
     name: "w-60 | Army Green",
     price: "Rs. 950",
-    image: "/feat-1.webp",
+    image: "/dek-green.webp",
     badge: "New" as const,
     materials: ["Copper Frame", "Premium Velvet"],
     swatches: [
@@ -32,7 +32,7 @@ const featuredProducts = [
     id: "7",
     name: "w-60 | Ash White",
     price: "Rs. 950",
-    image: "/feat-2.webp",
+    image: "/dek-white.webp",
     badge: "New" as const,
     materials: ["Copper Frame", "Terracotta Velvet"],
     swatches: [
@@ -52,7 +52,7 @@ const featuredProducts = [
     id: "8",
     name: "w-60 | Lava Red",
     price: "Rs. 1050",
-    image: "/feat-3.webp",
+    image: "/dek-red.webp",
     badge: "Limited" as const,
     materials: ["Copper Frame", "Sage Velvet"],
     swatches: [
