@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useState, useCallback } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 
@@ -8,53 +8,84 @@ function LoadingBarContent() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isLoading, setIsLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
+    // Start loading on route change
     setIsLoading(true)
-    const timeout = setTimeout(() => setIsLoading(false), 500)
-    return () => clearTimeout(timeout)
+    setProgress(0)
+
+    // Simulate progress
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 90) return prev
+        return prev + Math.random() * 10
+      })
+    }, 100)
+
+    // End loading after route is ready
+    const timeout = setTimeout(() => {
+      setProgress(100)
+      setTimeout(() => {
+        setIsLoading(false)
+        setProgress(0)
+      }, 200)
+    }, 600)
+
+    return () => {
+      clearInterval(progressInterval)
+      clearTimeout(timeout)
+    }
   }, [pathname, searchParams])
+
+  // Listen to link clicks for instant feedback
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const link = target.closest('a')
+      
+      if (link && link.href && !link.target && link.origin === window.location.origin) {
+        // Check if it's not the same page
+        const linkUrl = new URL(link.href)
+        if (linkUrl.pathname !== window.location.pathname) {
+          setIsLoading(true)
+          setProgress(10)
+        }
+      }
+    }
+
+    document.addEventListener('click', handleClick)
+    return () => document.removeEventListener('click', handleClick)
+  }, [])
 
   return (
     <AnimatePresence>
       {isLoading && (
-        <motion.div
-          className="fixed top-0 left-0 right-0 z-[9999] h-1"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          {/* Background track */}
-          <div className="absolute inset-0 bg-gradient-to-r from-neutral-200 to-neutral-300" />
-          
-          {/* Animated progress bar */}
+        <>
+          {/* Top Loading Bar */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-black via-neutral-700 to-black"
-            initial={{ x: "-100%" }}
-            animate={{ 
-              x: "100%",
-              transition: {
-                duration: 1,
-                ease: "easeInOut",
-                repeat: Infinity
-              }
-            }}
-          />
-          
-          {/* Shimmer effect */}
+            className="fixed top-0 left-0 right-0 z-[9999] h-1 bg-neutral-200"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="h-full bg-gradient-to-r from-neutral-900 via-neutral-700 to-neutral-900"
+              initial={{ width: "0%" }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+            />
+          </motion.div>
+
+          {/* Optional: Subtle page overlay for better feedback */}
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-            initial={{ x: "-100%" }}
-            animate={{ 
-              x: "200%",
-              transition: {
-                duration: 1.5,
-                ease: "easeInOut",
-                repeat: Infinity
-              }
-            }}
+            className="fixed inset-0 z-[9998] bg-white/50 backdrop-blur-[2px] pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
           />
-        </motion.div>
+        </>
       )}
     </AnimatePresence>
   )

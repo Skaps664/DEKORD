@@ -4,6 +4,8 @@ import { motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useState } from "react"
+import { Loader2 } from "lucide-react"
 
 interface ProductCardProps {
   product: {
@@ -23,6 +25,14 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onQuickLook, priority = false }: ProductCardProps) {
+  const [isNavigating, setIsNavigating] = useState(false)
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (product.link) {
+      setIsNavigating(true)
+    }
+  }
+
   const cardContent = (
     <motion.div
       className="group relative bg-white overflow-hidden"
@@ -31,7 +41,21 @@ export function ProductCard({ product, onQuickLook, priority = false }: ProductC
         boxShadow: "rgba(0, 0, 0, 0.1) 0px 10px 50px",
       }}
       layout
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
     >
+      {/* Loading Overlay */}
+      {isNavigating && (
+        <motion.div
+          className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.15 }}
+        >
+          <Loader2 className="w-8 h-8 text-neutral-900 animate-spin" />
+        </motion.div>
+      )}
+
       {/* Badge */}
       {product.badge && (
         <div className="absolute top-4 left-4 z-20">
@@ -106,7 +130,7 @@ export function ProductCard({ product, onQuickLook, priority = false }: ProductC
 
   if (product.link) {
     return (
-      <Link href={product.link} className="block">
+      <Link href={product.link} className="block" onClick={handleClick}>
         {cardContent}
       </Link>
     )
