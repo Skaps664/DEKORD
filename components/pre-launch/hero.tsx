@@ -64,9 +64,9 @@ export function PreLaunchHero() {
       >
         <div className="relative w-full h-full">
           <picture>
-            <source srcSet="/hero.webp" media="(min-width: 1024px)" />
+            <source srcSet="/banny-2.webp" media="(min-width: 1024px)" />
             <Image
-              src="/hero.webp"
+              src="/banny-2.webp"
               alt="dekord pre-launch - Premium braided charging cables coming soon"
               fill
               className="object-cover"

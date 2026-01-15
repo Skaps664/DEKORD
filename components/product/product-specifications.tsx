@@ -10,20 +10,20 @@ const specifications = [
     category: "Performance",
     icon: Zap,
     specs: [
-      { label: "Power Delivery", value: "100W (20V/5A)" },
-      { label: "Data Transfer Speed", value: "40 Gbps (USB 3.2 Gen 2)" },
-      { label: "Charging Protocol", value: "USB PD 3.0, QC 4.0+" },
-      { label: "Video Output", value: "4K@60Hz, 8K@30Hz" },
+      { label: "Power Delivery", value: "60W (20V/3A)" },
+      { label: "Data Transfer Speed", value: "480 Mbps (USB 3.2 Gen 2)" },
+      { label: "Charging Protocol", value: "USB PD 3.0, USB 2.0" },
+      { label: "Video Output", value: "-" },
     ]
   },
   {
     category: "Build Quality",
     icon: Shield,
     specs: [
-      { label: "Cable Jacket", value: "Double-Braided Nylon" },
+      { label: "Cable Jacket", value: "Double-Braided Layer" },
       { label: "Conductor Material", value: "Tinned Copper (99.9% Pure)" },
-      { label: "Connector Housing", value: "Aluminum Alloy (Anodized)" },
-      { label: "Bend Lifespan", value: "25,000+ Cycles Tested" },
+      { label: "Connector Housing", value: "Inner Mold Housing" },
+      { label: "Bend Lifespan", value: "20,000+ Cycles Tested" },
     ]
   },
   {
@@ -31,7 +31,7 @@ const specifications = [
     icon: Cpu,
     specs: [
       { label: "Wire Gauge", value: "20 AWG" },
-      { label: "E-Marker Chip", value: "Certified (PD 3.0 Compliant)" },
+      { label: "Chip", value: "Certified (PD 3.0 Compliant)" },
       { label: "Shielding", value: "Triple Layer (Al-Foil + Braided)" },
       { label: "Temperature Range", value: "-20°C to 80°C" },
     ]
@@ -47,13 +47,13 @@ const specifications = [
     ]
   },
   {
-    category: "Certifications",
+    category: "Standards",
     icon: CheckCircle2,
     specs: [
-      { label: "Safety Standards", value: "UL, CE, FCC, RoHS Certified" },
-      { label: "USB-IF Certified", value: "Yes (TID: 12345)" },
-      { label: "MFi Certified", value: "Yes (for Lightning variants)" },
-      { label: "Environmental", value: "RoHS 2.0, REACH Compliant" },
+      { label: "Safety Standards", value: "UL, CE, FCC, RoHS" },
+      { label: "USB-IF Standards", value: "Yes" },
+      { label: "MFi Standards", value: "Yes (for Lightning variants)" },
+      { label: "Environmental", value: "RoHS 2.0 Standard" },
     ]
   },
 ]
@@ -108,7 +108,7 @@ export function ProductSpecifications() {
                     <Zap className="w-4 h-4 text-amber-600" strokeWidth={2.5} />
                     <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Power Delivery</dt>
                   </div>
-                  <dd className="text-base sm:text-lg font-semibold">100W Fast Charging</dd>
+                  <dd className="text-base sm:text-lg font-semibold">60W Fast Charging</dd>
                 </div>
                 
                 <div className="p-4 sm:p-6">
@@ -116,7 +116,7 @@ export function ProductSpecifications() {
                     <Gauge className="w-4 h-4 text-blue-600" strokeWidth={2.5} />
                     <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Data Transfer</dt>
                   </div>
-                  <dd className="text-base sm:text-lg font-semibold">40 Gbps Speed</dd>
+                  <dd className="text-base sm:text-lg font-semibold">480 Mbps Speed</dd>
                 </div>
                 
                 <div className="p-4 sm:p-6">
@@ -124,7 +124,7 @@ export function ProductSpecifications() {
                     <Shield className="w-4 h-4 text-green-600" strokeWidth={2.5} />
                     <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Durability</dt>
                   </div>
-                  <dd className="text-base sm:text-lg font-semibold">25,000+ Bends</dd>
+                  <dd className="text-base sm:text-lg font-semibold">20,000+ Bends</dd>
                 </div>
               </div>
             </motion.div>

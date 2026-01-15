@@ -11,25 +11,25 @@ const materials = [
     id: "dek",
     name: "Lava Red",
     description: "Premium braided cables with reinforced connector joints",
-    image: "/dek-red-2.webp",
+    image: "/dek-red-5.webp",
     backgroundImage:
-      "/dek-red-2.webp",
+      "/dek-red-5.webp",
     tint: "bg-blue-50",
   },
   {
     id: "weev",
-    name: "Army Green",
+    name: "Ash White",
     description: "Hand-crafted cables with high-density braided jacket",
-    image: "/dek-green-2.webp",
-    backgroundImage: "/dek-green-2.webp",
+    image: "/dek-white-5.webp",
+    backgroundImage: "/dek-white-5.webp",
     tint: "bg-gray-100",
   },
   {
     id: "featured",
     name: "Yellows",
     description: "Our best-selling cables with stable PD chipset",
-    image: "/dek-yellow-2.webp",
-    backgroundImage: "/dek-yellow-2.webp",
+    image: "/dek-yellow-5.webp",
+    backgroundImage: "/dek-yellow-5.webp",
     tint: "bg-red-50",
   },
 ]
@@ -37,8 +37,10 @@ const materials = [
 export function MaterialsSection() {
   const [activeMaterial, setActiveMaterial] = useState("dek")
   const [isMobile, setIsMobile] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const checkMobile = () => setIsMobile(window.innerWidth < 768)
     checkMobile()
     window.addEventListener('resize', checkMobile)
@@ -52,18 +54,20 @@ export function MaterialsSection() {
       return <span>{text}</span>
     }
     return (
-      <span>
+      <span suppressHydrationWarning>
         {text.split("").map((char, index) => (
           <motion.span
             key={index}
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{
               duration: 0.5,
               delay: delay + index * 0.03,
               ease: [0.21, 0.47, 0.32, 0.98],
             }}
             style={{ display: char === " " ? "inline" : "inline-block" }}
+            suppressHydrationWarning
           >
             {char === " " ? "\u00A0" : char}
           </motion.span>
@@ -74,7 +78,7 @@ export function MaterialsSection() {
 
   return (
     <section className="relative min-h-[70vh] sm:min-h-[80vh] flex items-center justify-center overflow-hidden" id="materials">
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0" suppressHydrationWarning>
         {materials.map((material) => (
           <motion.div
             key={material.id}
@@ -82,6 +86,7 @@ export function MaterialsSection() {
             initial={{ opacity: material.id === activeMaterial ? 1 : 0 }}
             animate={{ opacity: material.id === activeMaterial ? 1 : 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
+            suppressHydrationWarning
           >
             <Image
               src={material.backgroundImage || "/placeholder.svg"}
@@ -92,21 +97,23 @@ export function MaterialsSection() {
             />
           </motion.div>
         ))}
-        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-black/20" suppressHydrationWarning />
       </div>
 
-      <div className="absolute top-[80px] sm:top-[120px] left-0 right-0 z-10">
-        <div className="container-custom text-white px-4 sm:px-6">
+      <div className="absolute top-[80px] sm:top-[120px] left-0 right-0 z-10" suppressHydrationWarning>
+        <div className="container-custom text-white px-4 sm:px-6" suppressHydrationWarning>
           <Reveal>
-            <div>
+            <div suppressHydrationWarning>
               <AnimatePresence mode="wait">
                 <motion.h2
                   key={activeMaterial}
                   initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   className="font-bold mb-4 sm:mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-tight"
+                  suppressHydrationWarning
                 >
                   <AnimatedText text={activeMaterialData.name} delay={0.2} />
                 </motion.h2>
@@ -119,7 +126,7 @@ export function MaterialsSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-8 z-10 max-w-md hidden">
+      <div className="absolute bottom-8 left-8 z-10 max-w-md hidden" suppressHydrationWarning>
         <Reveal delay={0.3}>
           <blockquote className="pl-0 py-4">
             <p className="text-xl text-white leading-relaxed italic lg:text-base font-medium">
@@ -130,10 +137,10 @@ export function MaterialsSection() {
         </Reveal>
       </div>
 
-      <div className="absolute bottom-8 left-0 right-0 z-10">
-        <div className="container-custom">
+      <div className="absolute bottom-8 left-0 right-0 z-10" suppressHydrationWarning>
+        <div className="container-custom" suppressHydrationWarning>
           <Reveal delay={0.1}>
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex flex-wrap justify-center gap-3" suppressHydrationWarning>
               {materials.map((material) => (
                 <motion.button
                   key={material.id}
@@ -146,6 +153,7 @@ export function MaterialsSection() {
                   onClick={() => setActiveMaterial(material.id)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  suppressHydrationWarning
                 >
                   {material.name}
                 </motion.button>

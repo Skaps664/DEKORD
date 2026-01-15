@@ -78,11 +78,11 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
                   Home
                 </Link>
                 <Link
-                  href="/collections"
+                  href="/pre-launch"
                   onClick={onClose}
                   className="text-sm md:text-base font-medium text-foreground hover:opacity-70 transition-opacity whitespace-nowrap"
                 >
-                  Collections
+                  Pre-Launch
                 </Link>
                 <Link
                   href="/catalog"
@@ -145,11 +145,11 @@ export function TopDropMenu({ open, onClose, className }: TopDropMenuProps) {
                 Home
               </Link>
               <Link
-                href="/collections"
+                href="/pre-launch"
                 onClick={onClose}
                 className="text-base font-medium text-foreground hover:opacity-70 transition-opacity py-2 text-center"
               >
-                Collections
+                Pre-Launch
               </Link>
               <Link
                 href="/catalog"

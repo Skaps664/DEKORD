@@ -21,6 +21,7 @@ export function Reveal({ children, delay = 0, className }: RevealProps) {
         ease: [0.21, 0.47, 0.32, 0.98],
       }}
       className={className}
+      suppressHydrationWarning
     >
       {children}
     </motion.div>

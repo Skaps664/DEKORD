@@ -1,12 +1,12 @@
 import Image from "next/image"
 
 const shots = [
-  { src: "/duo-1.webp", alt: "Streetwear portrait with cable" },
-  { src: "/duo-2.webp", alt: "Minimal still life charging" },
-  { src: "/duo-3.webp", alt: "Desk flatlay" },
-  { src: "/duo-4.webp", alt: "Macro braid detail" },
-  { src: "/duo-5.webp", alt: "Lifestyle shot" },
-  { src: "/cine-1.webp", alt: "Product on plinth" },
+  { src: "/dek-red-6.webp", alt: "Streetwear portrait with cable" },
+  { src: "/dek-blue-2.webp", alt: "Minimal still life charging" },
+  { src: "/dek-yellow-5.webp", alt: "Desk flatlay" },
+  { src: "/dek-black-6.webp", alt: "Macro braid detail" },
+  { src: "/dek-white-7.webp", alt: "Lifestyle shot" },
+  { src: "/dek-red-2.webp", alt: "Product on plinth" },
 ]
 
 export function LookbookStrip() {

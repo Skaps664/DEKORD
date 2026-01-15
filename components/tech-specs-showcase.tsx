@@ -9,7 +9,7 @@ const specs = [
   {
     icon: Zap,
     label: "Power Delivery",
-    value: "100",
+    value: "60-65",
     unit: "W",
     description: "Maximum charging power",
     color: "from-amber-500 to-orange-600",
@@ -19,8 +19,8 @@ const specs = [
   {
     icon: Gauge,
     label: "Data Transfer",
-    value: "40",
-    unit: "Gbps",
+    value: "480",
+    unit: "Mbps",
     description: "Lightning-fast file transfer",
     color: "from-blue-500 to-cyan-600",
     bgGlow: "bg-blue-500/10",
@@ -29,7 +29,7 @@ const specs = [
   {
     icon: Shield,
     label: "Durability",
-    value: "25000",
+    value: "20000",
     unit: "+",
     description: "Bend test cycles",
     color: "from-emerald-500 to-green-600",
@@ -69,9 +69,9 @@ const specs = [
 ]
 
 const features = [
-  { icon: CheckCircle2, text: "E-Marker Chip Certified", gradient: "from-blue-600 to-cyan-600" },
-  { icon: CheckCircle2, text: "Double-Braided Nylon", gradient: "from-purple-600 to-pink-600" },
-  { icon: CheckCircle2, text: "Aluminum Alloy Housing", gradient: "from-amber-600 to-orange-600" },
+  { icon: CheckCircle2, text: "Chip Certified", gradient: "from-blue-600 to-cyan-600" },
+  { icon: CheckCircle2, text: "Double-Braided Layer", gradient: "from-purple-600 to-pink-600" },
+  { icon: CheckCircle2, text: "Inner Mold Housing", gradient: "from-amber-600 to-orange-600" },
   { icon: CheckCircle2, text: "Reinforced SR Joints", gradient: "from-emerald-600 to-green-600" },
   { icon: CheckCircle2, text: "Universal Compatibility", gradient: "from-rose-600 to-red-600" },
   { icon: CheckCircle2, text: "Heat-Resistant Design", gradient: "from-indigo-600 to-purple-600" },
