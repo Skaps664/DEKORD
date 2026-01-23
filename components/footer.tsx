@@ -76,6 +76,7 @@ export function Footer() {
     Connect: [
       { name: "Contact Us", href: "/contact" },
       {name: "Corporate Queries", href: "/corporate-queries" },
+      { name: "Careers", href: "/openings" },
     ],
   }
 
