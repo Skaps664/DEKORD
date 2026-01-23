@@ -3,6 +3,7 @@ import { notFound } from "next/navigation"
 import JobApplicationPage from "./job-application-client"
 
 export const dynamic = 'force-dynamic'
+export const dynamicParams = true
 export const revalidate = 0
 
 async function getJob(id: string) {
