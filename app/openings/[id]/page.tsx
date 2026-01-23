@@ -2,6 +2,9 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import JobApplicationPage from "./job-application-client"
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 async function getJob(id: string) {
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/jobs/${id}`, {
