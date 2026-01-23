@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import JobApplicationPage from "./job-application-client"
+import { createClient } from '@/lib/supabase/server'
 
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
@@ -8,15 +9,21 @@ export const revalidate = 0
 
 async function getJob(id: string) {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/jobs/${id}`, {
-      cache: 'no-store'
-    })
+    const supabase = await createClient()
     
-    if (!response.ok) {
+    const { data, error } = await supabase
+      .from('job_openings')
+      .select('*')
+      .eq('id', id)
+      .eq('status', 'active')
+      .single()
+
+    if (error || !data) {
+      console.error('Error fetching job:', error)
       return null
     }
-    
-    return await response.json()
+
+    return data
   } catch (error) {
     console.error('Error fetching job:', error)
     return null
