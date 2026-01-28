@@ -6,21 +6,21 @@ interface TickerStripesProps {
 
 export function TickerStripes({ variant = "default" }: TickerStripesProps) {
   const topMessages = [
-    "Defy Ordinary",
-    "Tech That Speaks Style",
-    "Premium Quality",
     "60W-100W Power Delivery",
-    "Built to Last",
-    "Fast Charging Essentials",
+    "PD 3.0 High-Speed Charging",
+    "Bend Tested 20,000 Times",
+    "Gold-Plated Connectors",
+    "Braided Nylon Jacket",
+    "Universal Compatibility",
   ]
 
   const bottomMessages = [
-    "Charge Your Life",
-    "Style Meets Performance",
-    "Braided for Durability",
-    "Universal Compatibility",
-    "Designed in Peshawar",
-    "Not Just Cables, A Vibe",
+    "Fast Charging Technology",
+    "Premium Build Quality",
+    "Durable & Long-Lasting",
+    "Multi-Device Support",
+    "Tangle-Free Design",
+    "Water Resistant Coating",
   ]
 
   // Duplicate messages for seamless loop

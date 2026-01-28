@@ -62,7 +62,7 @@ export function HeroSection() {
           <picture>
             <source srcSet="/new-ban-desk-2.webp" media="(min-width: 1024px)" />
             <Image
-              src="/new-ban-mob.webp"
+              src="/new-ban-mob-2.webp"
               alt="dekord hero image - Premium braided charging cables"
               width={1920}
               height={1080}
