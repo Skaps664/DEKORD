@@ -10,6 +10,7 @@ import { CartProvider } from "@/contexts/cart-context"
 import { Analytics } from '@vercel/analytics/react'
 import LoadingBar from "@/components/loading-bar"
 import { PerformanceMonitor } from "@/components/performance-monitor"
+import { CookieConsent } from "@/components/cookie-consent"
 
 
 const inter = Inter({
@@ -205,6 +206,7 @@ export default function RootLayout({
           <main role="main">{children}</main>
           <Analytics />
           <Footer />
+          <CookieConsent />
         </CartProvider>
       </body>
     </html>

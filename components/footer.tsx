@@ -1,7 +1,81 @@
 "use client"
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Instagram, Facebook, Linkedin, ArrowUpRight, Mail } from "lucide-react"
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Instagram, Facebook, Linkedin, ArrowUpRight, Mail, ChevronDown } from "lucide-react"
+
+// Country Selector Component
+function CountrySelector() {
+  const [selectedCountry, setSelectedCountry] = useState("Pakistan")
+  const [isOpen, setIsOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  useEffect(() => {
+    // Load saved country on mount
+    const saved = localStorage.getItem('selectedCountry')
+    if (saved) setSelectedCountry(saved)
+  }, [])
+
+  const countries = [
+    "Pakistan",
+    "UAE",
+    "Saudi Arabia",
+    "UK",
+    "Oman",
+    "Qatar",
+    "Kuwait",
+    "Bahrain"
+  ]
+
+  const handleCountryChange = (country: string) => {
+    setSelectedCountry(country)
+    setIsOpen(false)
+    localStorage.setItem('selectedCountry', country)
+  }
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-md text-sm text-neutral-700 hover:bg-white/[0.1] transition-colors duration-200"
+      >
+        <span>{selectedCountry}</span>
+        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute bottom-full mb-2 right-0 bg-white border border-neutral-200 rounded-md shadow-lg py-1 min-w-[140px] z-10"
+          >
+            {countries.map((country) => (
+              <button
+                key={country}
+                onClick={() => handleCountryChange(country)}
+                className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors duration-200"
+              >
+                {country}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
 
 // TikTok icon component (Lucide doesn't have TikTok, so we'll use SVG)
 const TikTokIcon = ({ size = 18 }: { size?: number }) => (
@@ -201,7 +275,13 @@ export function Footer() {
           </div>
         </motion.div>
 
-        
+        {/* Bottom Section with Copyright and Country Selector */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-8 border-t border-white/[0.05]">
+          <p className="text-neutral-600 text-sm">
+            © {currentYear} dekord. All rights reserved.
+          </p>
+          <CountrySelector />
+        </div>
       </div>
     </footer>
   )
