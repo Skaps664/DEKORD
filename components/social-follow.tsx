@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Reveal } from "./reveal"
-import { Instagram } from "lucide-react"
+import { Instagram, Facebook, Linkedin, Music } from "lucide-react"
 
 export function SocialFollow() {
   return (
@@ -60,7 +60,7 @@ export function SocialFollow() {
             </motion.p>
 
             <motion.div
-              className="mt-8"
+              className="mt-8 flex flex-wrap justify-center gap-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -71,11 +71,41 @@ export function SocialFollow() {
                 href="https://instagram.com/dekord.pk"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-full font-medium hover:bg-neutral-800 transition-colors duration-200"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors duration-200"
                 suppressHydrationWarning
               >
                 <Instagram className="w-5 h-5" />
-                Follow on Instagram
+                Instagram
+              </a>
+              <a
+                href="https://facebook.com/dekord.pk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors duration-200"
+                suppressHydrationWarning
+              >
+                <Facebook className="w-5 h-5" />
+                Facebook
+              </a>
+              <a
+                href="https://linkedin.com/company/dekord-pk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-neutral-900 text-white rounded-full font-medium hover:bg-gray-800 transition-colors duration-200"
+                suppressHydrationWarning
+              >
+                <Linkedin className="w-5 h-5" />
+                LinkedIn
+              </a>
+              <a
+                href="https://tiktok.com/@dekord.pk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition-colors duration-200"
+                suppressHydrationWarning
+              >
+                <Music className="w-5 h-5" />
+                TikTok
               </a>
             </motion.div>
           </div>

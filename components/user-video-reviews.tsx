@@ -95,7 +95,7 @@ export function UserVideoReviews() {
   const updatedMaxDrag = Math.max(0, updatedTotalWidth - containerWidth + 48)
 
   return (
-    <section ref={containerRef} className="w-full py-12 sm:py-16 md:py-20 bg-background overflow-hidden">
+    <section ref={containerRef} className="w-full py-12 sm:py-16 md:py-20 overflow-hidden">
       <div className="container-custom" suppressHydrationWarning>
         {/* Header */}
         <Reveal>

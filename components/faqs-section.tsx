@@ -83,7 +83,7 @@ const faqs = [
 
 export function FAQsSection() {
   return (
-    <section aria-labelledby="faqs-title" className="w-full bg-background">
+    <section aria-labelledby="faqs-title" className="w-full ">
       <div className="mx-auto w-full max-w-6xl px-4 md:px-6 py-12 sm:py-16 md:py-24">
         <div className="grid gap-8 sm:gap-10 md:grid-cols-12">
           {/* Left column: small prompt, big stacked headline, hotline */}
