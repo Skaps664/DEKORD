@@ -6,7 +6,7 @@ import { Instagram, Facebook, Linkedin, Music } from "lucide-react"
 
 export function SocialFollow() {
   return (
-    <section className="py-20 lg:py-32 relative overflow-hidden">
+    <section className="py-8 lg:py-12 relative overflow-hidden">
       {/* Subtle background pattern */}
       <div className="absolute inset-0 opacity-5" suppressHydrationWarning>
         <div className="absolute inset-0" style={{

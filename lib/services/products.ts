@@ -7,7 +7,12 @@ export async function getAllProducts() {
   
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select(`
+      *,
+      collection_products(
+        collections(name)
+      )
+    `)
     .eq('status', 'active')
     .order('created_at', { ascending: false })
   
@@ -16,7 +21,13 @@ export async function getAllProducts() {
     return { data: null, error: error.message }
   }
   
-  return { data, error: null }
+  // Transform data to include collection names
+  const products = data.map(product => ({
+    ...product,
+    collection: product.collection_products?.[0]?.collections?.name || null
+  }))
+  
+  return { data: products, error: null }
 }
 
 export async function getProductBySlug(slug: string) {
@@ -26,7 +37,10 @@ export async function getProductBySlug(slug: string) {
     .from('products')
     .select(`
       *,
-      variants:product_variants(*)
+      variants:product_variants(*),
+      collection_products(
+        collections(name)
+      )
     `)
     .eq('slug', slug)
     .eq('status', 'active')
@@ -37,7 +51,13 @@ export async function getProductBySlug(slug: string) {
     return { data: null, error: error.message }
   }
   
-  return { data: data as ProductWithVariants, error: null }
+  // Transform data to include collection name
+  const product = {
+    ...data,
+    collection: data.collection_products?.[0]?.collections?.name || null
+  }
+  
+  return { data: product as ProductWithVariants, error: null }
 }
 
 export async function getProductsByCategory(category: string) {

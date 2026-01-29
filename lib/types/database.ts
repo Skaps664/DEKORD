@@ -19,6 +19,7 @@ export interface Product {
   og_image: string | null
   rating: number | null
   review_count: number
+  collection: string | null
   created_at: string
   updated_at: string
 }

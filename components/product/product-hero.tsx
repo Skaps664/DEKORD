@@ -26,6 +26,7 @@ export function ProductHero({ product }: ProductHeroProps = {}) {
         productImage: product.main_image,
         price: product.price,
         quantity: 1,
+        collection: product.collection ,
       })
       
       // Redirect to cart
@@ -45,6 +46,7 @@ export function ProductHero({ product }: ProductHeroProps = {}) {
         productImage: product.main_image,
         price: product.price,
         quantity: 1,
+        collection: product.collection ,
       })
     } catch (error) {
       console.error('Failed to add to cart:', error)
@@ -64,10 +66,10 @@ export function ProductHero({ product }: ProductHeroProps = {}) {
         <div className="flex flex-col gap-4 sm:gap-6 md:gap-8">
           <div className="max-w-2xl">
             <p className="pt-10 uppercase tracking-wide text-muted-foreground text-xs md:text-sm">
-              {product?.category || 'Dekord Essentials'}
+              {product?.collection || 'Series dek'}
             </p>
             <h1
-              className={cn("pt-6 text-balance font-sans font-semibold leading-tight", "text-2xl sm:text-3xl md:text-5xl")}
+              className={cn("pt-2 text-balance font-sans font-semibold leading-tight", "text-2xl sm:text-3xl md:text-5xl")}
             >
               {product?.name || 'Dekord Braided USB‑C Charging Cable'}
             </h1>

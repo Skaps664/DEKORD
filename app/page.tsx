@@ -138,8 +138,10 @@ export default function HomePage() {
       <FAQsSection />
 {/* <NewsletterSection /> */}
       <FullBleedDuo
-        left={{ src: "/duo-1.webp", alt: "Minimalist oak chair" }}
-        right={{ src: "/duo-3.webp", alt: "Modern walnut table" }}
+        // left={{ src: "/duo-1.webp", alt: "Minimalist oak chair" }}
+        left={{ src: "/bottom.webp", alt: "Minimalist oak chair" }}
+        // right={{ src: "/duo-3.webp", alt: "Modern walnut table" }}
+        right={{ src: "/bottom-2.webp", alt: "Modern walnut table" }}
       />
       <UserVideoReviews />
       {/* <InstagramFeed /> */}

@@ -176,7 +176,7 @@ export function UserVideoReviews() {
       </div>
 
       {/* CTA */}
-      <Reveal delay={0.2}>
+      {/* <Reveal delay={0.2}>
         <div className="container-custom mt-12 sm:mt-14 md:mt-16 text-center" suppressHydrationWarning>
           <p className="text-sm text-muted-foreground mb-4">Share your dekord story with us</p>
           <button className="inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background rounded-lg hover:opacity-90 transition-opacity duration-200" suppressHydrationWarning>
@@ -184,7 +184,7 @@ export function UserVideoReviews() {
             <span className="text-sm font-medium">Send us your video</span>
           </button>
         </div>
-      </Reveal>
+      </Reveal> */}
     </section>
   )
 }
