@@ -1,6 +1,6 @@
 // Server-side database service for Products (for SSR/ISR)
 import { createClient, createStaticClient } from '../supabase/server'
-import type { Product, ProductWithVariants } from '../types/database'
+import type { Product, ProductWithVariants, ProductType } from '../types/database'
 
 export async function getProductBySlugServer(slug: string) {
   const supabase = await createClient()
@@ -12,7 +12,8 @@ export async function getProductBySlugServer(slug: string) {
       variants:product_variants(*),
       collection_products(
         collections(name)
-      )
+      ),
+      product_type:product_types(*)
     `)
     .eq('slug', slug)
     .eq('status', 'active')
@@ -23,13 +24,14 @@ export async function getProductBySlugServer(slug: string) {
     return { data: null, error: error.message }
   }
   
-  // Transform data to include collection name
+  // Transform data to include collection name and product type
   const product = {
     ...data,
-    collection: data.collection_products?.[0]?.collections?.name || null
+    collection: data.collection_products?.[0]?.collections?.name || null,
+    product_type: data.product_type || null,
   }
   
-  return { data: product as ProductWithVariants, error: null }
+  return { data: product as ProductWithVariants & { product_type: ProductType | null }, error: null }
 }
 
 export async function getAllProductsServer() {

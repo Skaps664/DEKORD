@@ -35,7 +35,7 @@ function XIcon({ className = "" }: { className?: string }) {
   )
 }
 
-const FEATURES = [
+const DEFAULT_FEATURES = [
   "Durability Tested",
   "100% Pure Copper",
   "Double-Layer Insulation",
@@ -44,17 +44,27 @@ const FEATURES = [
   "Stable PD Chipset",
 ]
 
-export function ComparisonSection() {
+interface ComparisonSectionProps {
+  heading?: string
+  subheading?: string
+  features?: string[]
+}
+
+export function ComparisonSection({ heading, subheading, features }: ComparisonSectionProps) {
+  const featureList = features && features.length > 0 ? features : DEFAULT_FEATURES
+  const title = heading || "REDEFINING THE STANDARD"
+  const subtitle = subheading || "Not all cables are created equal. Here's why we stand apart."
+
   return (
     <section className="py-8 sm:py-14 lg:py-18" id="comparison">
   <div className="container-custom px-2 sm:px-2 md:px-3 overflow-x-hidden">
         <Reveal>
           <header className="text-center mb-8 sm:mb-10 lg:mb-14">
             <h2 className="text-neutral-900 text-2xl sm:text-3xl lg:text-5xl font-semibold tracking-wide">
-              REDEFINING THE STANDARD
+              {title}
             </h2>
             <p className="text-neutral-600 text-base sm:text-lg mt-3 sm:mt-4 max-w-2xl mx-auto px-4">
-              Not all cables are created equal. Here&apos;s why we stand apart.
+              {subtitle}
             </p>
           </header>
         </Reveal>
@@ -79,7 +89,7 @@ export function ComparisonSection() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {FEATURES.map((label) => (
+                {featureList.map((label) => (
                   <TableRow key={label}>
                     <TableCell className="py-5 text-neutral-900 px-2 lg:px-4 text-sm lg:text-base">{label}</TableCell>
                     <TableCell className="py-5 px-2 lg:px-4">

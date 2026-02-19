@@ -1,5 +1,59 @@
 // Database Types for dekord E-commerce
 
+export interface ProductType {
+  id: string
+  name: string
+  slug: string
+  specifications: SpecificationCategory[]
+  quick_specs: QuickSpec[]
+  showcase_heading: string
+  showcase_subheading: string
+  showcase_items: ShowcaseItem[]
+  comparison_heading: string
+  comparison_subheading: string
+  comparison_features: string[]
+  features_heading: string
+  feature_cards: FeatureCard[]
+  lookbook_images: LookbookImage[]
+  purchase_points: PurchasePoint[]
+  created_at: string
+  updated_at: string
+}
+
+export interface SpecificationCategory {
+  category: string
+  icon: string
+  specs: { label: string; value: string }[]
+}
+
+export interface QuickSpec {
+  icon: string
+  label: string
+  value: string
+}
+
+export interface ShowcaseItem {
+  heading: string
+  text: string
+  image: string
+}
+
+export interface FeatureCard {
+  title: string
+  body: string
+}
+
+export interface LookbookImage {
+  src: string
+  alt: string
+}
+
+export interface PurchasePoint {
+  icon: string
+  heading: string
+  text: string
+}
+
 export interface Product {
   id: string
   name: string
@@ -9,7 +63,9 @@ export interface Product {
   price: number
   stock: number
   status: 'active' | 'draft' | 'archived'
+  type_id: string | null
   main_image: string
+  hero_image: string | null
   image_2: string | null
   image_3: string | null
   image_4: string | null

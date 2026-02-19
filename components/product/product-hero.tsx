@@ -97,7 +97,7 @@ export function ProductHero({ product }: ProductHeroProps = {}) {
 
           <div className="relative rounded-xl ring-1 ring-border overflow-hidden">
             <Image
-              src={product?.main_image || "/placeholder.svg"}
+              src={product?.hero_image || product?.main_image || "/placeholder.svg"}
               alt={product?.name || "Product image"}
               width={1440}
               height={720}

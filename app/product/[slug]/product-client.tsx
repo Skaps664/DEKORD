@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
-import type { Product, ProductVariant } from "@/lib/types/database"
+import type { Product, ProductVariant, ProductType } from "@/lib/types/database"
 import { ProductHero } from "@/components/product/product-hero"
 import { ProductGallery } from "@/components/product/product-gallery"
 import { PurchasePanel } from "@/components/product/purchase-panel"
@@ -20,9 +20,10 @@ import { trackViewContent } from "@/components/facebook-pixel"
 
 interface ProductPageClientProps {
   product: Product & { variants?: ProductVariant[] }
+  productType?: ProductType | null
 }
 
-export function ProductPageClient({ product }: ProductPageClientProps) {
+export function ProductPageClient({ product, productType }: ProductPageClientProps) {
   const [showColorFlash, setShowColorFlash] = useState(false)
   const [flashColor, setFlashColor] = useState("")
   const [activeColorData, setActiveColorData] = useState<{ overlay: string; shadow: string } | null>(null)
@@ -76,23 +77,35 @@ export function ProductPageClient({ product }: ProductPageClientProps) {
               variants={product.variants}
               onColorChange={handleColorChange} 
               activeColorShadow={activeColorData?.shadow}
+              purchasePoints={productType?.purchase_points}
             />
           </div>
         </div>
       </section>
 
       <div className="py-6 md:py-8">
-        <ProductSpecifications />
+        <ProductSpecifications
+          specifications={productType?.specifications}
+          quickSpecs={productType?.quick_specs}
+        />
       </div>
 
       
 
       <div className="py-6 md:py-8">
-        <SpecialtyShowcase />
+        <SpecialtyShowcase
+          heading={productType?.showcase_heading}
+          subheading={productType?.showcase_subheading}
+          items={productType?.showcase_items}
+        />
       </div>
       
       <div className="">
-        <ComparisonSection />
+        <ComparisonSection
+          heading={productType?.comparison_heading}
+          subheading={productType?.comparison_subheading}
+          features={productType?.comparison_features}
+        />
       </div>
 
       <div className="py-6 md:py-8">
@@ -100,7 +113,10 @@ export function ProductPageClient({ product }: ProductPageClientProps) {
       </div>
 
       <div className="py-6 md:py-8">
-        <FeatureGrid />
+        <FeatureGrid
+          heading={productType?.features_heading}
+          featureCards={productType?.feature_cards}
+        />
       </div>
 
       {/* <div className="py-6 md:py-8">
@@ -108,7 +124,9 @@ export function ProductPageClient({ product }: ProductPageClientProps) {
       </div> */}
 
       <div className="py-6 md:py-8">
-        <LookbookStrip />
+        <LookbookStrip
+          images={productType?.lookbook_images}
+        />
       </div>
 
       <div className="py-6 md:py-8">

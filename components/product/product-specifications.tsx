@@ -2,13 +2,15 @@
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ChevronDown, Zap, Cable, Shield, Gauge, Cpu, Battery, CheckCircle2 } from "lucide-react"
+import { ChevronDown, Gauge } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { getIconComponent } from "@/lib/icon-map"
+import type { SpecificationCategory, QuickSpec } from "@/lib/types/database"
 
-const specifications = [
+const defaultSpecifications: SpecificationCategory[] = [
   {
     category: "Performance",
-    icon: Zap,
+    icon: "zap",
     specs: [
       { label: "Power Delivery", value: "60W (20V/3A)" },
       { label: "Data Transfer Speed", value: "480 Mbps (USB 3.2 Gen 2)" },
@@ -18,7 +20,7 @@ const specifications = [
   },
   {
     category: "Build Quality",
-    icon: Shield,
+    icon: "shield",
     specs: [
       { label: "Cable Jacket", value: "Double-Braided Layer" },
       { label: "Conductor Material", value: "Tinned Copper (99.9% Pure)" },
@@ -28,7 +30,7 @@ const specifications = [
   },
   {
     category: "Technical Details",
-    icon: Cpu,
+    icon: "cpu",
     specs: [
       { label: "Wire Gauge", value: "20 AWG" },
       { label: "Chip", value: "Certified (PD 3.0 Compliant)" },
@@ -38,7 +40,7 @@ const specifications = [
   },
   {
     category: "Compatibility",
-    icon: Cable,
+    icon: "cable",
     specs: [
       { label: "Devices", value: "iPhone 15/16, MacBook, iPad, Samsung Galaxy" },
       { label: "Ports", value: "USB-C to USB-C, USB-C to Lightning" },
@@ -48,7 +50,7 @@ const specifications = [
   },
   {
     category: "Standards",
-    icon: CheckCircle2,
+    icon: "check-circle",
     specs: [
       { label: "Safety Standards", value: "UL, CE, FCC, RoHS" },
       { label: "USB-IF Standards", value: "Yes" },
@@ -58,8 +60,33 @@ const specifications = [
   },
 ]
 
-export function ProductSpecifications() {
+const defaultQuickSpecs: QuickSpec[] = [
+  { icon: "zap", label: "Power Delivery", value: "60W Fast Charging" },
+  { icon: "gauge", label: "Data Transfer", value: "480 Mbps Speed" },
+  { icon: "shield", label: "Durability", value: "20,000+ Bends" },
+]
+
+const sectionColors = [
+  { bg: "bg-amber-100", text: "text-amber-700" },
+  { bg: "bg-green-100", text: "text-green-700" },
+  { bg: "bg-blue-100", text: "text-blue-700" },
+  { bg: "bg-purple-100", text: "text-purple-700" },
+  { bg: "bg-emerald-100", text: "text-emerald-700" },
+  { bg: "bg-rose-100", text: "text-rose-700" },
+  { bg: "bg-cyan-100", text: "text-cyan-700" },
+  { bg: "bg-orange-100", text: "text-orange-700" },
+]
+
+interface ProductSpecificationsProps {
+  specifications?: SpecificationCategory[]
+  quickSpecs?: QuickSpec[]
+}
+
+export function ProductSpecifications({ specifications, quickSpecs }: ProductSpecificationsProps) {
   const [isExpanded, setIsExpanded] = useState(false)
+
+  const specs = specifications && specifications.length > 0 ? specifications : defaultSpecifications
+  const qSpecs = quickSpecs && quickSpecs.length > 0 ? quickSpecs : defaultQuickSpecs
 
   return (
     <section className="container-custom py-6 sm:py-8 md:py-12">
@@ -92,7 +119,7 @@ export function ProductSpecifications() {
           </motion.div>
         </button>
 
-        {/* Collapsed Preview - 3 Quick Specs */}
+        {/* Collapsed Preview - Quick Specs */}
         <AnimatePresence mode="wait">
           {!isExpanded && (
             <motion.div
@@ -103,29 +130,19 @@ export function ProductSpecifications() {
               className="overflow-hidden border-t border-border"
             >
               <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border">
-                <div className="p-4 sm:p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Zap className="w-4 h-4 text-amber-600" strokeWidth={2.5} />
-                    <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Power Delivery</dt>
-                  </div>
-                  <dd className="text-base sm:text-lg font-semibold">60W Fast Charging</dd>
-                </div>
-                
-                <div className="p-4 sm:p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Gauge className="w-4 h-4 text-blue-600" strokeWidth={2.5} />
-                    <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Data Transfer</dt>
-                  </div>
-                  <dd className="text-base sm:text-lg font-semibold">480 Mbps Speed</dd>
-                </div>
-                
-                <div className="p-4 sm:p-6">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Shield className="w-4 h-4 text-green-600" strokeWidth={2.5} />
-                    <dt className="text-xs sm:text-sm font-medium text-muted-foreground">Durability</dt>
-                  </div>
-                  <dd className="text-base sm:text-lg font-semibold">20,000+ Bends</dd>
-                </div>
+                {qSpecs.map((qs, idx) => {
+                  const QIcon = getIconComponent(qs.icon)
+                  const colorClasses = ["text-amber-600", "text-blue-600", "text-green-600"]
+                  return (
+                    <div key={idx} className="p-4 sm:p-6">
+                      <div className="flex items-center gap-2 mb-2">
+                        <QIcon className={cn("w-4 h-4", colorClasses[idx] || "text-amber-600")} strokeWidth={2.5} />
+                        <dt className="text-xs sm:text-sm font-medium text-muted-foreground">{qs.label}</dt>
+                      </div>
+                      <dd className="text-base sm:text-lg font-semibold">{qs.value}</dd>
+                    </div>
+                  )
+                })}
               </div>
             </motion.div>
           )}
@@ -142,8 +159,9 @@ export function ProductSpecifications() {
               className="overflow-hidden border-t border-border"
             >
               <div className="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
-                {specifications.map((section, sectionIndex) => {
-                  const Icon = section.icon
+                {specs.map((section, sectionIndex) => {
+                  const Icon = getIconComponent(section.icon)
+                  const colors = sectionColors[sectionIndex % sectionColors.length]
                   return (
                     <motion.div
                       key={section.category}
@@ -156,20 +174,9 @@ export function ProductSpecifications() {
                       <div className="flex items-center gap-2 sm:gap-3 pb-3 border-b border-border">
                         <div className={cn(
                           "flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center",
-                          sectionIndex === 0 && "bg-amber-100",
-                          sectionIndex === 1 && "bg-green-100",
-                          sectionIndex === 2 && "bg-blue-100",
-                          sectionIndex === 3 && "bg-purple-100",
-                          sectionIndex === 4 && "bg-emerald-100"
+                          colors.bg
                         )}>
-                          <Icon className={cn(
-                            "w-4 h-4 sm:w-5 sm:h-5",
-                            sectionIndex === 0 && "text-amber-700",
-                            sectionIndex === 1 && "text-green-700",
-                            sectionIndex === 2 && "text-blue-700",
-                            sectionIndex === 3 && "text-purple-700",
-                            sectionIndex === 4 && "text-emerald-700"
-                          )} strokeWidth={2.5} />
+                          <Icon className={cn("w-4 h-4 sm:w-5 sm:h-5", colors.text)} strokeWidth={2.5} />
                         </div>
                         <h3 className="font-semibold text-base sm:text-lg">{section.category}</h3>
                       </div>

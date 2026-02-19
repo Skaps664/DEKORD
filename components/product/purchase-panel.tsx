@@ -9,7 +9,8 @@ import { ShoppingCart, Zap, Shield, Truck, Plus, Minus, Check } from "lucide-rea
 import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "@/contexts/cart-context"
 import { trackAddToCart } from "@/components/facebook-pixel"
-import type { Product, ProductVariant } from "@/lib/types/database"
+import { getIconComponent } from "@/lib/icon-map"
+import type { Product, ProductVariant, PurchasePoint } from "@/lib/types/database"
 
 const defaultColors = [
   { 
@@ -63,9 +64,10 @@ interface PurchasePanelProps {
   variants?: ProductVariant[]
   onColorChange?: (overlayClass: string, shadowClass: string) => void
   activeColorShadow?: string
+  purchasePoints?: PurchasePoint[]
 }
 
-export function PurchasePanel({ product, variants, onColorChange, activeColorShadow }: PurchasePanelProps = {}) {
+export function PurchasePanel({ product, variants, onColorChange, activeColorShadow, purchasePoints }: PurchasePanelProps = {}) {
   // Extract unique colors and lengths from variants
   const availableColors = useMemo(() => {
     if (!variants || variants.length === 0) return defaultColors
@@ -513,27 +515,45 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
 
         {/* Features */}
         <div className="pt-4 border-t border-border space-y-3">
-          <div className="flex items-start gap-3">
-            <Zap className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-neutral-900">60W Fast Charging</p>
-              <p className="text-xs text-neutral-600">USB‑C to USB‑C Power Delivery</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <Shield className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-neutral-900">1 Year Warranty</p>
-              <p className="text-xs text-neutral-600">Fray-replacement guarantee</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <Truck className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-neutral-900">Fast Shipping</p>
-              <p className="text-xs text-neutral-600">Delivery in 3-5 business days</p>
-            </div>
-          </div>
+          {purchasePoints && purchasePoints.length > 0 ? (
+            purchasePoints.map((point, idx) => {
+              const PointIcon = getIconComponent(point.icon)
+              const iconColors = ["text-amber-500", "text-blue-500", "text-green-500", "text-purple-500", "text-rose-500"]
+              return (
+                <div key={idx} className="flex items-start gap-3">
+                  <PointIcon className={`w-5 h-5 ${iconColors[idx % iconColors.length]} flex-shrink-0 mt-0.5`} />
+                  <div>
+                    <p className="text-sm font-medium text-neutral-900">{point.heading}</p>
+                    <p className="text-xs text-neutral-600">{point.text}</p>
+                  </div>
+                </div>
+              )
+            })
+          ) : (
+            <>
+              <div className="flex items-start gap-3">
+                <Zap className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-neutral-900">60W Fast Charging</p>
+                  <p className="text-xs text-neutral-600">USB‑C to USB‑C Power Delivery</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Shield className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-neutral-900">1 Year Warranty</p>
+                  <p className="text-xs text-neutral-600">Fray-replacement guarantee</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Truck className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-neutral-900">Fast Shipping</p>
+                  <p className="text-xs text-neutral-600">Delivery in 3-5 business days</p>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </aside>

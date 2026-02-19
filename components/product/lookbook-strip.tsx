@@ -1,6 +1,7 @@
 import Image from "next/image"
+import type { LookbookImage } from "@/lib/types/database"
 
-const shots = [
+const defaultShots: LookbookImage[] = [
   { src: "/dek-red-6.webp", alt: "Streetwear portrait with cable" },
   { src: "/dek-blue-2.webp", alt: "Minimal still life charging" },
   { src: "/dek-yellow-5.webp", alt: "Desk flatlay" },
@@ -9,7 +10,13 @@ const shots = [
   { src: "/dek-red-2.webp", alt: "Product on plinth" },
 ]
 
-export function LookbookStrip() {
+interface LookbookStripProps {
+  images?: LookbookImage[]
+}
+
+export function LookbookStrip({ images }: LookbookStripProps) {
+  const shots = images && images.length > 0 ? images : defaultShots
+
   return (
     <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
       <div className="flex items-baseline justify-between">
