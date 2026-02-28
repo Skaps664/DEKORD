@@ -8,9 +8,11 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Eye, EyeOff, Loader2, ArrowLeft, Zap } from "lucide-react"
 import Link from "next/link"
 import { signUp, signIn, signInWithGoogle } from "@/lib/services/auth"
+import { useSearchParams } from "next/navigation"
 
 export default function AuthPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [isSignIn, setIsSignIn] = useState(true)
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -43,8 +45,13 @@ export default function AuthPage() {
           setError(error)
         } else if (data) {
           setSuccess("Successfully signed in! Redirecting...")
+          // Redirect to the page user came from, or /account as fallback
+          const redirectParam = searchParams.get('redirect')
+          const storedRedirect = typeof window !== 'undefined' ? localStorage.getItem('auth_redirect') : null
+          const redirectTo = redirectParam || storedRedirect || '/account'
+          if (storedRedirect) localStorage.removeItem('auth_redirect')
           setTimeout(() => {
-            router.push("/account")
+            router.push(redirectTo)
           }, 1500)
         } else {
           console.warn('⚠️ No data and no error returned from signIn')

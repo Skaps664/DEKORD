@@ -62,6 +62,7 @@ export interface Product {
   category: string
   price: number
   stock: number
+  availability: 'in_stock' | 'out_of_stock' | 'coming_soon'
   status: 'active' | 'draft' | 'archived'
   type_id: string | null
   main_image: string

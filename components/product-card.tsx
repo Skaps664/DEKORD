@@ -72,6 +72,13 @@ export function ProductCard({ product, onQuickLook, priority = false }: ProductC
         </div>
       )}
 
+      {/* Launching Soon Button */}
+      <div className="absolute top-4 right-4 z-20">
+        <span className="px-3 py-1 text-xs font-medium rounded-full backdrop-blur-sm bg-neutral-900/90 text-white">
+          Launching Soon
+        </span>
+      </div>
+
       {/* Product Image */}
       <div className="relative overflow-hidden" style={{ aspectRatio: "25/36" }}>
         <div className="relative w-full h-full">

@@ -30,13 +30,23 @@ export function CookieConsent() {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100%" }}
-          transition={{ type: "spring", damping: 25, stiffness: 200 }}
-          className="fixed bottom-0 left-0 right-0 z-50 p-4"
-        >
+        <>
+          {/* Backdrop overlay */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[49] bg-black/40 backdrop-blur-sm"
+            onClick={handleReject}
+          />
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed bottom-0 left-0 right-0 z-50 p-4"
+          >
           <div className="container-custom">
             <div className="bg-white border border-neutral-200 rounded-t-lg shadow-lg p-4 sm:p-6">
               <div className="flex items-start gap-4">
@@ -77,7 +87,8 @@ export function CookieConsent() {
               </div>
             </div>
           </div>
-        </motion.div>
+          </motion.div>
+        </>
       )}
     </AnimatePresence>
   )

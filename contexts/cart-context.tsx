@@ -55,8 +55,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (user) {
       setUserId(user.id)
       // Sync local cart to database if user just logged in
-      if (items.length > 0 && !items[0].id) {
-        await syncLocalCartToDB(user.id)
+      // Read directly from localStorage to avoid race condition with items state
+      const stored = localStorage.getItem(CART_STORAGE_KEY)
+      if (stored) {
+        const localItems: CartItem[] = JSON.parse(stored)
+        if (localItems.length > 0) {
+          await syncLocalCartToDB(user.id, localItems)
+        }
       }
     }
   }
@@ -103,9 +108,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  async function syncLocalCartToDB(uid: string) {
+  async function syncLocalCartToDB(uid: string, localItems?: CartItem[]) {
     try {
-      for (const item of items) {
+      const itemsToSync = localItems || items
+      for (const item of itemsToSync) {
         await addToCartDB(
           uid, 
           item.productId || undefined, 

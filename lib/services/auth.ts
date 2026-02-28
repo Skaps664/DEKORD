@@ -71,7 +71,14 @@ export async function signInWithGoogle() {
   try {
     const supabase = createClient()
     
-    const redirectUrl = `${window.location.origin}/auth/callback`
+    // Determine where to redirect after OAuth callback
+    const params = new URLSearchParams(window.location.search)
+    const redirectParam = params.get('redirect')
+    const storedRedirect = localStorage.getItem('auth_redirect')
+    const nextPath = redirectParam || storedRedirect || '/account'
+    if (storedRedirect) localStorage.removeItem('auth_redirect')
+    
+    const redirectUrl = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',

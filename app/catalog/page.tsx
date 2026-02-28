@@ -153,46 +153,7 @@ function CatalogContent() {
       </section>
 
       {/* Filters & Controls */}
-<section className="py-4 top-16 md:top-18 z-30 bg-background/95 backdrop-blur-md border-b border-border">
-  <div className="container-custom py-4 md:py-8 md:py-10">
-    <div className="flex flex-col gap-3 md:gap-4">
-      {/* Categories Row */}
-      <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
-        {categories.map((category) => (
-          <motion.button
-            key={category}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setSelectedCategory(category)}
-            className={cn(
-              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all flex-shrink-0",
-              selectedCategory === category
-                ? "bg-foreground text-background"
-                : "bg-muted text-foreground hover:bg-muted/80"
-            )}
-          >
-            {category}
-          </motion.button>
-        ))}
-      </div>
 
-      {/* View Controls Row - Only on Desktop inline, Mobile gets its own row */}
-      <div className="flex gap-3 items-center justify-end md:absolute md:top-8 md:right-4">
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-border bg-background text-sm focus:ring-2 focus:ring-foreground/20 outline-none w-full md:w-auto"
-        >
-          {sortOptions.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
-    </div>
-  </div>
-</section>
 
       {/* Products */}
       <section className="py-12">
@@ -220,6 +181,15 @@ function CatalogContent() {
                   {viewMode === "grid" ? (
                     <Link href={`/product/${product.slug}`}>
                       <div className="group relative bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow">
+                        {/* Coming Soon Badge */}
+                        {product.availability === 'coming_soon' && (
+                          <div className="absolute top-4 right-4 z-20">
+                            <span className="px-3 py-1 text-xs font-medium rounded-full backdrop-blur-sm bg-purple-600/90 text-white shadow-lg">
+                              Coming Soon
+                            </span>
+                          </div>
+                        )}
+                        
                         {/* Image */}
                         <div className="relative aspect-square bg-muted overflow-hidden">
                           <Image
@@ -249,11 +219,11 @@ function CatalogContent() {
                             <span className="text-xl font-bold text-foreground">
                               Rs. {parseFloat(product.price.toString()).toFixed(2)}
                             </span>
-                            {product.stock === 0 ? (
+                            {product.availability === 'out_of_stock' ? (
                               <div className="px-3 py-1 text-xs font-semibold text-red-600 bg-red-50 rounded-full">
                                 Sold Out
                               </div>
-                            ) : product.stock === 99999 ? (
+                            ) : product.availability === 'coming_soon' ? (
                               <div className="px-3 py-1 text-xs font-semibold text-purple-600 bg-purple-50 rounded-full">
                                 Pre-Order
                               </div>
@@ -278,7 +248,16 @@ function CatalogContent() {
                     </Link>
                   ) : (
                     <Link href={`/product/${product.slug}`}>
-                      <div className="group flex gap-6 bg-card rounded-xl border border-border p-4 hover:shadow-lg transition-shadow">
+                      <div className="group relative flex gap-6 bg-card rounded-xl border border-border p-4 hover:shadow-lg transition-shadow">
+                        {/* Coming Soon Badge */}
+                        {product.availability === 'coming_soon' && (
+                          <div className="absolute top-4 right-4 z-20">
+                            <span className="px-3 py-1 text-xs font-medium rounded-full backdrop-blur-sm bg-purple-600/90 text-white shadow-lg">
+                              Coming Soon
+                            </span>
+                          </div>
+                        )}
+                        
                         <div className="relative w-32 h-32 flex-shrink-0 bg-muted rounded-lg overflow-hidden">
                           <Image
                             src={product.main_image || "/placeholder.svg"}
@@ -314,11 +293,11 @@ function CatalogContent() {
                             <span className="text-2xl font-bold text-foreground">
                               Rs. {parseFloat(product.price.toString()).toFixed(2)}
                             </span>
-                            {product.stock === 0 ? (
+                            {product.availability === 'out_of_stock' ? (
                               <div className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-full">
                                 Sold Out
                               </div>
-                            ) : product.stock === 99999 ? (
+                            ) : product.availability === 'coming_soon' ? (
                               <div className="px-4 py-2 text-sm font-semibold text-purple-600 bg-purple-50 rounded-full">
                                 Pre-Order
                               </div>

@@ -482,11 +482,11 @@ export default function JobApplicationPage({ job }: JobApplicationPageProps) {
               </a>
               <span className="hidden sm:block text-neutral-600">|</span>
               <a 
-                href="tel:+1234567890" 
+                href="tel:+923390166442" 
                 className="flex items-center gap-2 hover:text-neutral-300 transition-colors"
               >
                 <Phone className="w-5 h-5" />
-                <span className="font-medium">+92 3259327819</span>
+                <span className="font-medium">+92 3390166442</span>
               </a>
             </div>
           </div>

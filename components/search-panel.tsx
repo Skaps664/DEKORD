@@ -95,11 +95,12 @@ export function SearchPanel({ open, onClose }: SearchPanelProps) {
             "w-full mx-3 sm:mx-4 md:mx-5 rounded-b-2xl border border-neutral-200 bg-white/95 shadow-lg backdrop-blur transition-all duration-300",
             "ring-1 ring-neutral-200",
             open ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0",
-            searchQuery.trim().length >= 2 && searchResults.length > 0 ? "h-auto max-h-[500px] py-4 px-4 md:px-6" : "h-30 md:h-36 px-4 md:px-6 flex items-center justify-center"
+            "py-4 px-4 md:px-6",
+            searchQuery.trim().length >= 2 ? "h-auto max-h-[500px] overflow-y-auto" : ""
           )}
         >
               {/* Search Form */}
-              <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto w-full mb-4">
+              <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto w-full mt-2 mb-4">
                 <div className="relative">
                   <input
                     ref={inputRef}

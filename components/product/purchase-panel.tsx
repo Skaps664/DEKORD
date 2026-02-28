@@ -184,8 +184,8 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
 
   // Check stock availability
   const stock = selectedVariant?.stock ?? product?.stock ?? 0
-  const isOutOfStock = stock === 0
-  const isPreOrder = stock === 99999
+  const isOutOfStock = product?.availability === 'out_of_stock'
+  const isPreOrder = product?.availability === 'coming_soon'
 
   const handleAddToCart = async () => {
     if (isOutOfStock || isPreOrder) return

@@ -104,7 +104,11 @@ export default async function ProductPage({ params }: PageProps) {
       "url": `https://dekord.online/product/${product.slug}`,
       "priceCurrency": "PKR",
       "price": product.price,
-      "availability": "https://schema.org/InStock",
+      "availability": product.availability === 'out_of_stock' 
+        ? "https://schema.org/OutOfStock" 
+        : product.availability === 'coming_soon' 
+          ? "https://schema.org/PreOrder" 
+          : "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
         "name": "dekord"

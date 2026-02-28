@@ -13,11 +13,11 @@ type Badge = {
 
 const badges: Badge[] = [
   { title: "Money Back", icon: ShieldCheck },
-  { title: "Secure Payments", icon: Lock },
   { title: "Premium Quality", icon: Star },
   { title: "Fast Shipping", icon: Truck },
   { title: "Guaranteed Quality", icon: BadgeCheck },
   { title: "Inspected for Quality", icon: Search },
+  { title: "Secure Payments", icon: Lock },
 ]
 
 export function CredibilityBadges() {

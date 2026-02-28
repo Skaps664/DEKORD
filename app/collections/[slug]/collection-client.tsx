@@ -355,6 +355,15 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                 >
                   <Link href={`/product/${product.slug}`}>
                     <div className="group relative bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow">
+                      {/* Coming Soon Badge */}
+                      {product.availability === 'coming_soon' && (
+                        <div className="absolute top-4 right-4 z-20">
+                          <span className="px-3 py-1 text-xs font-medium rounded-full backdrop-blur-sm bg-purple-600/90 text-white shadow-lg">
+                            Coming Soon
+                          </span>
+                        </div>
+                      )}
+                      
                       {/* Image */}
                       <div className="relative aspect-square bg-muted overflow-hidden">
                         <Image
@@ -384,11 +393,11 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                           <span className="text-xl font-bold text-foreground">
                             Rs. {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
                           </span>
-                          {product.stock === 0 ? (
+                          {product.availability === 'out_of_stock' ? (
                             <div className="px-3 py-1 text-xs font-semibold text-red-600 bg-red-50 rounded-full">
                               Sold Out
                             </div>
-                          ) : product.stock === 99999 ? (
+                          ) : product.availability === 'coming_soon' ? (
                             <div className="px-3 py-1 text-xs font-semibold text-purple-600 bg-purple-50 rounded-full">
                               Pre-Order
                             </div>
@@ -424,7 +433,16 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                   transition={{ duration: 0.4, delay: index * 0.05 }}
                 >
                   <Link href={`/product/${product.slug}`}>
-                    <div className="group flex gap-6 bg-card rounded-xl border border-border p-4 hover:shadow-lg transition-shadow">
+                    <div className="group relative flex gap-6 bg-card rounded-xl border border-border p-4 hover:shadow-lg transition-shadow">
+                      {/* Coming Soon Badge */}
+                      {product.availability === 'coming_soon' && (
+                        <div className="absolute top-4 right-4 z-20">
+                          <span className="px-3 py-1 text-xs font-medium rounded-full backdrop-blur-sm bg-purple-600/90 text-white shadow-lg">
+                            Coming Soon
+                          </span>
+                        </div>
+                      )}
+                      
                       <div className="relative w-32 h-32 flex-shrink-0 bg-muted rounded-lg overflow-hidden">
                         <Image
                           src={product.main_image || "/placeholder.svg"}
@@ -456,11 +474,11 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                           <span className="text-xl font-bold text-foreground">
                             Rs. {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
                           </span>
-                          {product.stock === 0 ? (
+                          {product.availability === 'out_of_stock' ? (
                             <div className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-full">
                               Sold Out
                             </div>
-                          ) : product.stock === 99999 ? (
+                          ) : product.availability === 'coming_soon' ? (
                             <div className="px-4 py-2 text-sm font-semibold text-purple-600 bg-purple-50 rounded-full">
                               Pre-Order
                             </div>
