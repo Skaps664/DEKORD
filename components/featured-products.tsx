@@ -8,12 +8,34 @@ import { QuickLookModal } from "./quick-look-modal"
 import { Reveal } from "./reveal"
 
 const featuredProducts = [
+    {
+    id: "8",
+    name: "basic-60 | Purr White",
+    price: "Rs. 600",
+    image: "/basic-60-1.webp",
+    badge: "New" as const,
+    statusBadge: "In Stock",
+    materials: ["65 Watt PD 3.0", "Type C to C"],
+    swatches: [
+      { name: "Sage Green", color: "#9CAF88" },
+      { name: "Forest Green", color: "#355E3B" },
+      { name: "Copper", color: "#B87333" },
+    ],
+    quickLookImages: [
+      "/sage-copper-lounge-chair.png",
+      "/placeholder.svg",
+      "/placeholder.svg",
+    ],
+    dimensions: "W: 85cm × D: 90cm × H: 75cm",
+    link: "product/basic-w-60",
+  },
   {
     id: "4",
     name: "w-60 | Army Green",
     price: "Rs. 950",
     image: "/dek-green.webp",
     badge: "New" as const,
+    statusBadge: "Launching Soon",
     materials: ["Copper Frame", "Premium Velvet"],
     swatches: [
       { name: "Forest Green", color: "#355E3B" },
@@ -34,6 +56,7 @@ const featuredProducts = [
     price: "Rs. 950",
     image: "/dek-white.webp",
     badge: "New" as const,
+    statusBadge: "Launching Soon",
     materials: ["Copper Frame", "Terracotta Velvet"],
     swatches: [
       { name: "Terracotta", color: "#E2725B" },
@@ -48,26 +71,7 @@ const featuredProducts = [
     dimensions: "W: 95cm × D: 85cm × H: 80cm",
     link: "product/dek-w-60-lava-red",
   },
-  {
-    id: "8",
-    name: "w-60 | Lava Red",
-    price: "Rs. 1050",
-    image: "/dek-red.webp",
-    badge: "Limited" as const,
-    materials: ["Copper Frame", "Sage Velvet"],
-    swatches: [
-      { name: "Sage Green", color: "#9CAF88" },
-      { name: "Forest Green", color: "#355E3B" },
-      { name: "Copper", color: "#B87333" },
-    ],
-    quickLookImages: [
-      "/sage-copper-lounge-chair.png",
-      "/placeholder.svg",
-      "/placeholder.svg",
-    ],
-    dimensions: "W: 85cm × D: 90cm × H: 75cm",
-    link: "product/dek-w-60-lava-red",
-  },
+
 ]
 
 export function FeaturedProducts() {

@@ -14,6 +14,7 @@ interface ProductCardProps {
     price: string
     image: string
     badge?: "New" | "Back in stock" | "Limited"
+    statusBadge?: string // e.g. "Launching Soon", "In Stock", "Sold Out" — shown top-right
     materials: string[]
     swatches: { name: string; color: string }[]
     quickLookImages: string[]
@@ -72,12 +73,14 @@ export function ProductCard({ product, onQuickLook, priority = false }: ProductC
         </div>
       )}
 
-      {/* Launching Soon Button */}
-      <div className="absolute top-4 right-4 z-20">
-        <span className="px-3 py-1 text-xs font-medium rounded-full backdrop-blur-sm bg-neutral-900/90 text-white">
-          Launching Soon
-        </span>
-      </div>
+      {/* Status Badge (top-right) */}
+      {product.statusBadge && (
+        <div className="absolute top-4 right-4 z-20">
+          <span className="px-3 py-1 text-xs font-medium rounded-full backdrop-blur-sm bg-neutral-900/90 text-white">
+            {product.statusBadge}
+          </span>
+        </div>
+      )}
 
       {/* Product Image */}
       <div className="relative overflow-hidden" style={{ aspectRatio: "25/36" }}>
