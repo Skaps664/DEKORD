@@ -72,6 +72,25 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   // Increment view count (fire and forget - don't await)
   incrementBlogView(post.id).catch(err => console.error('Failed to increment view:', err))
 
+  // Strip inline base64 data URIs to reduce ISR page size (can be 30MB+)
+  // Uses indexOf loop instead of regex to avoid stack overflow on huge strings
+  const PLACEHOLDER = 'src="/placeholder-blog-image.svg" loading="lazy" data-stripped="true"'
+  const MARKER = 'src="data:image/'
+  let lightContent = post.content || ''
+  let hasStrippedImages = false
+  let idx = lightContent.indexOf(MARKER)
+  while (idx !== -1) {
+    const quoteEnd = lightContent.indexOf('"', idx + 5) // skip past src="
+    if (quoteEnd === -1) break
+    // Only strip if the data URI is actually large (>100 chars)
+    if (quoteEnd - idx > 100) {
+      hasStrippedImages = true
+      lightContent = lightContent.substring(0, idx) + PLACEHOLDER + lightContent.substring(quoteEnd + 1)
+    }
+    idx = lightContent.indexOf(MARKER, idx + PLACEHOLDER.length)
+  }
+  const lightPost = { ...post, content: lightContent }
+
   const metaTitle = post.meta_title || post.title || "dekord Blog – Premium Charging Cables"
   const metaDescription = post.meta_description || post.excerpt || "Read the latest from dekord."
   const metaImage = post.featured_image || "/premium-braided-cable-lifestyle.jpg"
@@ -122,7 +141,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           })
         }}
       />
-      <BlogPostClient post={post} />
+      <BlogPostClient post={lightPost} hasStrippedImages={hasStrippedImages} />
     </>
   )
 }

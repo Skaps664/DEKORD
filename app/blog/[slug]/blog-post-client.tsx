@@ -1,34 +1,62 @@
 "use client"
 
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { motion } from "framer-motion"
 import { ArrowLeft, Calendar, User, Clock, Eye } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import type { BlogPost } from "@/lib/types/database"
-import DOMPurify from "dompurify"
+import { createClient } from "@/lib/supabase/client"
 
 interface BlogPostClientProps {
   post: BlogPost
+  hasStrippedImages?: boolean
 }
 
-export function BlogPostClient({ post }: BlogPostClientProps) {
-  // Sanitize HTML content for security
-  const htmlContent = useMemo(() => {
-    if (!post?.content) return ''
-    
-    try {
-      const cleanHtml = DOMPurify.sanitize(post.content, {
-        ADD_TAGS: ['img', 'iframe'],
-        ADD_ATTR: ['target', 'loading', 'decoding', 'class', 'style'],
+export function BlogPostClient({ post, hasStrippedImages }: BlogPostClientProps) {
+  const [fullContent, setFullContent] = useState<string | null>(null)
+
+  // Fetch full content client-side if images were stripped for ISR size optimization
+  useEffect(() => {
+    if (!hasStrippedImages) return
+    const supabase = createClient()
+    supabase
+      .from('blog_posts')
+      .select('content')
+      .eq('slug', post.slug)
+      .single()
+      .then(({ data }) => {
+        if (data?.content) setFullContent(data.content)
       })
-      
-      return cleanHtml
-    } catch (err) {
-      console.error('Error sanitizing HTML:', err)
-      return post.content
+      .catch(() => {}) // Fail silently — stripped version still works
+  }, [hasStrippedImages, post.slug])
+
+  // Sanitize HTML content — DOMPurify only works in browser
+  const htmlContent = useMemo(() => {
+    const raw = fullContent || post?.content
+    if (!raw) return ''
+    
+    // Only sanitize in browser where DOMPurify works
+    if (typeof window !== 'undefined') {
+      try {
+        const DOMPurify = require('dompurify') as typeof import('dompurify')
+        return (DOMPurify as any).default?.sanitize
+          ? (DOMPurify as any).default.sanitize(raw, {
+              ADD_TAGS: ['img', 'iframe'],
+              ADD_ATTR: ['target', 'loading', 'decoding', 'class', 'style'],
+            })
+          : (DOMPurify as any).sanitize(raw, {
+              ADD_TAGS: ['img', 'iframe'],
+              ADD_ATTR: ['target', 'loading', 'decoding', 'class', 'style'],
+            })
+      } catch (err) {
+        console.error('Error sanitizing HTML:', err)
+        return raw
+      }
     }
-  }, [post?.content])
+
+    return raw
+  }, [post?.content, fullContent])
 
   return (
     <main className="min-h-screen bg-background grain-texture pt-16 md:pt-18">
