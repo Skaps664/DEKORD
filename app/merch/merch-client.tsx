@@ -9,11 +9,6 @@ import type { MerchWithFeatures } from "@/lib/types/database"
 import Image from "next/image"
 import { useCart } from "@/contexts/cart-context"
 
-const DeferredInfiniteGallery = dynamic(() => import("@/components/infinite-gallery"), {
-  ssr: false,
-  loading: () => <div className="h-[420px]" aria-hidden="true" />,
-})
-
 const DeferredCreativityShowcase = dynamic(() => import("@/components/creativity-showcase"), {
   ssr: false,
 })
@@ -177,24 +172,7 @@ export function MerchPageClient({ merchItems }: MerchPageClientProps) {
 
       <div ref={deferredSectionsTriggerRef} className="h-px" aria-hidden="true" />
 
-      {/* Infinite Gallery */}
-      <section className="py-20">
-        <Reveal>
-          <h2 className="text-4xl font-bold text-center mb-12">
-            Gallery
-          </h2>
-        </Reveal>
-        {showHeavySections ? (
-          <DeferredInfiniteGallery
-            images={merchItems.flatMap(item => 
-              [item.image_1, item.image_2, item.image_3, item.image_4, item.image_5].filter(Boolean) as string[]
-            )}
-            speed={30}
-          />
-        ) : (
-          <div className="h-[420px]" aria-hidden="true" />
-        )}
-      </section>
+
 
       {/* Creativity Showcase */}
       {showHeavySections ? <DeferredCreativityShowcase /> : null}
