@@ -53,21 +53,21 @@ export default function ContactPage() {
       title: "Email",
       detail: "contact@dekord.online",
       description: "24h response time",
-      gradient: "from-blue-500/10 via-blue-500/5 to-transparent"
+      accent: "sky"
     },
     {
       icon: Phone,
-      title: "Phone + WhatsAp",
+      title: "Phone + WhatsApp",
       detail: "+92 339-0166442",
       description: "Mon-Sat, 10AM-8PM",
-      gradient: "from-emerald-500/10 via-emerald-500/5 to-transparent"
+      accent: "emerald"
     },
     {
       icon: MapPin,
       title: "Location",
       detail: "Peshawar, Pakistan",
       description: "Visit by appointment",
-      gradient: "from-purple-500/10 via-purple-500/5 to-transparent"
+      accent: "amber"
     }
   ]
 
@@ -152,17 +152,28 @@ export default function ContactPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="group relative"
+                className="group relative overflow-hidden rounded-2xl border border-border/70 bg-card/85 p-7 md:p-8 shadow-[0_20px_40px_-30px_rgba(0,0,0,0.35)]"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${method.gradient} rounded-3xl`} />
-                <div className="relative p-8 border border-border/50 rounded-3xl bg-card/50 backdrop-blur-sm hover:border-foreground/20 transition-all duration-300">
-                  <method.icon className="w-12 h-12 mb-6 text-foreground group-hover:scale-110 transition-transform" />
-                  <h3 className="text-sm font-medium text-muted-foreground mb-2 uppercase tracking-wider">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_12%,hsl(var(--foreground)/0.06)_1px,transparent_1.5px)] bg-[length:14px_14px] opacity-70" />
+                <div className="absolute inset-y-0 left-0 w-[3px] bg-foreground/70" />
+                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-foreground/30 to-transparent" />
+                <div className="absolute right-4 top-4 rounded-full border border-border/80 px-2.5 py-1 text-[10px] font-semibold tracking-[0.2em] text-muted-foreground">
+                  0{index + 1}
+                </div>
+
+                <div className="relative transition-all duration-300">
+                  <div className="mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-border/70 bg-background/90 text-foreground transition-transform duration-300 group-hover:scale-110">
+                    <method.icon className="h-5 w-5" />
+                  </div>
+
+                  <h3 className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-[0.2em]">
                     {method.title}
                   </h3>
-                  <p className="text-xl font-bold text-foreground mb-2">
+
+                  <p className="text-2xl font-semibold leading-tight text-foreground mb-2">
                     {method.detail}
                   </p>
+
                   <p className="text-sm text-muted-foreground">
                     {method.description}
                   </p>

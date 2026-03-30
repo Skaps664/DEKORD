@@ -57,20 +57,20 @@ export function ComparisonSection({ heading, subheading, features }: ComparisonS
 
   return (
     <section className="py-8 sm:py-14 lg:py-18" id="comparison">
-  <div className="container-custom px-2 sm:px-2 md:px-3 overflow-x-hidden">
+      <div className="container-custom px-2 sm:px-2 md:px-3 overflow-x-hidden">
         <Reveal>
           <header className="text-center mb-8 sm:mb-10 lg:mb-14">
-            <h2 className="text-neutral-900 text-2xl sm:text-3xl lg:text-5xl font-semibold tracking-wide">
+            <h2 className="text-foreground text-2xl sm:text-3xl lg:text-5xl font-semibold tracking-wide">
               {title}
             </h2>
-            <p className="text-neutral-600 text-base sm:text-lg mt-3 sm:mt-4 max-w-2xl mx-auto px-4">
+            <p className="text-muted-foreground text-base sm:text-lg mt-3 sm:mt-4 max-w-2xl mx-auto px-4 leading-relaxed">
               {subtitle}
             </p>
           </header>
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="rounded-none overflow-x-auto max-w-full">
+          <div className="overflow-x-auto max-w-full rounded-2xl border border-border bg-background">
             <Table className="text-sm sm:text-base w-full max-w-full table-fixed min-w-[320px]">
               <colgroup>
                 <col className="w-[45%] md:w-auto" />
@@ -78,29 +78,33 @@ export function ComparisonSection({ heading, subheading, features }: ComparisonS
                 <col className="w-[27.5%] md:w-auto" />
               </colgroup>
               <TableHeader>
-                <TableRow className="border-t">
-                  <TableHead className="py-4 text-neutral-700 px-2 lg:px-4"> </TableHead>
-                  <TableHead className="py-4 text-center text-neutral-900 px-2 lg:px-4 text-sm lg:text-base">
-                    Our Product
+                <TableRow className="border-b border-border bg-muted/20">
+                  <TableHead className="py-4 text-muted-foreground px-2 lg:px-4">Feature</TableHead>
+                  <TableHead className="py-4 text-center text-foreground px-2 lg:px-4 text-xs sm:text-sm lg:text-base font-semibold uppercase tracking-[0.14em]">
+                    Ours
                   </TableHead>
-                  <TableHead className="py-4 text-center text-neutral-900 px-2 lg:px-4 text-sm lg:text-base">
+                  <TableHead className="py-4 text-center text-foreground px-2 lg:px-4 text-xs sm:text-sm lg:text-base font-semibold uppercase tracking-[0.14em]">
                     Others
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {featureList.map((label) => (
-                  <TableRow key={label}>
-                    <TableCell className="py-5 text-neutral-900 px-2 lg:px-4 text-sm lg:text-base">{label}</TableCell>
+                  <TableRow key={label} className="border-b border-border/70 last:border-b-0 hover:bg-muted/20 transition-colors">
+                    <TableCell className="py-5 text-foreground px-2 lg:px-4 text-sm lg:text-base">{label}</TableCell>
                     <TableCell className="py-5 px-2 lg:px-4">
                       <div className="flex items-center justify-center">
-                        <CheckIcon className="w-5 h-5 lg:w-6 lg:h-6" />
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                          <CheckIcon className="w-5 h-5 lg:w-6 lg:h-6" />
+                        </span>
                         <span className="sr-only">{"Included in our product"}</span>
                       </div>
                     </TableCell>
                     <TableCell className="py-5 px-2 lg:px-4">
                       <div className="flex items-center justify-center">
-                        <XIcon className="w-5 h-5 lg:w-6 lg:h-6" />
+                        <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-500/10 border border-red-500/20">
+                          <XIcon className="w-5 h-5 lg:w-6 lg:h-6" />
+                        </span>
                         <span className="sr-only">{"Not included in market products"}</span>
                       </div>
                     </TableCell>
