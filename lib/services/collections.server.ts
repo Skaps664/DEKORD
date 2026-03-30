@@ -1,9 +1,9 @@
 // Server-side database service for Collections (for SSR/ISR)
-import { createClient, createStaticClient } from '../supabase/server'
+import { createStaticClient } from '../supabase/server'
 import type { CollectionWithProducts } from '../types/database'
 
 export async function getAllCollectionsServer() {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
   
   const { data, error } = await supabase
     .from('collections')
@@ -33,7 +33,7 @@ export async function getAllCollectionsServer() {
 }
 
 export async function getCollectionBySlugServer(slug: string) {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
   
   const { data, error } = await supabase
     .from('collections')

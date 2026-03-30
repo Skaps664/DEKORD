@@ -4,13 +4,11 @@ import { Inter, Geist_Mono, Instrument_Serif } from "next/font/google"
 import "./globals.css"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import FacebookPixel from "@/components/facebook-pixel"
-import { GoogleAnalytics } from "@/components/google-analytics"
 import { CartProvider } from "@/contexts/cart-context"
 import { Analytics } from '@vercel/analytics/react'
 import LoadingBar from "@/components/loading-bar"
-import { PerformanceMonitor } from "@/components/performance-monitor"
 import { CookieConsent } from "@/components/cookie-consent"
+import DeferredGlobalScripts from "@/components/deferred-global-scripts"
 
 
 const inter = Inter({
@@ -197,9 +195,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans bg-neutral-50 text-neutral-900 overflow-x-hidden grain-texture" suppressHydrationWarning>
-        <PerformanceMonitor />
-        <GoogleAnalytics />
-        <FacebookPixel />
+        <DeferredGlobalScripts />
         <LoadingBar />
         <CartProvider>
           <Header />

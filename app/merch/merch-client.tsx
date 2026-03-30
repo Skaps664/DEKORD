@@ -1,14 +1,22 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import dynamic from "next/dynamic"
 import { Reveal } from "@/components/reveal"
-import InfiniteGallery from "@/components/infinite-gallery"
 import { ProductSection } from "@/components/ProductSection"
 import { motion } from "framer-motion"
-import CreativityShowcase from "@/components/creativity-showcase"
 import type { MerchWithFeatures } from "@/lib/types/database"
 import Image from "next/image"
 import { useCart } from "@/contexts/cart-context"
+
+const DeferredInfiniteGallery = dynamic(() => import("@/components/infinite-gallery"), {
+  ssr: false,
+  loading: () => <div className="h-[420px]" aria-hidden="true" />,
+})
+
+const DeferredCreativityShowcase = dynamic(() => import("@/components/creativity-showcase"), {
+  ssr: false,
+})
 
 interface MerchPageClientProps {
   merchItems: MerchWithFeatures[]
@@ -18,8 +26,28 @@ export function MerchPageClient({ merchItems }: MerchPageClientProps) {
   const [addedItemId, setAddedItemId] = useState<string | null>(null)
   const [quantities, setQuantities] = useState<Record<string, number>>({})
   const [currentImages, setCurrentImages] = useState<Record<string, number>>({})
+  const [showHeavySections, setShowHeavySections] = useState(false)
+  const deferredSectionsTriggerRef = useRef<HTMLDivElement | null>(null)
   
   const { addItem, isLoading } = useCart()
+
+  useEffect(() => {
+    const node = deferredSectionsTriggerRef.current
+    if (!node || showHeavySections) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setShowHeavySections(true)
+          observer.disconnect()
+        }
+      },
+      { rootMargin: "600px 0px" }
+    )
+
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [showHeavySections])
 
   const handleAddToCart = (item: MerchWithFeatures) => {
     const quantity = quantities[item.id] || 1
@@ -147,6 +175,8 @@ export function MerchPageClient({ merchItems }: MerchPageClientProps) {
         )
       })}
 
+      <div ref={deferredSectionsTriggerRef} className="h-px" aria-hidden="true" />
+
       {/* Infinite Gallery */}
       <section className="py-20">
         <Reveal>
@@ -154,16 +184,20 @@ export function MerchPageClient({ merchItems }: MerchPageClientProps) {
             Gallery
           </h2>
         </Reveal>
-        <InfiniteGallery
-          images={merchItems.flatMap(item => 
-            [item.image_1, item.image_2, item.image_3, item.image_4, item.image_5].filter(Boolean) as string[]
-          )}
-          speed={30}
-        />
+        {showHeavySections ? (
+          <DeferredInfiniteGallery
+            images={merchItems.flatMap(item => 
+              [item.image_1, item.image_2, item.image_3, item.image_4, item.image_5].filter(Boolean) as string[]
+            )}
+            speed={30}
+          />
+        ) : (
+          <div className="h-[420px]" aria-hidden="true" />
+        )}
       </section>
 
       {/* Creativity Showcase */}
-      <CreativityShowcase />
+      {showHeavySections ? <DeferredCreativityShowcase /> : null}
     </main>
   )
 }

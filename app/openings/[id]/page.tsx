@@ -1,15 +1,25 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import JobApplicationPage from "./job-application-client"
-import { createClient } from '@/lib/supabase/server'
+import { createStaticClient } from '@/lib/supabase/server'
 
-export const dynamic = 'force-dynamic'
 export const dynamicParams = true
-export const revalidate = 0
+export const revalidate = 300
+
+export async function generateStaticParams() {
+  const supabase = createStaticClient()
+
+  const { data } = await supabase
+    .from('job_openings')
+    .select('id')
+    .eq('status', 'active')
+
+  return (data || []).map((job: { id: string }) => ({ id: job.id }))
+}
 
 async function getJob(id: string) {
   try {
-    const supabase = await createClient()
+    const supabase = createStaticClient()
     
     const { data, error } = await supabase
       .from('job_openings')

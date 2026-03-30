@@ -1,9 +1,9 @@
 // Server-side database service for Products (for SSR/ISR)
-import { createClient, createStaticClient } from '../supabase/server'
+import { createStaticClient } from '../supabase/server'
 import type { Product, ProductWithVariants, ProductType } from '../types/database'
 
 export async function getProductBySlugServer(slug: string) {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
   
   const { data, error } = await supabase
     .from('products')
@@ -35,7 +35,7 @@ export async function getProductBySlugServer(slug: string) {
 }
 
 export async function getAllProductsServer() {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
   
   const { data, error } = await supabase
     .from('products')

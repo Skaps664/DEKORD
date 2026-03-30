@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createStaticClient } from '@/lib/supabase/server'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export const revalidate = 300
 
 export async function GET() {
   try {
-    const supabase = await createClient()
+    const supabase = createStaticClient()
 
     const { data: jobs, error } = await supabase
       .from('job_openings')
@@ -21,9 +20,7 @@ export async function GET() {
 
     return NextResponse.json(jobs || [], {
       headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
       },
     })
   } catch (error) {

@@ -1,5 +1,7 @@
-import { createClient } from '@/lib/supabase/server'
+import { createStaticClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+
+export const revalidate = 300
 
 export async function GET(
   request: Request,
@@ -7,7 +9,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const supabase = await createClient()
+    const supabase = createStaticClient()
     
     const { data, error } = await supabase
       .from('job_openings')
@@ -23,7 +25,11 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(data)
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+      },
+    })
   } catch (error) {
     console.error('Error fetching job:', error)
     return NextResponse.json(

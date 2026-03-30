@@ -21,12 +21,7 @@ export default function OpeningsClient() {
 
   const fetchJobs = async () => {
     try {
-      const response = await fetch('/api/jobs', {
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache'
-        }
-      })
+      const response = await fetch('/api/jobs')
       if (response.ok) {
         const data = await response.json()
         console.log('Jobs fetched:', data)

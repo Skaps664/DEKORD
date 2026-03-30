@@ -1,9 +1,9 @@
 // Server-side database service for Merch (for SSR/ISR)
-import { createClient } from '../supabase/server'
+import { createStaticClient } from '../supabase/server'
 import type { MerchWithFeatures } from '../types/database'
 
 export async function getAllMerchServer() {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   const { data, error } = await supabase
     .from('merch')
@@ -23,7 +23,7 @@ export async function getAllMerchServer() {
 }
 
 export async function getMerchBySlugServer(slug: string) {
-  const supabase = await createClient()
+  const supabase = createStaticClient()
 
   const { data, error} = await supabase
     .from('merch')

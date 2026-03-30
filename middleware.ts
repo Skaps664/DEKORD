@@ -53,6 +53,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // API routes only need CORS handling here.
+  if (isApiRoute) {
+    return response
+  }
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -109,8 +114,12 @@ export const config = {
   matcher: [
     // Match API routes for CORS handling
     '/api/:path*',
-    // Match all other routes except static files
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Match auth/session-sensitive routes only
+    '/account/:path*',
+    '/auth/:path*',
+    '/checkout/:path*',
+    '/order/:path*',
+    '/claim/:path*',
   ],
 }
 

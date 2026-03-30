@@ -51,37 +51,6 @@ const nextConfig = {
   // Performance: Optimize production builds
   productionBrowserSourceMaps: false,
   
-  // Performance: Configure webpack for better chunking
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      // Optimize client-side bundle
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          // Vendor chunk
-          vendor: {
-            name: 'vendor',
-            chunks: 'all',
-            test: /node_modules/,
-            priority: 20
-          },
-          // Common components chunk
-          common: {
-            name: 'common',
-            minChunks: 2,
-            chunks: 'all',
-            priority: 10,
-            reuseExistingChunk: true,
-            enforce: true
-          }
-        }
-      }
-    }
-    return config
-  },
-  
   // Security headers
   async headers() {
     return [
@@ -108,10 +77,6 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin'
-          },
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
           },
         ],
       },

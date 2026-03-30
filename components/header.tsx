@@ -1,16 +1,30 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
 import { motion } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Menu, ShoppingBag, X, Search } from "lucide-react"
-import CartDropPanel from "./cart-drop-panel"
-import UserDropPanel from "./user-drop-panel"
-import { TopDropMenu } from "./top-drop-menu"
-import { SearchPanel } from "./search-panel"
 import { useCart } from "@/contexts/cart-context"
-import { getCurrentUser } from "@/lib/services/auth"
 import { createClient } from "@/lib/supabase/client"
+
+const CartDropPanel = dynamic(() => import("./cart-drop-panel"), {
+  loading: () => null,
+})
+
+const UserDropPanel = dynamic(() => import("./user-drop-panel"), {
+  loading: () => null,
+})
+
+const TopDropMenu = dynamic(
+  () => import("./top-drop-menu").then((mod) => ({ default: mod.TopDropMenu })),
+  { loading: () => null }
+)
+
+const SearchPanel = dynamic(
+  () => import("./search-panel").then((mod) => ({ default: mod.SearchPanel })),
+  { loading: () => null }
+)
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -25,11 +39,15 @@ export function Header() {
 
   // Check if user is logged in and listen for auth state changes
   useEffect(() => {
-    checkAuthStatus()
-    
-    // Listen for auth state changes
     const supabase = createClient()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+
+    // Prime auth state once without forcing an extra user fetch.
+    supabase.auth.getSession().then(({ data }) => {
+      setIsLoggedIn(!!data.session?.user)
+    })
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setIsLoggedIn(!!session?.user)
     })
     
@@ -37,11 +55,6 @@ export function Header() {
       subscription.unsubscribe()
     }
   }, [])
-
-  async function checkAuthStatus() {
-    const { data: user } = await getCurrentUser()
-    setIsLoggedIn(!!user)
-  }
 
   // Trigger shake animation when item is added
   useEffect(() => {
@@ -53,10 +66,19 @@ export function Header() {
   }, [itemCount, prevItemCount])
 
   useEffect(() => {
+    let ticking = false
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20)
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20)
+          ticking = false
+        })
+        ticking = true
+      }
     }
-    window.addEventListener("scroll", handleScroll)
+
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
