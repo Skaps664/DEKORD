@@ -277,9 +277,12 @@ export function Footer() {
 
         {/* Bottom Section with Copyright and Country Selector */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-8 border-t border-white/[0.05]">
-          <p className="text-neutral-600 text-sm">
-            © {currentYear} dekord. All rights reserved.
-          </p>
+          <div className="text-neutral-600 text-sm space-y-1">
+            <p>© {currentYear} dekord. All rights reserved.</p>
+            <p>
+              Designed and developed by Skordlabs, <a href="https://www.skordlabs.com" target="_blank" rel="noreferrer" className="underline hover:text-neutral-900 transition-colors duration-200">www.skordlabs.com</a>
+            </p>
+          </div>
           <CountrySelector />
         </div>
       </div>
