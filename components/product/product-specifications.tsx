@@ -105,7 +105,7 @@ export function ProductSpecifications({ specifications, quickSpecs }: ProductSpe
                 Technical Specifications
               </h2>
               <p className="text-sm sm:text-base text-muted-foreground mt-0.5">
-                {isExpanded ? "Hide detailed specs" : "View complete technical details"}
+                {isExpanded ? "Click to collapse detailed specs" : "Click to expand detailed technical details"}
               </p>
             </div>
           </div>
