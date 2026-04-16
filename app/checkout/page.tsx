@@ -717,7 +717,7 @@ export default function CheckoutPage() {
                         <div className="flex items-center justify-between mt-1.5">
                           <span className="text-xs text-muted-foreground">Qty: {item.quantity}</span>
                           <span className="text-sm font-bold text-foreground">
-                            Rs. {(item.price * item.quantity).toFixed(2)}
+                            Rs. {(item.price * item.quantity).toLocaleString()}
                           </span>
                         </div>
                       </div>
@@ -730,7 +730,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="font-medium text-foreground">
-                      Rs. {subtotal.toFixed(2)}
+                      Rs. {subtotal.toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -751,7 +751,7 @@ export default function CheckoutPage() {
                         </span>
                       </div>
                       <span className="font-semibold text-green-600">
-                        -Rs. {discount.toFixed(2)}
+                        -Rs. {discount.toLocaleString()}
                       </span>
                     </div>
                   )}
@@ -761,7 +761,7 @@ export default function CheckoutPage() {
                   <div className="flex justify-between items-baseline">
                     <span className="text-lg font-bold text-foreground">Total</span>
                     <span className="text-2xl font-bold text-foreground">
-                      Rs. {total.toFixed(2)}
+                      Rs. {total.toLocaleString()}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1">Cash on Delivery</p>
@@ -787,7 +787,7 @@ export default function CheckoutPage() {
                   ) : (
                     <>
                       <Package className="w-4 h-4" />
-                      Place Order - Rs. {total.toFixed(2)}
+                      Place Order - Rs. {total.toLocaleString()}
                     </>
                   )}
                 </button>

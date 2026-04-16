@@ -391,7 +391,7 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
 
                         <div className="flex items-center justify-between">
                           <span className="text-xl font-bold text-foreground">
-                            Rs. {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
+                            Rs. {typeof product.price === 'string' ? Math.round(parseFloat(product.price)).toLocaleString() : Math.round(product.price).toLocaleString()}
                           </span>
                           {product.availability === 'out_of_stock' ? (
                             <div className="px-3 py-1 text-xs font-semibold text-red-600 bg-red-50 rounded-full">
@@ -472,7 +472,7 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
 
                         <div className="flex items-center gap-4">
                           <span className="text-xl font-bold text-foreground">
-                            Rs. {typeof product.price === 'string' ? parseFloat(product.price).toFixed(2) : product.price.toFixed(2)}
+                            Rs. {typeof product.price === 'string' ? Math.round(parseFloat(product.price)).toLocaleString() : Math.round(product.price).toLocaleString()}
                           </span>
                           {product.availability === 'out_of_stock' ? (
                             <div className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-full">

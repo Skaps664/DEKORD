@@ -279,10 +279,10 @@ export default function CartPage() {
                             {/* Price */}
                             <div className="text-right">
                                                             <p className="text-lg font-bold text-foreground">
-                                Rs. {(item.price * item.quantity).toFixed(2)}
+                                Rs. {(item.price * item.quantity).toLocaleString()}
                               </p>
                               <p className="text-sm text-muted-foreground">
-                                  Rs. {item.price.toFixed(2)} each
+                                  Rs. {item.price.toLocaleString()} each
                               </p>
                             </div>
                           </div>
@@ -351,7 +351,7 @@ export default function CartPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
                     <span className="font-medium text-foreground">
-                      Rs. {subtotal.toFixed(2)}
+                      Rs. {subtotal.toLocaleString()}
                     </span>
                   </div>
                   
@@ -363,7 +363,7 @@ export default function CartPage() {
                     >
                       <span className="font-medium">Discount ({appliedCoupon.code})</span>
                       <span className="font-semibold">
-                        - Rs. {discount.toFixed(2)}
+                        - Rs. {discount.toLocaleString()}
                       </span>
                     </motion.div>
                   )}
@@ -373,7 +373,7 @@ export default function CartPage() {
                   <div className="flex justify-between items-baseline">
                     <span className="text-lg font-bold text-foreground">Total</span>
                     <span className="text-2xl font-bold text-foreground">
-                      Rs. {total.toFixed(2)}
+                      Rs. {total.toLocaleString()}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-2">

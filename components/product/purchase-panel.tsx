@@ -341,7 +341,7 @@ export function PurchasePanel({ product, variants, onColorChange, activeColorSha
             <p className="text-sm text-neutral-600 mt-1">{product?.category || "Premium fast charging cable"}</p>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-bold text-neutral-900">Rs. {finalPrice.toFixed(2)}</p>
+            <p className="text-3xl font-bold text-neutral-900">Rs. {Math.round(finalPrice).toLocaleString()}</p>
             
           </div>
         </div>

@@ -131,5 +131,5 @@ export default async function ProductPage({ params }: PageProps) {
   )
 }
 
-// Enable ISR with 1 hour revalidation
-export const revalidate = 3600
+// Enable ISR with a shorter revalidation time (e.g. 60 seconds) so changes show up faster
+export const revalidate = 60

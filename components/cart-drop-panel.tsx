@@ -75,7 +75,7 @@ export default function CartDropPanel({
                 <p className="text-xs md:text-sm text-muted-foreground">Your cart is empty</p>
               ) : (
                 <p className="text-xs md:text-sm text-muted-foreground">
-                  {itemCount} {itemCount === 1 ? 'item' : 'items'} • Rs. {total.toFixed(2)}
+                  {itemCount} {itemCount === 1 ? 'item' : 'items'} • Rs. {Math.round(total).toLocaleString()}
                 </p>
               )}
             </div>

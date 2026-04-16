@@ -192,7 +192,7 @@ export default function CatalogClient({ initialProducts }: CatalogClientProps) {
 
                           <div className="flex items-center justify-between">
                             <span className="text-xl font-bold text-foreground">
-                              Rs. {parseFloat(product.price.toString()).toFixed(2)}
+                              Rs. {Math.round(parseFloat(product.price.toString())).toLocaleString()}
                             </span>
                             {product.availability === 'out_of_stock' ? (
                               <div className="px-3 py-1 text-xs font-semibold text-red-600 bg-red-50 rounded-full">
@@ -266,7 +266,7 @@ export default function CatalogClient({ initialProducts }: CatalogClientProps) {
 
                           <div className="flex items-center justify-between">
                             <span className="text-2xl font-bold text-foreground">
-                              Rs. {parseFloat(product.price.toString()).toFixed(2)}
+                              Rs. {Math.round(parseFloat(product.price.toString())).toLocaleString()}
                             </span>
                             {product.availability === 'out_of_stock' ? (
                               <div className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 rounded-full">
