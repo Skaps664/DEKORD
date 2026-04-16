@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Image from "next/image"
+import Link from "next/link"
 import { Reveal } from "./reveal"
 
 const collections = [
@@ -128,8 +129,14 @@ export function CollectionStrip() {
         </motion.div>
       </div>
 
-      <div className="text-center mt-8">
+      <div className="text-center mt-8 space-y-4">
         <p className="text-sm text-neutral-500">← Drag to explore collections →</p>
+        <Link 
+          href="/collections" 
+          className="inline-block px-8 py-3 bg-black text-white text-sm font-medium rounded-full hover:bg-neutral-800 transition-colors"
+        >
+          Visit Collections
+        </Link>
       </div>
     </section>
   )

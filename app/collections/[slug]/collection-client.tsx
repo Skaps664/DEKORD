@@ -354,7 +354,7 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                   transition={{ duration: 0.4, delay: index * 0.05 }}
                 >
                   <Link href={`/product/${product.slug}`}>
-                    <div className="group relative bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-shadow">
+                    <div className="group relative bg-card rounded-xl border border-border overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300">
                       {/* Coming Soon Badge */}
                       {product.availability === 'coming_soon' && (
                         <div className="absolute top-4 right-4 z-20">
@@ -370,7 +370,7 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                           src={product.main_image || "/placeholder.svg"}
                           alt={product.name}
                           fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="object-cover"
                         />
                       </div>
 
@@ -433,7 +433,7 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                   transition={{ duration: 0.4, delay: index * 0.05 }}
                 >
                   <Link href={`/product/${product.slug}`}>
-                    <div className="group relative flex gap-6 bg-card rounded-xl border border-border p-4 hover:shadow-lg transition-shadow">
+                    <div className="group relative flex gap-6 bg-card rounded-xl border border-border p-4 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1 transition-all duration-300">
                       {/* Coming Soon Badge */}
                       {product.availability === 'coming_soon' && (
                         <div className="absolute top-4 right-4 z-20">
@@ -448,7 +448,7 @@ export function CollectionPageClient({ collection, products: initialProducts }: 
                           src={product.main_image || "/placeholder.svg"}
                           alt={product.name}
                           fill
-                          className="object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="object-cover"
                         />
                       </div>
 

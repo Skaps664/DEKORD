@@ -39,14 +39,14 @@ export function CinematicBanner() {
                 </p>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                   <a
-                    href="#materials"
+                    href="/catalog"
                     className="inline-flex items-center rounded-[var(--radius-lg)] px-4 sm:px-5 py-2.5 sm:py-3 bg-primary text-primary-foreground text-sm sm:text-base"
                     aria-label="Explore our cable technology"
                   >
                     Discover now
                   </a>
                   <a
-                    href="#featured-products"
+                    href="/collections"
                     className="inline-flex items-center rounded-[var(--radius-lg)] px-4 sm:px-5 py-2.5 sm:py-3 border border-border text-foreground text-sm sm:text-base"
                     aria-label="View cable collection"
                   >
