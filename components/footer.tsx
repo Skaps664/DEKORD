@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { Instagram, Facebook, Linkedin, ArrowUpRight, Mail, ChevronDown } from "lucide-react"
+import { Instagram, Facebook, Linkedin, ArrowUpRight, Mail, ChevronDown, ArrowRight } from "lucide-react"
 
 // Country Selector Component
 function CountrySelector() {
@@ -47,29 +47,36 @@ function CountrySelector() {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-md text-sm text-neutral-700 hover:bg-white/[0.1] transition-colors duration-200"
+        className="flex items-center gap-2 text-sm font-medium text-neutral-500 hover:text-neutral-900 transition-colors duration-200"
       >
         <span>{selectedCountry}</span>
-        <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute bottom-full mb-2 right-0 bg-white border border-neutral-200 rounded-md shadow-lg py-1 min-w-[140px] z-10"
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ duration: 0.15 }}
+            className="absolute bottom-full mb-3 right-0 sm:left-0 sm:right-auto bg-white border border-neutral-200 rounded-xl shadow-xl flex flex-col p-2 min-w-[160px] z-50 origin-bottom-right sm:origin-bottom-left"
           >
-            {countries.map((country) => (
-              <button
-                key={country}
-                onClick={() => handleCountryChange(country)}
-                className="w-full text-left px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50 transition-colors duration-200"
-              >
-                {country}
-              </button>
-            ))}
+            <div className="max-h-[200px] overflow-y-auto no-scrollbar flex flex-col">
+              {countries.map((country) => (
+                <button
+                  key={country}
+                  onClick={() => handleCountryChange(country)}
+                  className={`w-full text-left px-3 py-2 text-sm rounded-md transition-colors duration-200 ${
+                    selectedCountry === country 
+                      ? 'bg-neutral-100 text-neutral-900 font-medium' 
+                      : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
+                  }`}
+                >
+                  {country}
+                </button>
+              ))}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -77,7 +84,7 @@ function CountrySelector() {
   )
 }
 
-// TikTok icon component (Lucide doesn't have TikTok, so we'll use SVG)
+// TikTok icon component
 const TikTokIcon = ({ size = 18 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
     <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
@@ -113,9 +120,9 @@ export function Footer() {
       const data = await response.json()
 
       if (response.ok) {
-        setFooterMessage("Thank you for subscribing!")
+        setFooterMessage("Thanks for signing up!")
         setFooterEmail("")
-        setTimeout(() => setFooterMessage(""), 3000)
+        setTimeout(() => setFooterMessage(""), 5000)
       } else {
         setFooterMessage(data.error || 'Failed to subscribe')
       }
@@ -128,9 +135,9 @@ export function Footer() {
   }
 
   const footerSections = {
-    "Explore": [
+    Explore: [
       { name: "Home", href: "/" },
-      {name: "About Us", href: "/about"},
+      { name: "About Us", href: "/about" },
       { name: "Our Blog", href: "/blog" },
     ],
     SHOP: [
@@ -149,7 +156,7 @@ export function Footer() {
     ],
     Connect: [
       { name: "Contact Us", href: "/contact" },
-      {name: "Corporate Queries", href: "/corporate-queries" },
+      { name: "Corporate Queries", href: "/corporate-queries" },
       { name: "Careers", href: "/openings" },
     ],
   }
@@ -162,129 +169,138 @@ export function Footer() {
   ]
 
   return (
-    <footer className="bg-white border-t border-white/[0.02] pt-16">
-      <div className="container-custom py-12 sm:py-16 lg:py-20 px-2 sm:px-2 md:px-3">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mb-8 sm:mb-10">
-          {/* Brand Section */}
-          <div className="lg:col-span-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+    <footer className="bg-white border-t border-neutral-200 mt-12 relative overflow-hidden">
+      <div className="container-custom px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl pt-20 pb-8">
+        
+        {/* Clean Newsletter Row */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-10 my-12">
+          <div className="max-w-xl">
+            <motion.h4 
+              initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
               viewport={{ once: true }}
+              className="text-2xl md:text-3xl tracking-tight text-neutral-900 mb-4"
             >
-              <a href="/" className="inline-flex items-center mb-4">
-                <img src="/images/loogoo.png" alt="dekord logo" className="h-7 lg:h-8 w-auto" decoding="async" />
-                <span className="sr-only">{"dekord"}</span>
-              </a>
-              <p className="text-neutral-600 mb-6 leading-relaxed">
-                Not just cables, but a vibe. dekord creates essentials that charge your life with power, durability, and style.
-              </p>
-              <div className="flex space-x-4">
-                {socialLinks.map((social) => (
-                  <motion.a
-                    key={social.name}
-                    href={social.href}
-                    target="_blank"
-                    className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 transition-all duration-200"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <social.icon size={18} />
-                    <span className="sr-only">{social.name}</span>
-                  </motion.a>
-                ))}
-              </div>
-            </motion.div>
+              We send tasty emails.
+            </motion.h4>
+            <motion.p 
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-neutral-500 text-md leading-relaxed mix-blend-multiply"
+            >
+              Drop your email to stay updated with new arrivals, exclusive drops, and styling stories.
+            </motion.p>
           </div>
-
-          {/* Links Sections */}
-          <div className="lg:col-span-8">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6">
-              {Object.entries(footerSections).map(([section, links], index) => (
-                <motion.div
-                  key={section}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                >
-                  <h4 className="font-semibold text-neutral-900 mb-2 whitespace-nowrap text-sm">{section}</h4>
-                  <ul className="space-y-2">
-                    {links.map((link) => (
-                      <li key={link.name}>
-                        <a
-                          href={link.href}
-                          className="text-neutral-600 hover:text-neutral-900 transition-colors duration-200 group flex items-center text-xs sm:text-sm"
-                        >
-                          {link.name}
-                          <ArrowUpRight
-                            size={14}
-                            className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                          />
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Newsletter Section */}
-        <motion.div
-          className="py-8 sm:py-10 bg-white/[0.03] rounded-lg mb-8 sm:mb-10 border border-white/[0.05]"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          viewport={{ once: true }}
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-6">
-            <div>
-              <h4 className="font-semibold text-neutral-900 text-base lg:text-lg mb-1">We send tasty emails</h4>
-              <p className="text-neutral-600 text-sm">Stay updated with new arrivals and stories.</p>
-              {footerMessage && (
-                <p className={`text-sm mt-2 ${footerMessage.includes('Thank') ? 'text-green-600' : 'text-red-600'}`}>
-                  {footerMessage}
-                </p>
-              )}
-            </div>
-            <form onSubmit={handleFooterSubscribe} className="flex w-full sm:w-auto shadow-lg">
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="w-full xl:w-1/3 min-w-[320px]"
+          >
+            <form onSubmit={handleFooterSubscribe} className="relative flex flex-col sm:flex-row items-center justify-between bg-neutral-100 rounded-[2rem] p-1.5 focus-within:shadow-[0_0_0_2px_#171717] transition-all">
               <input
                 type="email"
                 value={footerEmail}
                 onChange={(e) => setFooterEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 sm:flex-none px-4 py-2.5 sm:py-3 bg-white/[0.05] border border-white/[0.1] rounded-l text-sm text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-400"
+                className="w-full bg-transparent border-transparent px-6 sm:py-3.5 py-4 text-neutral-900 placeholder:text-neutral-500 outline-none text-base"
                 required
                 disabled={footerIsSubmitting}
               />
               <button
                 type="submit"
                 disabled={footerIsSubmitting}
-                className="px-4 sm:px-6 py-2.5 sm:py-3 bg-neutral-900 text-white rounded-r hover:bg-neutral-800 transition-colors duration-200 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto h-full min-h-[48px] px-8 bg-neutral-900 text-white text-base font-medium rounded-[1.8rem] hover:bg-black hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                <Mail size={16} className="sm:hidden" />
-                <span className="hidden sm:inline text-sm">
-                  {footerIsSubmitting ? 'Subscribing...' : 'Subscribe'}
-                </span>
+                {footerIsSubmitting ? '...' : (
+                  <>
+                    Subscribe
+                    <ArrowRight size={18} strokeWidth={2.5} className="ml-1" />
+                  </>
+                )}
               </button>
             </form>
-          </div>
-        </motion.div>
+            {footerMessage && (
+              <p className={`text-sm mt-3 px-4 font-medium ${footerMessage.includes('Thanks') ? 'text-green-600' : 'text-red-500'}`}>
+                {footerMessage}
+              </p>
+            )}
+          </motion.div>
+        </div>
 
-        {/* Bottom Section with Copyright and Country Selector */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-8 border-t border-white/[0.05]">
-          <div className="text-neutral-600 text-sm space-y-1">
-            <p>© {currentYear} dekord. All rights reserved.</p>
-            <p>
-              Designed and developed by Skordlabs, <a href="https://www.skordlabs.com" target="_blank" rel="noreferrer" className="underline hover:text-neutral-900 transition-colors duration-200">www.skordlabs.com</a>
+        {/* Divider */}
+        <div className="w-full h-px bg-neutral-200 mb-16"></div>
+
+        {/* Main Links Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 mb-16">
+          
+          {/* Brand & Social */}
+          <div className="lg:col-span-4 lg:pr-10">
+            <a href="/" className="inline-block mb-6 transition-opacity hover:opacity-80">
+              <img src="/images/loogoo.png" alt="dekord logo" className="h-8 w-auto mix-blend-multiply" decoding="async" />
+              <span className="sr-only">dekord</span>
+            </a>
+            <p className="text-neutral-500 text-sm leading-relaxed mb-8 max-w-sm font-medium">
+              Not just cables, but a vibe. dekord creates essentials that charge your life with power, durability, and style.
+            </p>
+            
+            <div className="flex gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  className="w-10 h-10 border border-neutral-200 rounded-full flex items-center justify-center text-neutral-500 hover:text-white hover:bg-neutral-900 hover:border-neutral-900 transition-all duration-300"
+                >
+                  <social.icon size={18} />
+                  <span className="sr-only">{social.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Links Columns */}
+          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+            {Object.entries(footerSections).map(([section, links], index) => (
+              <div key={section} className="flex flex-col">
+                <h4 className="font-bold text-neutral-900 mb-6 text-xs tracking-widest uppercase">{section}</h4>
+                <ul className="space-y-4">
+                  {links.map((link) => (
+                    <li key={link.name}>
+                      <a
+                        href={link.href}
+                        className="text-neutral-500 hover:text-neutral-900 transition-colors duration-200 group flex items-center text-sm font-medium w-fit"
+                      >
+                        {link.name}
+                        <span className="ml-[2px] opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                          <ArrowUpRight size={14} strokeWidth={2.5} />
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom Formatted Copyright */}
+        <div className="pt-8 border-t border-neutral-200 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-6 text-neutral-400 text-sm">
+            <p className="font-medium">© {currentYear} dekord. All rights reserved.</p>
+            <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-neutral-300"></div>
+            <p className="font-medium">
+              Designed & developed by <a href="https://www.skordlabs.com" target="_blank" rel="noreferrer" className="text-neutral-600 hover:text-neutral-900 font-semibold transition-colors duration-200">Skord Labs</a>
             </p>
           </div>
+          
           <CountrySelector />
         </div>
+
       </div>
     </footer>
   )
