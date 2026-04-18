@@ -46,7 +46,18 @@ export async function getAllProductsServer() {
   const { data, error } = await supabase
     .from('products')
     .select(`
-      *,
+      id,
+      name,
+      slug,
+      description,
+      category,
+      price,
+      availability,
+      main_image,
+      rating,
+      review_count,
+      created_at,
+      updated_at,
       collection_products(
         collections(name)
       )
@@ -59,7 +70,7 @@ export async function getAllProductsServer() {
     return { data: null, error: error.message }
   }
   
-  // Transform data to include collection names
+  // Keep catalog payload lean for Worker CPU limits while preserving collection label.
   const products = data.map(product => ({
     ...product,
     collection: product.collection_products?.[0]?.collections?.name || null

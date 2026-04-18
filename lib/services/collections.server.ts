@@ -1,19 +1,13 @@
 // Server-side database service for Collections (for SSR/ISR)
 import { createStaticClient } from '../supabase/server'
-import type { CollectionWithProducts } from '../types/database'
+import type { Collection, CollectionWithProducts } from '../types/database'
 
 export async function getAllCollectionsServer() {
   const supabase = createStaticClient()
   
   const { data, error } = await supabase
     .from('collections')
-    .select(`
-      *,
-      collection_products(
-        product_id,
-        products(*)
-      )
-    `)
+    .select('*')
     .eq('status', 'active')
     .order('sort_order', { ascending: true })
   
@@ -21,15 +15,9 @@ export async function getAllCollectionsServer() {
     console.error('Error fetching collections:', error)
     return { data: null, error: error.message }
   }
-  
-  // Transform data to include product count
-  const collections = data.map((collection: any) => ({
-    ...collection,
-    product_count: collection.collection_products?.length || 0,
-    products: collection.collection_products?.map((cp: any) => cp.products) || []
-  }))
-  
-  return { data: collections as CollectionWithProducts[], error: null }
+
+  // Collections listing UI only needs collection-level fields.
+  return { data: data as Collection[], error: null }
 }
 
 export async function getCollectionBySlugServer(slug: string) {
