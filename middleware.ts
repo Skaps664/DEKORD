@@ -122,6 +122,3 @@ export const config = {
     '/claim/:path*',
   ],
 }
-
-// Disable Edge Runtime for middleware (use Node.js runtime)
-export const runtime = 'nodejs'
