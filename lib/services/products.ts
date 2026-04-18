@@ -44,7 +44,9 @@ export async function getProductBySlug(slug: string) {
     `)
     .eq('slug', slug)
     .eq('status', 'active')
-    .single()
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
   
   if (error) {
     console.error('Error fetching product:', error)
