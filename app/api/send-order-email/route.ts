@@ -8,8 +8,6 @@ import {
   getOrderDeliveredEmail 
 } from '@/lib/email-templates'
 
-const resend = new Resend(process.env.RESEND_API_KEY!)
-
 interface OrderEmailData {
   orderId: string
   orderNumber: string
@@ -51,17 +49,20 @@ function getEmailContent(type: string, data: OrderEmailData) {
 
 export async function POST(request: Request) {
   try {
+    const resendApiKey = process.env.RESEND_API_KEY
+    if (!resendApiKey) {
+      console.error('❌ RESEND_API_KEY not configured')
+      return NextResponse.json({ error: 'Email service not configured' }, { status: 500 })
+    }
+
+    const resend = new Resend(resendApiKey)
+
     const body = await request.json()
     const { type, orderId } = body
 
     if (!type || !orderId) {
       console.error('❌ Missing required parameters:', { type, orderId })
       return NextResponse.json({ error: 'Missing type or orderId' }, { status: 400 })
-    }
-
-    if (!process.env.RESEND_API_KEY) {
-      console.error('❌ RESEND_API_KEY not configured')
-      return NextResponse.json({ error: 'Email service not configured' }, { status: 500 })
     }
 
     const supabase = await createClient()

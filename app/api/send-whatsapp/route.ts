@@ -2,13 +2,6 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { Twilio } from 'twilio'
 
-const twilioClient = new Twilio(
-  process.env.TWILIO_ACCOUNT_SID!,
-  process.env.TWILIO_AUTH_TOKEN!
-)
-
-const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER!
-
 interface WhatsAppMessageData {
   orderId: string
   orderNumber: string
@@ -125,6 +118,21 @@ Thank you for trusting *dekord*! 🙏❤️
 
 export async function POST(request: Request) {
   try {
+    const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID
+    const twilioAuthToken = process.env.TWILIO_AUTH_TOKEN
+    const twilioWhatsappNumber = process.env.TWILIO_WHATSAPP_NUMBER
+
+    if (!twilioAccountSid || !twilioAuthToken || !twilioWhatsappNumber) {
+      console.error('Twilio env vars not configured', {
+        hasAccountSid: !!twilioAccountSid,
+        hasAuthToken: !!twilioAuthToken,
+        hasWhatsappNumber: !!twilioWhatsappNumber,
+      })
+      return NextResponse.json({ error: 'WhatsApp service not configured' }, { status: 500 })
+    }
+
+    const twilioClient = new Twilio(twilioAccountSid, twilioAuthToken)
+
     const body = await request.json()
     const { type, orderId } = body
 
@@ -189,7 +197,7 @@ export async function POST(request: Request) {
 
     // Send via Twilio WhatsApp
     const result = await twilioClient.messages.create({
-      from: `whatsapp:${TWILIO_WHATSAPP_NUMBER}`,
+      from: `whatsapp:${twilioWhatsappNumber}`,
       to: `whatsapp:${formattedPhone}`,
       body: message
     })

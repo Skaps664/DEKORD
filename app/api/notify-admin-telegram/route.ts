@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_ADMIN_CHAT_ID!
-
 export async function POST(request: Request) {
   try {
+    const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN
+    const telegramChatId = process.env.TELEGRAM_ADMIN_CHAT_ID
+
     const { orderId } = await request.json()
 
     if (!orderId) {
@@ -13,10 +13,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Order ID required' }, { status: 400 })
     }
 
-    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    if (!telegramBotToken || !telegramChatId) {
       console.error('❌ Telegram not configured:', { 
-        hasToken: !!TELEGRAM_BOT_TOKEN, 
-        hasChatId: !!TELEGRAM_CHAT_ID 
+        hasToken: !!telegramBotToken, 
+        hasChatId: !!telegramChatId 
       })
       return NextResponse.json({ error: 'Telegram not configured' }, { status: 500 })
     }
@@ -85,7 +85,7 @@ ${itemsList}
 *dekord* | Order Management System`
 
     // Send message to Telegram with retries and timeout (fixes transient ETIMEDOUT in dev)
-    const telegramUrl = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`
+    const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`
 
     async function sendTelegramWithRetry(payload: any) {
       const maxRetries = 3
@@ -131,7 +131,7 @@ ${itemsList}
     let result: any = null
     try {
       result = await sendTelegramWithRetry({
-        chat_id: TELEGRAM_CHAT_ID,
+        chat_id: telegramChatId,
         text: message,
         parse_mode: 'Markdown',
         disable_web_page_preview: false
