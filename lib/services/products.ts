@@ -52,6 +52,10 @@ export async function getProductBySlug(slug: string) {
     console.error('Error fetching product:', error)
     return { data: null, error: error.message }
   }
+
+  if (!data) {
+    return { data: null, error: null }
+  }
   
   // Transform data to include collection name
   const product = {

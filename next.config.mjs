@@ -6,7 +6,9 @@ const nextConfig = {
   // Suppress hydration warnings caused by browser extensions
   reactStrictMode: true,
   images: {
-    unoptimized: false, // Set to true if images still don't work
+    // Cloudflare Workers can hit CPU limits under heavy image optimization load.
+    // Serve source images directly to reduce Worker CPU pressure.
+    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

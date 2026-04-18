@@ -5,7 +5,6 @@ import "./globals.css"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { CartProvider } from "@/contexts/cart-context"
-import { Analytics } from '@vercel/analytics/react'
 import LoadingBar from "@/components/loading-bar"
 import { CookieConsent } from "@/components/cookie-consent"
 import DeferredGlobalScripts from "@/components/deferred-global-scripts"
@@ -200,7 +199,6 @@ export default function RootLayout({
         <CartProvider>
           <Header />
           <main role="main">{children}</main>
-          <Analytics />
           <Footer />
           <CookieConsent />
         </CartProvider>

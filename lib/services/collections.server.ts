@@ -55,6 +55,10 @@ export async function getCollectionBySlugServer(slug: string) {
     console.error('Error fetching collection:', error)
     return { data: null, error: error.message }
   }
+
+  if (!data) {
+    return { data: null, error: null }
+  }
   
   // Transform data
   const collection = {
