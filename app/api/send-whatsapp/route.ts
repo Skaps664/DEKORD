@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { Twilio } from 'twilio'
 
 interface WhatsAppMessageData {
   orderId: string
@@ -20,8 +19,38 @@ interface WhatsAppMessageData {
   }>
 }
 
+const DEFAULT_SITE_URL = 'https://dekord.online'
+
+function resolveSiteUrl() {
+  const candidates = [
+    process.env.SITE_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.CLOUDFLARE_PUBLIC_URL,
+    DEFAULT_SITE_URL,
+  ]
+
+  for (const candidate of candidates) {
+    if (!candidate) continue
+
+    try {
+      const parsed = new URL(candidate)
+      const hostname = parsed.hostname.toLowerCase()
+
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+        continue
+      }
+
+      return `${parsed.protocol}//${parsed.host}`
+    } catch {
+      continue
+    }
+  }
+
+  return DEFAULT_SITE_URL
+}
+
 function getMessage(type: string, data: WhatsAppMessageData) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dekord.online'
+  const baseUrl = resolveSiteUrl()
   const confirmUrl = `${baseUrl}/order-confirmation/${data.orderId}`
   const accountUrl = `${baseUrl}/account?tab=orders`
   
@@ -116,6 +145,41 @@ Thank you for trusting *dekord*! 🙏❤️
   }
 }
 
+async function sendWhatsAppViaTwilio(params: {
+  accountSid: string
+  authToken: string
+  from: string
+  to: string
+  body: string
+}) {
+  const { accountSid, authToken, from, to, body } = params
+  const endpoint = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`
+  const basicAuth = Buffer.from(`${accountSid}:${authToken}`).toString('base64')
+
+  const payload = new URLSearchParams({
+    From: `whatsapp:${from}`,
+    To: `whatsapp:${to}`,
+    Body: body,
+  })
+
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${basicAuth}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: payload,
+  })
+
+  const data = await response.json()
+  if (!response.ok) {
+    const msg = data?.message || 'Failed to send WhatsApp message via Twilio'
+    throw new Error(msg)
+  }
+
+  return data as { sid: string }
+}
+
 export async function POST(request: Request) {
   try {
     const twilioAccountSid = process.env.TWILIO_ACCOUNT_SID
@@ -130,8 +194,6 @@ export async function POST(request: Request) {
       })
       return NextResponse.json({ error: 'WhatsApp service not configured' }, { status: 500 })
     }
-
-    const twilioClient = new Twilio(twilioAccountSid, twilioAuthToken)
 
     const body = await request.json()
     const { type, orderId } = body
@@ -196,10 +258,12 @@ export async function POST(request: Request) {
     const message = getMessage(type, messageData)
 
     // Send via Twilio WhatsApp
-    const result = await twilioClient.messages.create({
-      from: `whatsapp:${twilioWhatsappNumber}`,
-      to: `whatsapp:${formattedPhone}`,
-      body: message
+    const result = await sendWhatsAppViaTwilio({
+      accountSid: twilioAccountSid,
+      authToken: twilioAuthToken,
+      from: twilioWhatsappNumber,
+      to: formattedPhone,
+      body: message,
     })
 
     // Log success

@@ -1,10 +1,15 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { getBlogPostBySlugServer, getAllBlogSlugs, incrementBlogView } from "@/lib/services/blog.server"
+import { cache } from "react"
+import { getBlogPostBySlugServer, getAllBlogSlugs } from "@/lib/services/blog.server"
 import { BlogPostClient } from "./blog-post-client"
 import { generateBreadcrumbSchema } from "@/lib/breadcrumb-schema"
 
 export const revalidate = 3600 // Revalidate every hour
+
+const getBlogPostBySlugCached = cache(async (slug: string) => {
+  return getBlogPostBySlugServer(slug)
+})
 
 export async function generateStaticParams() {
   const { data: slugs } = await getAllBlogSlugs()
@@ -14,7 +19,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
-  const { data: post } = await getBlogPostBySlugServer(slug)
+  const { data: post } = await getBlogPostBySlugCached(slug)
 
   if (!post) {
     return {
@@ -63,14 +68,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const { data: post, error } = await getBlogPostBySlugServer(slug)
+  const { data: post, error } = await getBlogPostBySlugCached(slug)
 
   if (error || !post) {
     notFound()
   }
-
-  // Increment view count (fire and forget - don't await)
-  incrementBlogView(post.id).catch(err => console.error('Failed to increment view:', err))
 
   // Strip inline base64 data URIs to reduce ISR page size (can be 30MB+)
   // Uses indexOf loop instead of regex to avoid stack overflow on huge strings
@@ -135,7 +137,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
               "@type": "WebPage",
               "@id": canonicalUrl
             },
-            "wordCount": post.content?.split(/\s+/).length || 0,
             "articleBody": post.excerpt,
             "keywords": post.tags?.join(', ') || ""
           })

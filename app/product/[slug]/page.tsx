@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { cache } from "react"
 import { getProductBySlugServer, getAllProductSlugs } from "@/lib/services/products.server"
 import { ProductPageClient } from "./product-client"
 import { generateBreadcrumbSchema } from "@/lib/breadcrumb-schema"
@@ -7,6 +8,10 @@ import { generateBreadcrumbSchema } from "@/lib/breadcrumb-schema"
 interface PageProps {
   params: Promise<{ slug: string }>
 }
+
+const getProductBySlugCached = cache(async (slug: string) => {
+  return getProductBySlugServer(slug)
+})
 
 // Generate static params for ISR
 export async function generateStaticParams() {
@@ -22,7 +27,7 @@ export async function generateStaticParams() {
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const { data: product } = await getProductBySlugServer(slug)
+  const { data: product } = await getProductBySlugCached(slug)
   
   if (!product) {
     return {
@@ -74,7 +79,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params
-  const { data: product, error } = await getProductBySlugServer(slug)
+  const { data: product, error } = await getProductBySlugCached(slug)
   
   if (error || !product) {
     console.error("Failed to fetch product:", error)

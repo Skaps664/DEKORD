@@ -1,5 +1,6 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { cache } from "react"
 import JobApplicationPage from "./job-application-client"
 import { createStaticClient } from '@/lib/supabase/server'
 
@@ -40,9 +41,13 @@ async function getJob(id: string) {
   }
 }
 
+const getJobCached = cache(async (id: string) => {
+  return getJob(id)
+})
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params
-  const job = await getJob(id)
+  const job = await getJobCached(id)
   
   if (!job) {
     return {
@@ -58,7 +63,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function JobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const job = await getJob(id)
+  const job = await getJobCached(id)
 
   if (!job) {
     notFound()

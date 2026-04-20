@@ -13,7 +13,7 @@ export function HeroText() {
     },
     {
       icon: <Cable className="w-6 h-6 text-green-400" />,
-      title: "100% Pure Copper",
+      title: "Crafted for Durability",
     },
     {
       icon: <Truck className="w-6 h-6 text-amber-400" />,

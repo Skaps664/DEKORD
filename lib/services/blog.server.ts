@@ -17,7 +17,22 @@ export async function getBlogPostsServer(options: {
   const supabase = createStaticClient()
   let query = supabase
     .from('blog_posts')
-    .select('*', { count: 'exact' })
+    .select(
+      `
+      id,
+      title,
+      slug,
+      excerpt,
+      featured_image,
+      author_name,
+      category,
+      tags,
+      featured,
+      published_at,
+      updated_at
+      `,
+      { count: 'exact' }
+    )
     .eq('status', 'published')
     .order('published_at', { ascending: false })
 

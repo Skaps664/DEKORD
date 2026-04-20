@@ -25,8 +25,38 @@ interface OrderEmailData {
   courier?: string
 }
 
+const DEFAULT_SITE_URL = 'https://dekord.online'
+
+function resolveSiteUrl() {
+  const candidates = [
+    process.env.SITE_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.CLOUDFLARE_PUBLIC_URL,
+    DEFAULT_SITE_URL,
+  ]
+
+  for (const candidate of candidates) {
+    if (!candidate) continue
+
+    try {
+      const parsed = new URL(candidate)
+      const hostname = parsed.hostname.toLowerCase()
+
+      if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '::1') {
+        continue
+      }
+
+      return `${parsed.protocol}//${parsed.host}`
+    } catch {
+      continue
+    }
+  }
+
+  return DEFAULT_SITE_URL
+}
+
 function getEmailContent(type: string, data: OrderEmailData) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dekord.online';
+  const baseUrl = resolveSiteUrl();
   const confirmUrl = `${baseUrl}/order-confirmation/${data.orderId}`;
 
   switch (type) {

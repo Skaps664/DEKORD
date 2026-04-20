@@ -1,0 +1,29 @@
+
+┌──────────────────────────────┐
+│ OpenNext — Cloudflare deploy │
+└──────────────────────────────┘
+
+Incremental cache does not need populating
+Tag cache does not need populating
+
+ ⛅️ wrangler 4.83.0
+───────────────────
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mThe entry-point file at ".open-next/worker.js" was not found.[0m
+
+  
+  This might mean that your entry-point file needs to be generated (which is the general case when a framework is being used).
+  If that's the case please run your project's build command and try again.
+
+
+🪵  Logs were written to "/home/skaps/.config/.wrangler/logs/wrangler-2026-04-18_20-06-03_078.log"
+ERROR Wrangler deploy command failed:
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mThe entry-point file at ".open-next/worker.js" was not found.[0m
+
+  
+  This might mean that your entry-point file needs to be generated (which is the general case when a framework is being used).
+  If that's the case please run your project's build command and try again.
+
+
+🪵  Logs were written to "/home/skaps/.config/.wrangler/logs/wrangler-2026-04-18_20-06-03_078.log"
+

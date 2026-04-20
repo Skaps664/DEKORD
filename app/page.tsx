@@ -139,9 +139,9 @@ export default function HomePage() {
 {/* <NewsletterSection /> */}
       <FullBleedDuo
         // left={{ src: "/duo-1.webp", alt: "Minimalist oak chair" }}
-        left={{ src: "/bottom.webp", alt: "Minimalist oak chair" }}
+        left={{ src: "/dove-l.webp", alt: "dekord basic w-60 cable in a bag" }}
         // right={{ src: "/duo-3.webp", alt: "Modern walnut table" }}
-        right={{ src: "/bottom-2.webp", alt: "Modern walnut table" }}
+        right={{ src: "/dove-r.png", alt: "A man tanlged in dekord braided cable" }}
       />
       <UserVideoReviews />
       {/* <InstagramFeed /> */}

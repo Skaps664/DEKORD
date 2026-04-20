@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { cache } from "react"
 import { getCollectionBySlugServer, getAllCollectionSlugs } from "@/lib/services/collections.server"
 import { CollectionPageClient } from "./collection-client"
 import { generateBreadcrumbSchema } from "@/lib/breadcrumb-schema"
@@ -7,6 +8,10 @@ import { generateBreadcrumbSchema } from "@/lib/breadcrumb-schema"
 interface PageProps {
   params: Promise<{ slug: string }>
 }
+
+const getCollectionBySlugCached = cache(async (slug: string) => {
+  return getCollectionBySlugServer(slug)
+})
 
 // Generate static params for ISR
 export async function generateStaticParams() {
@@ -22,7 +27,7 @@ export async function generateStaticParams() {
 // Generate metadata for SEO
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const { data: collection } = await getCollectionBySlugServer(slug)
+  const { data: collection } = await getCollectionBySlugCached(slug)
   
   if (!collection) {
     return {
@@ -70,7 +75,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CollectionPage({ params }: PageProps) {
   const { slug } = await params
-  const { data: collection, error } = await getCollectionBySlugServer(slug)
+  const { data: collection, error } = await getCollectionBySlugCached(slug)
   
   if (error || !collection) {
     console.error("Failed to fetch collection:", error)
